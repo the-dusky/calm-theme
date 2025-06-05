@@ -6,12 +6,61 @@
 {{ 'delivery-calendar.scss.css' | asset_url | stylesheet_tag }}
 
 {%- liquid
+  # Find collections with STOQ preorder data or delivery dates
   assign delivery_collections = collections | where: 'title', '*Delivery*'
+  
   if delivery_collections.size == 0
     assign delivery_collections = collections | where: 'title', '*delivery*'
   endif
+  
   if delivery_collections.size == 0
     assign delivery_collections = collections | where: 'title', '*2025*'
+  endif
+  
+  # Also include collections with STOQ metafields
+  assign stoq_collections = blank
+  assign all_collections = collections
+  
+  for collection in all_collections
+    # Check for STOQ preorder metafields
+    assign has_stoq_data = false
+    
+    if collection.metafields.stoq.preorder_enabled
+      assign has_stoq_data = true
+    elsif collection.metafields.stoq.delivery_date
+      assign has_stoq_data = true
+    elsif collection.metafields.custom.delivery_date
+      assign has_stoq_data = true
+    elsif collection.metafields.custom.preorder_date
+      assign has_stoq_data = true
+    endif
+    
+    # Check if collection has products with preorder data
+    unless has_stoq_data
+      for product in collection.products limit: 5
+        if product.metafields.stoq.preorder_enabled or product.metafields.stoq.delivery_date
+          assign has_stoq_data = true
+          break
+        endif
+      endfor
+    endunless
+    
+    if has_stoq_data
+      assign stoq_collections = stoq_collections | append: collection.id | append: ','
+    endif
+  endfor
+  
+  # Merge delivery collections with STOQ collections
+  if stoq_collections != blank
+    assign stoq_collection_ids = stoq_collections | split: ','
+    for collection_id in stoq_collection_ids
+      unless collection_id == blank
+        assign stoq_collection = collections[collection_id]
+        unless delivery_collections contains stoq_collection
+          assign delivery_collections = delivery_collections | concat: array[stoq_collection]
+        endunless
+      endunless
+    endfor
   endif
 -%}
 
@@ -29,25 +78,84 @@
     <delivery-calendar 
       data-collections='[
         {%- for collection in delivery_collections -%}
+          {%- liquid
+            # Determine delivery date from various sources
+            assign delivery_date = collection.metafields.custom.delivery_date
+            if delivery_date == blank
+              assign delivery_date = collection.metafields.stoq.delivery_date
+            endif
+            if delivery_date == blank
+              assign delivery_date = collection.metafields.stoq.preorder_delivery_date
+            endif
+            if delivery_date == blank
+              assign delivery_date = collection.metafields.custom.preorder_date
+            endif
+            
+            # Check if this is a STOQ preorder collection
+            assign is_preorder = false
+            if collection.metafields.stoq.preorder_enabled == true
+              assign is_preorder = true
+            endif
+          -%}
           {
             "handle": "{{ collection.handle }}",
             "title": "{{ collection.title | escape }}",
             "products_count": {{ collection.products_count }},
             "url": "{{ collection.url }}",
+            "is_preorder": {{ is_preorder }},
+            "stoq_enabled": {% if collection.metafields.stoq %}true{% else %}false{% endif %},
             "products": [
               {%- for product in collection.products limit: 6 -%}
+                {%- liquid
+                  # Get product-specific delivery date and preorder info
+                  assign product_delivery_date = product.metafields.stoq.delivery_date
+                  if product_delivery_date == blank
+                    assign product_delivery_date = product.metafields.custom.delivery_date
+                  endif
+                  
+                  assign product_preorder = false
+                  if product.metafields.stoq.preorder_enabled == true
+                    assign product_preorder = true
+                  endif
+                -%}
                 {
                   "id": {{ product.id }},
                   "title": "{{ product.title | escape }}",
                   "url": "{{ product.url }}",
                   "featured_image": "{{ product.featured_image | image_url: width: 300 }}",
-                  "price": {{ product.price }}
+                  "price": {{ product.price }},
+                  "is_preorder": {{ product_preorder }},
+                  "preorder_delivery_date": {% if product_delivery_date != blank %}"{{ product_delivery_date }}"{% else %}null{% endif %},
+                  "variants": [
+                    {%- for variant in product.variants limit: 20 -%}
+                      {%- liquid
+                        assign variant_delivery_date = variant.metafields.stoq.delivery_date
+                        if variant_delivery_date == blank
+                          assign variant_delivery_date = variant.metafields.custom.delivery_date
+                        endif
+                        
+                        assign variant_preorder = false
+                        if variant.metafields.stoq.preorder_enabled == true
+                          assign variant_preorder = true
+                        endif
+                      -%}
+                      {
+                        "id": {{ variant.id }},
+                        "title": "{{ variant.title | escape }}",
+                        "price": {{ variant.price }},
+                        "available": {{ variant.available }},
+                        "is_preorder": {{ variant_preorder }},
+                        "delivery_date": {% if variant_delivery_date != blank %}"{{ variant_delivery_date }}"{% else %}null{% endif %}
+                      }{% unless forloop.last %},{% endunless %}
+                    {%- endfor -%}
+                  ]
                 }{% unless forloop.last %},{% endunless %}
               {%- endfor -%}
             ]
-            {%- assign delivery_date = collection.metafields.custom.delivery_date -%}
             {%- if delivery_date != blank -%}
               ,"delivery_date": "{{ delivery_date }}"
+            {%- else -%}
+              ,"delivery_date": "TBA"
             {%- endif -%}
           }{% unless forloop.last %},{% endunless %}
         {%- endfor -%}

@@ -39,11 +39,13 @@ export default class DeliveryCalendar extends HTMLElement {
           <h3 class="month-title">${month.title}</h3>
           <span class="product-count">${month.count} ${month.count === 1 ? 'item' : 'items'}</span>
         </div>
+        ${month.isPreorder ? '<div class="preorder-badge">Pre-order</div>' : ''}
         <div class="month-preview">
           ${this.renderPreviewImages(month.products)}
         </div>
         <div class="month-meta">
           <span class="delivery-date">${month.deliveryDate}</span>
+          ${month.stoqEnabled ? '<span class="stoq-badge">STOQ</span>' : ''}
         </div>
       </div>
     `).join('');
@@ -66,8 +68,10 @@ export default class DeliveryCalendar extends HTMLElement {
       slug: collection.handle,
       title: collection.title,
       count: collection.products_count,
-      deliveryDate: collection.metafields?.delivery_date || 'TBA',
-      products: collection.products || []
+      deliveryDate: collection.delivery_date || 'TBA',
+      products: collection.products || [],
+      isPreorder: collection.is_preorder || false,
+      stoqEnabled: collection.stoq_enabled || false
     }));
   }
 
@@ -171,21 +175,43 @@ export default class DeliveryCalendar extends HTMLElement {
     return `
       <div class="products-grid">
         ${products.map(product => `
-          <div class="product-card">
+          <div class="product-card ${product.is_preorder ? 'preorder-product' : ''}">
             <div class="product-image">
               <img src="${product.featured_image}" alt="${product.title}" loading="lazy">
+              ${product.is_preorder ? '<div class="preorder-overlay">Pre-order</div>' : ''}
             </div>
             <div class="product-info">
               <h4 class="product-title">${product.title}</h4>
               <div class="product-price">
                 ${this.formatPrice(product.price)}
               </div>
-              <a href="${product.url}" class="product-link">View Details</a>
+              ${product.preorder_delivery_date ? `<div class="delivery-info">Delivers: ${product.preorder_delivery_date}</div>` : ''}
+              ${this.renderVariantInfo(product.variants)}
+              <a href="${product.url}" class="product-link">${product.is_preorder ? 'Pre-order Now' : 'View Details'}</a>
             </div>
           </div>
         `).join('')}
       </div>
     `;
+  }
+
+  renderVariantInfo(variants) {
+    if (!variants || variants.length <= 1) {
+      return '';
+    }
+
+    const preorderVariants = variants.filter(v => v.is_preorder);
+    const regularVariants = variants.filter(v => !v.is_preorder);
+    
+    let info = '';
+    if (preorderVariants.length > 0) {
+      info += `<div class="variant-info preorder-variants">${preorderVariants.length} pre-order variant${preorderVariants.length > 1 ? 's' : ''}</div>`;
+    }
+    if (regularVariants.length > 0) {
+      info += `<div class="variant-info regular-variants">${regularVariants.length} regular variant${regularVariants.length > 1 ? 's' : ''}</div>`;
+    }
+    
+    return info;
   }
 
   formatPrice(price) {
