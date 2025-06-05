@@ -1,0 +1,118 @@
+{% comment %}
+  Delivery Calendar Section
+  Place this in sections/delivery-calendar.liquid
+{% endcomment %}
+
+{{ 'delivery-calendar.scss.css' | asset_url | stylesheet_tag }}
+
+{%- liquid
+  assign delivery_collections = collections | where: 'title', '*Delivery*'
+  if delivery_collections.size == 0
+    assign delivery_collections = collections | where: 'title', '*delivery*'
+  endif
+  if delivery_collections.size == 0
+    assign delivery_collections = collections | where: 'title', '*2025*'
+  endif
+-%}
+
+<div class="delivery-calendar-section">
+  <div class="container">
+    {% if section.settings.heading != blank %}
+      <div class="section-header">
+        <h2 class="section-title">{{ section.settings.heading }}</h2>
+        {% if section.settings.subheading != blank %}
+          <p class="section-subtitle">{{ section.settings.subheading }}</p>
+        {% endif %}
+      </div>
+    {% endif %}
+
+    <delivery-calendar 
+      data-collections='[
+        {%- for collection in delivery_collections -%}
+          {
+            "handle": "{{ collection.handle }}",
+            "title": "{{ collection.title | escape }}",
+            "products_count": {{ collection.products_count }},
+            "url": "{{ collection.url }}",
+            "products": [
+              {%- for product in collection.products limit: 6 -%}
+                {
+                  "id": {{ product.id }},
+                  "title": "{{ product.title | escape }}",
+                  "url": "{{ product.url }}",
+                  "featured_image": "{{ product.featured_image | image_url: width: 300 }}",
+                  "price": {{ product.price }}
+                }{% unless forloop.last %},{% endunless %}
+              {%- endfor -%}
+            ]
+            {%- assign delivery_date = collection.metafields.custom.delivery_date -%}
+            {%- if delivery_date != blank -%}
+              ,"delivery_date": "{{ delivery_date }}"
+            {%- endif -%}
+          }{% unless forloop.last %},{% endunless %}
+        {%- endfor -%}
+      ]'
+      class="delivery-calendar-component">
+    </delivery-calendar>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Delivery Calendar",
+  "class": "section-delivery-calendar",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Delivery Schedule"
+    },
+    {
+      "type": "textarea",
+      "id": "subheading",
+      "label": "Subheading",
+      "default": "Select a delivery month to view available products"
+    },
+    {
+      "type": "select",
+      "id": "layout",
+      "label": "Calendar Layout",
+      "options": [
+        {
+          "value": "grid",
+          "label": "Grid Layout"
+        },
+        {
+          "value": "timeline",
+          "label": "Timeline Layout"
+        }
+      ],
+      "default": "grid"
+    },
+    {
+      "type": "range",
+      "id": "columns_mobile",
+      "label": "Mobile Columns",
+      "min": 1,
+      "max": 3,
+      "step": 1,
+      "default": 1
+    },
+    {
+      "type": "range",
+      "id": "columns_desktop",
+      "label": "Desktop Columns",
+      "min": 2,
+      "max": 6,
+      "step": 1,
+      "default": 3
+    }
+  ],
+  "presets": [
+    {
+      "name": "Delivery Calendar"
+    }
+  ]
+}
+{% endschema %}

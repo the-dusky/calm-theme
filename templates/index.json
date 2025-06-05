@@ -345,10 +345,21 @@
         "padding-block-start": 48,
         "padding-block-end": 96
       }
+    },
+    "delivery_calendar_section": {
+      "type": "delivery-calendar",
+      "settings": {
+        "heading": "Delivery Schedule",
+        "subheading": "Select a delivery month to view available products",
+        "layout": "grid",
+        "columns_mobile": 1,
+        "columns_desktop": 3
+      }
     }
   },
   "order": [
     "hero_jVaWmY",
+    "delivery_calendar_section",
     "product_list_qU3bEB"
   ]
 }
