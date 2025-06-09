@@ -1,0 +1,357 @@
+{% comment %}
+  Delivery Calendar Section
+  Place this in sections/delivery-calendar.liquid
+{% endcomment %}
+
+{{ 'delivery-calendar.scss.css' | asset_url | stylesheet_tag }}
+
+{%- liquid
+  # Get STOQ API key from theme settings
+  assign stoq_api_key = settings.storefront_api_key
+  assign stoq_api_url = 'https://api.stoqapp.com/v1'
+  
+  # For now, get collections that contain delivery dates while we implement STOQ API
+  # TODO: Replace this with actual STOQ API calls
+  assign delivery_collection_handles = ''
+  
+  # Find collections with delivery-related patterns (temporary until STOQ API is integrated)
+  for collection in collections
+    assign title_lower = collection.title | downcase
+    assign is_delivery_collection = false
+    
+    # Check for delivery/shipment keywords or date patterns
+    if title_lower contains 'delivery' or title_lower contains 'shipment' or title_lower contains 'preorder' or title_lower contains '2024' or title_lower contains '2025' or title_lower contains '2026'
+      assign is_delivery_collection = true
+    endif
+    
+    if is_delivery_collection
+      if delivery_collection_handles == ''
+        assign delivery_collection_handles = collection.handle
+      else
+        assign delivery_collection_handles = delivery_collection_handles | append: ',' | append: collection.handle
+      endif
+    endif
+  endfor
+  
+  # Convert handles back to collections array
+  assign delivery_collections = ''
+  if delivery_collection_handles != ''
+    assign handles_array = delivery_collection_handles | split: ','
+    for handle in handles_array
+      assign found_collection = collections[handle]
+      if found_collection
+        if delivery_collections == ''
+          assign delivery_collections = found_collection
+        else
+          assign delivery_collections = delivery_collections | append: '|' | append: found_collection
+        endif
+      endif
+    endfor
+    assign delivery_collections = delivery_collections | split: '|'
+  endif
+  
+  # Also include collections with STOQ metafields
+  assign stoq_collections = blank
+  assign all_collections = collections
+  
+  for collection in all_collections
+    # Check for STOQ preorder metafields
+    assign has_stoq_data = false
+    
+    if collection.metafields.stoq.preorder_enabled
+      assign has_stoq_data = true
+    elsif collection.metafields.stoq.delivery_date
+      assign has_stoq_data = true
+    elsif collection.metafields.custom.delivery_date
+      assign has_stoq_data = true
+    elsif collection.metafields.custom.preorder_date
+      assign has_stoq_data = true
+    endif
+    
+    # Check if collection has products with preorder data
+    unless has_stoq_data
+      for product in collection.products limit: 5
+        if product.metafields.stoq.preorder_enabled or product.metafields.stoq.delivery_date
+          assign has_stoq_data = true
+          break
+        endif
+      endfor
+    endunless
+    
+    if has_stoq_data
+      assign stoq_collections = stoq_collections | append: collection.id | append: ','
+    endif
+  endfor
+  
+  # Merge delivery collections with STOQ collections
+  if stoq_collections != blank
+    assign stoq_collection_ids = stoq_collections | split: ','
+    for collection_id in stoq_collection_ids
+      unless collection_id == blank
+        assign stoq_collection = collections[collection_id]
+        unless delivery_collections contains stoq_collection
+          assign delivery_collections = delivery_collections | concat: array[stoq_collection]
+        endunless
+      endunless
+    endfor
+  endif
+-%}
+
+<div class="delivery-calendar-section">
+  <div class="container">
+    {% if section.settings.heading != blank %}
+      <div class="section-header">
+        <h2 class="section-title">{{ section.settings.heading }}</h2>
+        {% if section.settings.subheading != blank %}
+          <p class="section-subtitle">{{ section.settings.subheading }}</p>
+        {% endif %}
+      </div>
+    {% endif %}
+
+    <!-- Debug info -->
+    <div class="debug-info" style="background: #f0f0f0; padding: 1rem; margin: 1rem 0; font-family: monospace; font-size: 12px; max-height: 400px; overflow-y: auto;">
+      <h4>Debug Info:</h4>
+      <p>Total collections: {{ collections.size }}</p>
+      <p>Delivery collections found: {{ delivery_collections.size }}</p>
+      
+      <h5>Collection Metafields:</h5>
+      {% for collection in collections limit: 5 %}
+        <div style="margin-left: 1rem; margin-bottom: 1rem; border: 1px solid #ddd; padding: 8px;">
+          <strong>{{ collection.title }} ({{ collection.handle }})</strong><br>
+          Products: {{ collection.products_count }}<br>
+          
+          {% comment %} Show all metafields {% endcomment %}
+          <strong>All Collection Metafields:</strong><br>
+          {% for metafield in collection.metafields %}
+            &nbsp;&nbsp;{{ metafield[0] }}: {{ metafield[1] | truncate: 100 }}<br>
+          {% endfor %}
+          
+          {% comment %} Show first product's metafields {% endcomment %}
+          {% assign first_product = collection.products.first %}
+          {% if first_product %}
+            <br><strong>First Product Metafields ({{ first_product.title }}):</strong><br>
+            {% for metafield in first_product.metafields %}
+              &nbsp;&nbsp;{{ metafield[0] }}: {{ metafield[1] | truncate: 100 }}<br>
+            {% endfor %}
+            
+            {% comment %} Show first variant's metafields {% endcomment %}
+            {% assign first_variant = first_product.variants.first %}
+            {% if first_variant %}
+              <br><strong>First Variant Metafields ({{ first_variant.title }}):</strong><br>
+              {% for metafield in first_variant.metafields %}
+                &nbsp;&nbsp;{{ metafield[0] }}: {{ metafield[1] | truncate: 100 }}<br>
+              {% endfor %}
+            {% endif %}
+          {% endif %}
+        </div>
+      {% endfor %}
+      
+      <h5>Found delivery collections:</h5>
+      {% for collection in delivery_collections %}
+        <div style="margin-left: 1rem;">- {{ collection.title }} ({{ collection.handle }})</div>
+      {% endfor %}
+    </div>
+
+    <delivery-calendar 
+      data-stoq-api-key="{{ stoq_api_key }}"
+      data-stoq-api-url="{{ stoq_api_url }}"
+      data-collections='[
+        {%- for collection in delivery_collections -%}
+          {%- liquid
+            # Determine delivery date from various sources
+            assign delivery_date = collection.metafields.custom.delivery_date
+            if delivery_date == blank
+              assign delivery_date = collection.metafields.stoq.delivery_date
+            endif
+            if delivery_date == blank
+              assign delivery_date = collection.metafields.stoq.preorder_delivery_date
+            endif
+            if delivery_date == blank
+              assign delivery_date = collection.metafields.stoq.fulfillment_date
+            endif
+            if delivery_date == blank
+              assign delivery_date = collection.metafields.custom.preorder_date
+            endif
+            if delivery_date == blank
+              assign delivery_date = collection.metafields.custom.fulfillment_date
+            endif
+            
+# Extract date from collection title since no metafields exist
+            if delivery_date == blank
+              assign title_lower = collection.title | downcase
+              # Look for specific date patterns in the title
+              if title_lower contains '2025-06-30'
+                assign delivery_date = '2025-06-30'
+              elsif title_lower contains '2025-07-15'
+                assign delivery_date = '2025-07-15'
+              elsif title_lower contains '2025'
+                # Try to extract any date pattern YYYY-MM-DD from the beginning of title
+                assign title_parts = collection.title | split: ' '
+                assign first_part = title_parts[0]
+                if first_part contains '2025'
+                  assign delivery_date = first_part
+                endif
+              endif
+              
+              # If still no date found, set a default based on collection title
+              if delivery_date == blank
+                if title_lower contains 'june' or title_lower contains 'jun'
+                  assign delivery_date = '2025-06-30'
+                elsif title_lower contains 'july' or title_lower contains 'jul'
+                  assign delivery_date = '2025-07-15'
+                else
+                  assign delivery_date = 'TBA'
+                endif
+              endif
+            endif
+            
+# Since no metafields exist, determine preorder status from title
+            assign is_preorder = false
+            if title_lower contains 'preorder' or title_lower contains 'pre-order'
+              assign is_preorder = true
+            endif
+          -%}
+          {
+            "handle": "{{ collection.handle }}",
+            "title": "{{ collection.title | escape }}",
+            "products_count": {{ collection.products_count | default: 0 }},
+            "url": "{{ collection.url }}",
+            "is_preorder": {{ is_preorder | default: false }},
+            "stoq_enabled": {% if collection.metafields.stoq %}true{% else %}false{% endif %},
+            "products": [
+              {%- for product in collection.products limit: 6 -%}
+                {%- liquid
+                  # Since no metafields exist, use collection delivery date for products
+                  assign product_delivery_date = delivery_date
+                  
+                  # Use collection preorder status for products
+                  assign product_preorder = is_preorder
+                  
+                  # No STOQ offers since no metafields exist
+                  assign offers_count = 0
+                -%}
+                {
+                  "id": {{ product.id }},
+                  "title": "{{ product.title | escape }}",
+                  "url": "{{ product.url }}",
+                  "featured_image": "{{ product.featured_image | image_url: width: 300 }}",
+                  "price": {{ product.price | default: 0 }},
+                  "is_preorder": {{ product_preorder | default: false }},
+                  "preorder_delivery_date": {% if product_delivery_date != blank %}"{{ product_delivery_date }}"{% else %}null{% endif %},
+                  "stoq_offers_count": {{ offers_count | default: 0 }},
+                  "collection_delivery_date": "{{ delivery_date | default: 'TBA' }}",
+                  "variants": [
+                    {%- for variant in product.variants limit: 20 -%}
+                      {%- liquid
+                        assign variant_delivery_date = variant.metafields.restockrocket_production.delivery_date
+                        if variant_delivery_date == blank
+                          assign variant_delivery_date = variant.metafields.restockrocket_production.fulfillment_date
+                        endif
+                        if variant_delivery_date == blank
+                          assign variant_delivery_date = variant.metafields.custom.delivery_date
+                        endif
+                        
+                        assign variant_preorder = false
+                        if variant.metafields.restockrocket_production.preorder_enabled == true
+                          assign variant_preorder = true
+                        endif
+                        if variant.metafields.restockrocket_production.is_preorder == true
+                          assign variant_preorder = true
+                        endif
+                        
+                        # Check for selling plans (indicates preorder availability)
+                        assign selling_plan_ids = variant.metafields.restockrocket_production.selling_plan_ids
+                        if selling_plan_ids != blank
+                          assign variant_preorder = true
+                        endif
+                        
+                        # Also check if variant has any selling plans assigned
+                        if variant.selling_plan_allocations.size > 0
+                          assign variant_preorder = true
+                        endif
+                      -%}
+                      {
+                        "id": {{ variant.id }},
+                        "title": "{{ variant.title | escape }}",
+                        "price": {{ variant.price | default: 0 }},
+                        "available": {{ variant.available | default: false }},
+                        "is_preorder": {{ variant_preorder | default: false }},
+                        "delivery_date": {% if variant_delivery_date != blank %}"{{ variant_delivery_date }}"{% else %}null{% endif %}
+                      }{% unless forloop.last %},{% endunless %}
+                    {%- endfor -%}
+                  ]
+                }{% unless forloop.last %},{% endunless %}
+              {%- endfor -%}
+            ]
+            {%- if delivery_date != blank -%}
+              ,"delivery_date": "{{ delivery_date }}"
+            {%- else -%}
+              ,"delivery_date": "TBA"
+            {%- endif -%}
+          }{% unless forloop.last %},{% endunless %}
+        {%- endfor -%}
+      ]'
+      class="delivery-calendar-component">
+    </delivery-calendar>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Delivery Calendar",
+  "class": "section-delivery-calendar",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Delivery Schedule"
+    },
+    {
+      "type": "textarea",
+      "id": "subheading",
+      "label": "Subheading",
+      "default": "Select a delivery month to view available products"
+    },
+    {
+      "type": "select",
+      "id": "layout",
+      "label": "Calendar Layout",
+      "options": [
+        {
+          "value": "grid",
+          "label": "Grid Layout"
+        },
+        {
+          "value": "timeline",
+          "label": "Timeline Layout"
+        }
+      ],
+      "default": "grid"
+    },
+    {
+      "type": "range",
+      "id": "columns_mobile",
+      "label": "Mobile Columns",
+      "min": 1,
+      "max": 3,
+      "step": 1,
+      "default": 1
+    },
+    {
+      "type": "range",
+      "id": "columns_desktop",
+      "label": "Desktop Columns",
+      "min": 2,
+      "max": 6,
+      "step": 1,
+      "default": 3
+    }
+  ],
+  "presets": [
+    {
+      "name": "Delivery Calendar"
+    }
+  ]
+}
+{% endschema %}
