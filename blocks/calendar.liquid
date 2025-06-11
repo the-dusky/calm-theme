@@ -339,37 +339,96 @@
           this.renderCalendar();});
       }
       
+      // Parse date from various formats including Shopify admin date format
+      parseDate(dateStr) {
+        if (!dateStr) return null;
+        
+        // Try to detect the format and parse accordingly
+        let date = null;
+        
+        // Clean the string (remove extra spaces, etc)
+        dateStr = dateStr.trim();
+        
+        // Try ISO format (YYYY-MM-DD or YYYY-MM-DDThh:mm:ss)
+        if (/^\d{4}-\d{2}-\d{2}(T[\d:.]+Z?)?$/.test(dateStr)) {
+          date = new Date(dateStr);
+          if (!isNaN(date.getTime())) return date;
+        }
+        
+        // Try Shopify admin date format (YYYY-MM-DD)
+        if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {
+          const [year, month, day] = dateStr.split('-').map(num => parseInt(num, 10));
+          date = new Date(year, month - 1, day); // Month is 0-indexed in JavaScript
+          if (!isNaN(date.getTime())) return date;
+        }
+        
+        // Try MM/DD/YYYY format
+        if (/^\d{1,2}\/\d{1,2}\/\d{4}$/.test(dateStr)) {
+          const [month, day, year] = dateStr.split('/').map(num => parseInt(num, 10));
+          date = new Date(year, month - 1, day);
+          if (!isNaN(date.getTime())) return date;
+        }
+        
+        // Try DD/MM/YYYY format
+        if (/^\d{1,2}\/\d{1,2}\/\d{4}$/.test(dateStr)) {
+          const [day, month, year] = dateStr.split('/').map(num => parseInt(num, 10));
+          date = new Date(year, month - 1, day);
+          if (!isNaN(date.getTime())) return date;
+        }
+        
+        // Last resort: try native Date parsing
+        date = new Date(dateStr);
+        if (!isNaN(date.getTime())) return date;
+        
+        console.error(`Could not parse date: ${dateStr}`);
+        return null;
+      }
+      
       async fetchAllCollections() {
         try {
-          // Fetch all collections with the shipping date metafield
-          const response = await fetch(`/collections?view=calendar-json`);
-          if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
+          // Try different URL formats to access our template
+          console.log('Attempting to fetch collections with calendar-json view');
+          let response;
+          try {
+            // First try with /collections/all?view=calendar-json
           }
           const allCollections = await response.json();
+          console.log('Response status:', response.status);
+          console.log('Response text preview:', response.responseText.substring(0, 200));
+          try {
+            allCollections = JSON.parse(responseText);
+          } catch (e) {
+            console.error('Failed to parse JSON:', e);
+            throw new Error('Invalid JSON response');
+          }
 
-          console.log("RUNNING")
-          console.log("allCollections", allCollections)
+          console.log("RUNNING");
+          console.log("allCollections", allCollections);
           
-          // Process collections with shipping dates
-          this.collections = allCollections.forEach(collection => {
-            console.log(collection.title, collection.shipping_date);
-            if (collection.metafields && collection.metafields[this.dateField]) {
-              const dateStr = collection.metafields[this.dateField];
-              const date = new Date(dateStr);
-              if (!isNaN(date.getTime())) {
+          // Process collections with shipping date
+          this.collections = [];
+          allCollections.forEach(collection => {
+            console.log('Processing collection:', collection.title);
+            if (collection.shipping_date) {
+              const dateStr = collection.shipping_date;
+              console.log('Found shipping date:', dateStr);
+              const date = this.parseDate(dateStr);
+              if (date && !isNaN(date.getTime())) {
                 // Format date as YYYY-MM-DD for consistency
                 const formattedDate = this.formatDateYYYYMMDD(date);
-                console.log(formattedDate)
+                console.log('Formatted date:', formattedDate);
                 // Group collections by date
                 if (!this.collectionDates[formattedDate]) {
                   this.collectionDates[formattedDate] = [];
                 }
                 this.collectionDates[formattedDate].push(collection);
-                return true;
+                this.collections.push(collection);
+              } else {
+                console.warn('Could not parse date:', dateStr);
               }
+            } else {
+              console.log('No shipping date found for collection:', collection.title);
             }
-            return false;
           });} catch (error) {
           console.error('Error fetching collections:', error);
           // Fallback to individual collection fetching if the JSON template approach fails
@@ -379,31 +438,40 @@
       
       async fetchCollectionsIndividually() {
         try {
-          // Fetch all collections
+          // Fetch all collections directly from Shopify API
           const response = await fetch('/collections.json');
           const data = await response.json();
-          const collections = data.collections;
+          const collections = data.collections || [];
+          
+          console.log('Fetching collections individually, found:', collections.length);
           
           // Process each collection to check for shipping date metafield
           const promises = collections.map(async collection => {
             try {
+              // Use our custom JSON template for individual collections
               const collectionResponse = await fetch(`/collections/${collection.handle}?view=json`);
               const collectionData = await collectionResponse.json();
               
-              if (collectionData.metafields && collectionData.metafields[this.dateField]) {
-                const dateStr = collectionData.metafields[this.dateField];
-                const date = new Date(dateStr);
-                if (!isNaN(date.getTime())) {
+              console.log('Fetched collection data for:', collection.handle, collectionData);
+              
+              if (collectionData.shipping_date) {
+                const dateStr = collectionData.shipping_date;
+                console.log('Individual collection shipping date:', dateStr);
+                const date = this.parseDate(dateStr);
+                if (date && !isNaN(date.getTime())) {
                   // Format date as YYYY-MM-DD for consistency
                   const formattedDate = this.formatDateYYYYMMDD(date);
+                  console.log('Individual collection formatted date:', formattedDate);
                   
                   // Group collections by date
                   if (!this.collectionDates[formattedDate]) {
                     this.collectionDates[formattedDate] = [];
                   }
                   this.collectionDates[formattedDate].push(collectionData);
-                return collectionData;
+                  return collectionData;
                 }
+              } else {
+                console.log('No shipping date found for collection:', collectionData.title);
               }
               return null;
             } catch (error) {
@@ -413,7 +481,9 @@
           });
           
           const results = await Promise.all(promises);
-          this.collections = results.filter(result => result !== null);
+          const validResults = results.filter(result => result !== null);
+          console.log(`Found ${validResults.length} collections with valid shipping dates`);
+          this.collections = validResults;
         } catch (error) {
           console.error('Error fetching collections list:', error);
         }
@@ -427,7 +497,9 @@
       }
       
       formatDateForDisplay(dateStr) {
-        const date = new Date(dateStr);
+        const date = this.parseDate(dateStr);
+        if (!date) return 'Invalid Date';
+        
         return date.toLocaleDateString('en-US', {
           weekday: 'short', 
           month: 'long', 

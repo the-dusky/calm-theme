@@ -1,0 +1,17 @@
+{%- layout none -%}
+{
+  "collections": [
+    {%- for collection in collections -%}
+      {
+        "id": {{ collection.id | json }},
+        "handle": {{ collection.handle | json }},
+        "title": {{ collection.title | json }},
+        "description": {{ collection.description | strip_html | truncatewords: 25 | json }},
+        "image": {% if collection.image %}{{ collection.image.src | json }}{% else %}null{% endif %},
+        "url": {{ collection.url | json }},
+        "products_count": {{ collection.products_count | json }},
+        "shipping_date": {{ collection.metafields.custom.shipping_date | json }}
+      }{%- unless forloop.last -%},{%- endunless -%}
+    {%- endfor -%}
+  ]
+}
