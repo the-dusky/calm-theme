@@ -1,0 +1,830 @@
+{% doc %}
+  @prompt
+  Create a calendar-style component that displays collections organized by "will ship by" dates. The component should
+  show a visual calendar where each date with available collections is clickable, allowing customers to browse products
+  that will ship on specific dates. Include the ability to display collection metadata and make it easy for customers to
+  navigate between different shipping dates for preorder items., This seems to only accept 1 collection at a time, I
+  want it to accept n number of collections on different dates
+{% enddoc %}
+{% assign ai_gen_id = block.id | replace: '_', '' | downcase %}
+
+<script>
+  console.log("test")
+</script>
+{% style %}
+  .calendar-container-{{ ai_gen_id }} {
+    font-family: var(--font-body-family);
+    max-width: 100%;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: {{ block.settings.background_color }};
+    border-radius: {{ block.settings.border_radius }}px;}
+
+  .calendar-header-{{ ai_gen_id }} {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+
+  .calendar-title-{{ ai_gen_id }} {
+    font-size: {{ block.settings.title_size }}px;
+    font-weight: 600;
+    color: {{ block.settings.title_color }};
+    margin: 0;
+  }
+
+  .calendar-nav-{{ ai_gen_id }} {
+    display: flex;
+    gap: 10px;
+  }
+
+  .calendar-nav-button-{{ ai_gen_id }} {
+    background-color: {{ block.settings.button_color }};
+    color: {{ block.settings.button_text_color }};
+    border: none;
+    border-radius: {{ block.settings.button_border_radius }}px;
+    padding: 8px 12px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;}
+
+  .calendar-nav-button-{{ ai_gen_id }}:hover {
+    background-color: {{ block.settings.button_hover_color }};
+  }
+
+  .calendar-month-year-{{ ai_gen_id }} {
+    font-size: 18px;
+    font-weight: 500;
+    margin: 0 15px;
+    color: {{ block.settings.text_color }};
+  }
+
+  .calendar-weekdays-{{ ai_gen_id }} {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 5px;
+    margin-bottom: 10px;
+  }
+
+  .calendar-weekday-{{ ai_gen_id }} {
+    text-align: center;
+    font-weight: 500;
+    padding: 10px 0;
+    color: {{ block.settings.text_color }};
+  }
+
+  .calendar-days-{{ ai_gen_id }} {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 5px;
+  }
+
+  .calendar-day-{{ ai_gen_id }} {
+    position: relative;
+    height: 0;
+    padding-bottom: 100%;
+    border-radius: {{ block.settings.date_border_radius }}px;
+    background-color: {{ block.settings.date_background_color }};}
+
+  .calendar-day-content-{{ ai_gen_id }} {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition: background-color 0.2s;
+  }
+
+  .calendar-day-number-{{ ai_gen_id }} {
+    font-size: 16px;
+    font-weight: 500;
+    color: {{ block.settings.text_color }};}
+
+  .calendar-day-empty-{{ ai_gen_id }} {
+    background-color: transparent;
+    cursor: default;
+  }
+
+  .calendar-day-with-collection-{{ ai_gen_id }} {
+    background-color: {{ block.settings.active_date_background_color }};
+  }
+
+  .calendar-day-with-collection-{{ ai_gen_id }} .calendar-day-number-{{ ai_gen_id }} {
+    color: {{ block.settings.active_date_text_color }};
+  }
+
+  .calendar-day-with-collection-{{ ai_gen_id }} .calendar-day-content-{{ ai_gen_id }}:hover {
+    background-color: {{ block.settings.active_date_hover_color }};
+  }
+
+  .calendar-day-selected-{{ ai_gen_id }} {
+    background-color: {{ block.settings.selected_date_background_color }} !important;
+  }
+
+  .calendar-day-selected-{{ ai_gen_id }} .calendar-day-number-{{ ai_gen_id }} {
+    color: {{ block.settings.selected_date_text_color }} !important;
+  }
+
+  .calendar-day-indicator-{{ ai_gen_id }} {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background-color: {{ block.settings.indicator_color }};
+    margin-top: 4px;
+  }
+
+  .calendar-collections-{{ ai_gen_id }} {
+    margin-top: 30px;
+  }
+
+  .calendar-collections-title-{{ ai_gen_id }} {
+    font-size: 18px;
+    font-weight: 500;
+    margin-bottom: 15px;
+    color: {{ block.settings.text_color }};
+  }
+
+  .calendar-collections-grid-{{ ai_gen_id }} {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 20px;}
+
+  .calendar-collection-card-{{ ai_gen_id }} {
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s;
+    background-color: {{ block.settings.card_background_color }};
+  }
+
+  .calendar-collection-card-{{ ai_gen_id }}:hover {
+    transform: translateY(-5px);
+  }
+
+  .calendar-collection-image-{{ ai_gen_id }} {
+    position: relative;
+    padding-bottom: 70%;
+    overflow: hidden;
+  }
+
+  .calendar-collection-image-{{ ai_gen_id }} img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .calendar-collection-image-placeholder-{{ ai_gen_id }} {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f4f4f4;}
+
+  .calendar-collection-image-placeholder-{{ ai_gen_id }} svg {
+    width: 50%;
+    height: 50%;
+    opacity: 0.5;
+  }
+
+  .calendar-collection-info-{{ ai_gen_id }} {
+    padding: 15px;
+  }
+
+  .calendar-collection-title-{{ ai_gen_id }} {
+    font-size: 16px;
+    font-weight: 500;
+    margin: 0 0 5px;
+    color: {{ block.settings.card_title_color }};
+  }
+
+  .calendar-collection-description-{{ ai_gen_id }} {
+    font-size: 14px;
+    color: {{ block.settings.card_text_color }};
+    margin: 0 0 10px;display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .calendar-collection-meta-{{ ai_gen_id }} {
+    font-size: 14px;
+    color: {{ block.settings.card_meta_color }};
+    margin-top: 10px;}
+
+  .calendar-collection-link-{{ ai_gen_id }} {
+    display: inline-block;
+    margin-top: 10px;
+    font-size: 14px;
+    color: {{ block.settings.card_link_color }};
+    text-decoration: none;
+  }
+
+  .calendar-collection-link-{{ ai_gen_id }}:hover {
+    text-decoration: underline;
+  }
+
+  .calendar-no-collections-{{ ai_gen_id }} {
+    text-align: center;
+    padding: 30px;
+    color: {{ block.settings.text_color }};
+  }
+
+  .calendar-collection-count-{{ ai_gen_id }} {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    background-color: {{ block.settings.indicator_color }};
+    color: white;
+    font-size: 10px;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  @media screen and (max-width: 767px) {
+    .calendar-weekday-{{ ai_gen_id }} {
+      font-size: 14px;
+      padding: 5px 0;
+    }
+
+    .calendar-day-number-{{ ai_gen_id }} {
+      font-size: 14px;
+    }
+
+    .calendar-collections-grid-{{ ai_gen_id }} {
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    }
+  }
+{% endstyle %}
+
+<shipping-calendar-{{ ai_gen_id }}
+  class="calendar-container-{{ ai_gen_id }}"
+  {{ block.shopify_attributes }}data-date-field="{{ block.settings.date_metafield }}"
+>
+  <div class="calendar-header-{{ ai_gen_id }}">
+    <h2 class="calendar-title-{{ ai_gen_id }}">{{ block.settings.title }}</h2>
+    <div class="calendar-nav-{{ ai_gen_id }}">
+      <button class="calendar-nav-button-{{ ai_gen_id }} prev-month" aria-label="Previous month">&larr;</button>
+      <span class="calendar-month-year-{{ ai_gen_id }}"></span>
+      <button class="calendar-nav-button-{{ ai_gen_id }} next-month" aria-label="Next month">&rarr;</button>
+    </div>
+  </div>
+
+  <div class="calendar-weekdays-{{ ai_gen_id }}">
+    <div class="calendar-weekday-{{ ai_gen_id }}">Sun</div>
+    <div class="calendar-weekday-{{ ai_gen_id }}">Mon</div>
+    <div class="calendar-weekday-{{ ai_gen_id }}">Tue</div>
+    <div class="calendar-weekday-{{ ai_gen_id }}">Wed</div>
+    <div class="calendar-weekday-{{ ai_gen_id }}">Thu</div>
+    <div class="calendar-weekday-{{ ai_gen_id }}">Fri</div>
+    <div class="calendar-weekday-{{ ai_gen_id }}">Sat</div>
+  </div>
+
+  <div class="calendar-days-{{ ai_gen_id }}">
+    <!-- Calendar days will be generated by JavaScript -->
+  </div>
+
+  <div class="calendar-collections-{{ ai_gen_id }}">
+    <h3 class="calendar-collections-title-{{ ai_gen_id }}">
+      Collections shipping on<span class="selected-date"></span>
+    </h3>
+    <div class="calendar-collections-grid-{{ ai_gen_id }}">
+      <!-- Collection cards will be generated by JavaScript -->
+    </div>
+  </div>
+</shipping-calendar-{{ ai_gen_id }}>
+
+<script>
+  (function() {
+    class ShippingCalendar extends HTMLElement {
+      constructor() {
+        super();
+        this.currentDate = new Date();
+        this.selectedDate = null;
+        this.collections = [];
+        this.collectionDates = {};
+        this.dateField = this.getAttribute('data-date-field');
+      }
+
+      connectedCallback() {
+        this.monthYearElement = this.querySelector('.calendar-month-year-{{ ai_gen_id }}');
+        this.daysContainer = this.querySelector('.calendar-days-{{ ai_gen_id }}');
+        this.collectionsContainer = this.querySelector('.calendar-collections-grid-{{ ai_gen_id }}');
+        this.selectedDateElement = this.querySelector('.selected-date');
+        this.collectionsTitle = this.querySelector('.calendar-collections-title-{{ ai_gen_id }}');
+        this.prevButton = this.querySelector('.prev-month');
+        this.nextButton = this.querySelector('.next-month');
+        
+        this.prevButton.addEventListener('click', () => this.changeMonth(-1));
+        this.nextButton.addEventListener('click', () => this.changeMonth(1));
+        
+        this.fetchAllCollections().then(() => {
+          this.renderCalendar();});
+      }
+      
+      async fetchAllCollections() {
+        try {
+          // Fetch all collections with the shipping date metafield
+          const response = await fetch(`/collections?view=calendar-json`);
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+          const allCollections = await response.json();
+
+          console.log("RUNNING")
+          console.log("allCollections", allCollections)
+          
+          // Process collections with shipping dates
+          this.collections = allCollections.forEach(collection => {
+            console.log(collection.title, collection.shipping_date);
+            if (collection.metafields && collection.metafields[this.dateField]) {
+              const dateStr = collection.metafields[this.dateField];
+              const date = new Date(dateStr);
+              if (!isNaN(date.getTime())) {
+                // Format date as YYYY-MM-DD for consistency
+                const formattedDate = this.formatDateYYYYMMDD(date);
+                console.log(formattedDate)
+                // Group collections by date
+                if (!this.collectionDates[formattedDate]) {
+                  this.collectionDates[formattedDate] = [];
+                }
+                this.collectionDates[formattedDate].push(collection);
+                return true;
+              }
+            }
+            return false;
+          });} catch (error) {
+          console.error('Error fetching collections:', error);
+          // Fallback to individual collection fetching if the JSON template approach fails
+          await this.fetchCollectionsIndividually();
+        }
+      }
+      
+      async fetchCollectionsIndividually() {
+        try {
+          // Fetch all collections
+          const response = await fetch('/collections.json');
+          const data = await response.json();
+          const collections = data.collections;
+          
+          // Process each collection to check for shipping date metafield
+          const promises = collections.map(async collection => {
+            try {
+              const collectionResponse = await fetch(`/collections/${collection.handle}?view=json`);
+              const collectionData = await collectionResponse.json();
+              
+              if (collectionData.metafields && collectionData.metafields[this.dateField]) {
+                const dateStr = collectionData.metafields[this.dateField];
+                const date = new Date(dateStr);
+                if (!isNaN(date.getTime())) {
+                  // Format date as YYYY-MM-DD for consistency
+                  const formattedDate = this.formatDateYYYYMMDD(date);
+                  
+                  // Group collections by date
+                  if (!this.collectionDates[formattedDate]) {
+                    this.collectionDates[formattedDate] = [];
+                  }
+                  this.collectionDates[formattedDate].push(collectionData);
+                return collectionData;
+                }
+              }
+              return null;
+            } catch (error) {
+              console.error(`Error fetching collection ${collection.handle}:`, error);
+              return null;
+            }
+          });
+          
+          const results = await Promise.all(promises);
+          this.collections = results.filter(result => result !== null);
+        } catch (error) {
+          console.error('Error fetching collections list:', error);
+        }
+      }
+      
+      formatDateYYYYMMDD(date) {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+      }
+      
+      formatDateForDisplay(dateStr) {
+        const date = new Date(dateStr);
+        return date.toLocaleDateString('en-US', {
+          weekday: 'short', 
+          month: 'long', 
+          day: 'numeric',
+          year: 'numeric'
+        });
+      }
+      
+      renderCalendar() {
+        const year = this.currentDate.getFullYear();
+        const month = this.currentDate.getMonth();
+        
+        // Update month and year display
+        this.monthYearElement.textContent = new Date(year, month, 1)
+          .toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+        
+        // Clear previous days
+        this.daysContainer.innerHTML = '';
+        
+        // Get first day of the month and total days in month
+        const firstDay = new Date(year, month, 1).getDay();
+        const daysInMonth = new Date(year, month + 1, 0).getDate();
+        
+        // Add empty cells for days before the first day of the month
+        for (let i = 0; i < firstDay; i++) {
+          const emptyDay = document.createElement('div');
+          emptyDay.className = `calendar-day-{{ ai_gen_id }} calendar-day-empty-{{ ai_gen_id }}`;
+          this.daysContainer.appendChild(emptyDay);
+        }
+
+        console.log(this.collectionDates);
+        
+        // Add days of the month
+        for (let day = 1; day <= daysInMonth; day++) {
+          const date = new Date(year, month, day);
+          const dateStr = this.formatDateYYYYMMDD(date);
+          const hasCollection = this.collectionDates[dateStr] && this.collectionDates[dateStr].length > 0;
+          
+          const dayElement = document.createElement('div');
+          dayElement.className = `calendar-day-{{ ai_gen_id }}`;
+          if (hasCollection) {
+            dayElement.classList.add('calendar-day-with-collection-{{ ai_gen_id }}');
+          }
+          
+          const dayContent = document.createElement('div');
+          dayContent.className = 'calendar-day-content-{{ ai_gen_id }}';
+          const dayNumber = document.createElement('span');
+          dayNumber.className = 'calendar-day-number-{{ ai_gen_id }}';
+          dayNumber.textContent = day;
+          
+          dayContent.appendChild(dayNumber);
+          
+          if (hasCollection) {
+            const indicator = document.createElement('span');
+            indicator.className = 'calendar-day-indicator-{{ ai_gen_id }}';
+            dayContent.appendChild(indicator);
+            
+            // Add collection count if there are multiple collections
+            if (this.collectionDates[dateStr].length > 1) {
+              const countBadge = document.createElement('span');
+              countBadge.className = 'calendar-collection-count-{{ ai_gen_id }}';
+              countBadge.textContent = this.collectionDates[dateStr].length;
+              dayContent.appendChild(countBadge);
+            }
+            
+            dayContent.addEventListener('click', () => {
+              this.selectDate(dateStr);
+            });
+          }
+          
+          dayElement.appendChild(dayContent);
+          this.daysContainer.appendChild(dayElement);
+        }
+        
+        // If no date is selected yet but we have collections, select the earliest date
+        if (!this.selectedDate && Object.keys(this.collectionDates).length > 0) {
+          const dates = Object.keys(this.collectionDates).sort();
+          this.selectDate(dates[0]);
+        } else if (this.selectedDate) {
+          // If a date is already selected, make sure it's highlighted
+          this.highlightSelectedDate();
+        }
+      }
+      
+      selectDate(dateStr) {
+        this.selectedDate = dateStr;
+        this.highlightSelectedDate();
+        this.renderCollections(dateStr);
+        
+        // Update the month view if the selected date is not in the current month
+        const selectedDate = new Date(dateStr);
+        if (selectedDate.getMonth() !== this.currentDate.getMonth() || 
+            selectedDate.getFullYear() !== this.currentDate.getFullYear()) {
+          this.currentDate = new Date(selectedDate);
+          this.renderCalendar();
+        }
+      }
+      
+      highlightSelectedDate() {
+        // Remove previous selection
+        const previousSelected = this.querySelector('.calendar-day-selected-{{ ai_gen_id }}');
+        if (previousSelected) {
+          previousSelected.classList.remove('calendar-day-selected-{{ ai_gen_id }}');
+        }
+        
+        if (!this.selectedDate) return;
+        
+        // Find and highlight the selected date
+        const selectedDate = new Date(this.selectedDate);
+        if (selectedDate.getMonth() === this.currentDate.getMonth() && 
+            selectedDate.getFullYear() === this.currentDate.getFullYear()) {
+          
+          const dayElements = this.querySelectorAll('.calendar-day-with-collection-{{ ai_gen_id }}');
+          const dayOfMonth = selectedDate.getDate();
+          
+          // Find the day element that matches the selected date
+          let selectedElement = null;
+          dayElements.forEach(element => {
+            const dayNumber = element.querySelector('.calendar-day-number-{{ ai_gen_id }}').textContent;
+            if (parseInt(dayNumber) === dayOfMonth) {
+              selectedElement = element;}
+          });
+          
+          if (selectedElement) {
+            selectedElement.classList.add('calendar-day-selected-{{ ai_gen_id }}');
+          }
+        }
+      }
+      
+      renderCollections(dateStr) {
+        this.collectionsContainer.innerHTML = '';
+        this.selectedDateElement.textContent = this.formatDateForDisplay(dateStr);
+        
+        const collections = this.collectionDates[dateStr] || [];
+        
+        if (collections.length === 0) {
+          const noCollections = document.createElement('div');
+          noCollections.className = 'calendar-no-collections-{{ ai_gen_id }}';
+          noCollections.textContent = 'No collections shipping on this date.';
+          this.collectionsContainer.appendChild(noCollections);
+          return;
+        }
+        
+        collections.forEach(collection => {
+          const card = document.createElement('div');
+          card.className = 'calendar-collection-card-{{ ai_gen_id }}';
+          
+          const imageContainer = document.createElement('div');
+          imageContainer.className = 'calendar-collection-image-{{ ai_gen_id }}';
+          
+          if (collection.image) {
+            const image = document.createElement('img');
+            image.src = collection.image;
+            image.alt = collection.title;
+            image.loading = 'lazy';
+            imageContainer.appendChild(image);
+          } else {
+            const placeholder = document.createElement('div');
+            placeholder.className = 'calendar-collection-image-placeholder-{{ ai_gen_id }}';
+            placeholder.innerHTML = `{{'collection-apparel-1' | placeholder_svg_tag }}`;
+            imageContainer.appendChild(placeholder);
+          }
+          
+          const info = document.createElement('div');
+          info.className = 'calendar-collection-info-{{ ai_gen_id }}';
+          
+          const title = document.createElement('h4');
+          title.className = 'calendar-collection-title-{{ ai_gen_id }}';
+          title.textContent = collection.title;
+          
+          const description = document.createElement('p');
+          description.className = 'calendar-collection-description-{{ ai_gen_id }}';
+          description.textContent = collection.description || '';
+          
+          const meta = document.createElement('div');
+          meta.className = 'calendar-collection-meta-{{ ai_gen_id }}';
+          meta.textContent = `Ships by: ${this.formatDateForDisplay(dateStr)}`;
+          
+          const link = document.createElement('a');
+          link.className = 'calendar-collection-link-{{ ai_gen_id }}';
+          link.href = `/collections/${collection.handle}`;
+          link.textContent = 'View Collection';
+          
+          info.appendChild(title);
+          info.appendChild(description);
+          info.appendChild(meta);
+          info.appendChild(link);
+          
+          card.appendChild(imageContainer);
+          card.appendChild(info);
+          
+          this.collectionsContainer.appendChild(card);
+        });
+      }
+      
+      changeMonth(delta) {
+        this.currentDate.setMonth(this.currentDate.getMonth() + delta);
+        this.renderCalendar();
+      }
+    }
+    
+    customElements.define('shipping-calendar-{{ ai_gen_id }}', ShippingCalendar);
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Shipping Calendar",
+  "tag": null,
+  "class": "shipping-calendar-section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Calendar Content"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Calendar title",
+      "default": "Shipping Calendar"
+    },
+    {
+      "type": "text",
+      "id": "date_metafield",
+      "label": "Shipping date metafield",
+      "default": "shipping_date",
+      "info": "Enter the metafield namespace.key that contains the shipping date (YYYY-MM-DD format)"
+    },
+    {
+      "type": "header",
+      "content": "Calendar Appearance"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text color",
+      "default": "#333333"
+    },
+    {
+      "type": "color",
+      "id": "title_color",
+      "label": "Title color",
+      "default": "#000000"
+    },
+    {
+      "type": "range",
+      "id": "title_size",
+      "min": 16,
+      "max": 36,
+      "step": 1,
+      "unit": "px",
+      "label": "Title size",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "border_radius",
+      "min": 0,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "label": "Calendar border radius",
+      "default": 8
+    },
+    {
+      "type": "header",
+      "content": "Date Appearance"
+    },
+    {
+      "type": "color",
+      "id": "date_background_color",
+      "label": "Date background color",
+      "default": "#f5f5f5"
+    },
+    {
+      "type": "color",
+      "id": "active_date_background_color",
+      "label": "Active date background color",
+      "default": "#e6f7ff"
+    },
+    {
+      "type": "color",
+      "id": "active_date_text_color",
+      "label": "Active date text color",
+      "default": "#1890ff"
+    },
+    {
+      "type": "color",
+      "id": "active_date_hover_color",
+      "label": "Active date hover color",
+      "default": "#bae7ff"
+    },
+    {
+      "type": "color",
+      "id": "selected_date_background_color",
+      "label": "Selected date background color",
+      "default": "#1890ff"
+    },
+    {
+      "type": "color",
+      "id": "selected_date_text_color",
+      "label": "Selected date text color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "indicator_color",
+      "label": "Date indicator color",
+      "default": "#1890ff"
+    },
+    {
+      "type": "range",
+      "id": "date_border_radius",
+      "min": 0,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "label": "Date border radius",
+      "default": 4
+    },
+    {
+      "type": "header",
+      "content": "Navigation Buttons"
+    },
+    {
+      "type": "color",
+      "id": "button_color",
+      "label": "Button color",
+      "default": "#1890ff"
+    },
+    {
+      "type": "color",
+      "id": "button_text_color",
+      "label": "Button text color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "button_hover_color",
+      "label": "Button hover color",
+      "default": "#40a9ff"
+    },
+    {
+      "type": "range",
+      "id": "button_border_radius",
+      "min": 0,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "label": "Button border radius",
+      "default": 4
+    },
+    {
+      "type": "header",
+      "content": "Collection Cards"
+    },
+    {
+      "type": "color",
+      "id": "card_background_color",
+      "label": "Card background color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "card_title_color",
+      "label": "Card title color",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "card_text_color",
+      "label": "Card text color",
+      "default": "#666666"
+    },
+    {
+      "type": "color",
+      "id": "card_meta_color",
+      "label": "Card metadata color",
+      "default": "#1890ff"
+    },
+    {
+      "type": "color",
+      "id": "card_link_color",
+      "label": "Card link color",
+      "default": "#1890ff"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Shipping Calendar"
+    }
+  ]
+}
+{% endschema %}
