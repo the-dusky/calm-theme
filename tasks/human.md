@@ -1,0 +1,10 @@
+- [ ] All product photos uploaded
+- [ ] Product descriptions include size/fit info
+- [ ] Shipping zones configured
+- [ ] Payment providers connected
+- [ ] Legal pages created (Privacy, Terms, Returns)
+- [ ] Email notifications customized
+- [ ] 404 page customized
+- [ ] Search functionality tested
+- [ ] Mobile experience tested
+- [ ] Checkout process tested
