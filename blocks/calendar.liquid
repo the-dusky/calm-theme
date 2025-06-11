@@ -386,19 +386,29 @@
       
       async fetchAllCollections() {
         try {
-          // Try different URL formats to access our template
           console.log('Attempting to fetch collections with calendar-json view');
+          
           let response;
-          try {
-            // First try with /collections/all?view=calendar-json
+          let responseText;
+          
+          // Try the correct URL format
+          console.log('Trying URL format: /collections/calendar');
+          response = await fetch(`/collections/calendar`);
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
           }
-          const allCollections = await response.json();
+          responseText = await response.text();
           console.log('Response status:', response.status);
-          console.log('Response text preview:', response.responseText.substring(0, 200));
+          console.log('Response text preview:', responseText.substring(0, 200));
+          
+          // Try to parse the response as JSON
+          let allCollections;
           try {
             allCollections = JSON.parse(responseText);
+            console.log('Successfully parsed JSON response');
           } catch (e) {
             console.error('Failed to parse JSON:', e);
+            console.error('Response text:', responseText);
             throw new Error('Invalid JSON response');
           }
 
@@ -409,9 +419,27 @@
           this.collections = [];
           allCollections.forEach(collection => {
             console.log('Processing collection:', collection.title);
-            if (collection.shipping_date) {
-              const dateStr = collection.shipping_date;
-              console.log('Found shipping date:', dateStr);
+            let dateStr = collection.shipping_date;
+            
+            // If shipping_date metafield is null, try to extract date from title
+            if (!dateStr && collection.title) {
+              // Look for a date pattern like YYYY-MM-DD or YYYY/MM/DD in the title
+              const dateMatch = collection.title.match(/(\d{4})[-\/](\d{1,2})[-\/](\d{1,2})/);
+              if (dateMatch) {
+                dateStr = `${dateMatch[1]}-${dateMatch[2].padStart(2, '0')}-${dateMatch[3].padStart(2, '0')}`;
+                console.log('Extracted date from title:', dateStr);
+              } else {
+                // Try another format like "YYYY-MM-DD Delivery"
+                const deliveryMatch = collection.title.match(/(\d{4})-(\d{2})-(\d{2})\s+Delivery/);
+                if (deliveryMatch) {
+                  dateStr = `${deliveryMatch[1]}-${deliveryMatch[2]}-${deliveryMatch[3]}`;
+                  console.log('Extracted delivery date from title:', dateStr);
+                }
+              }
+            }
+            
+            if (dateStr) {
+              console.log('Using date:', dateStr);
               const date = this.parseDate(dateStr);
               if (date && !isNaN(date.getTime())) {
                 // Format date as YYYY-MM-DD for consistency
@@ -427,7 +455,7 @@
                 console.warn('Could not parse date:', dateStr);
               }
             } else {
-              console.log('No shipping date found for collection:', collection.title);
+              console.log('No date found for collection:', collection.title);
             }
           });} catch (error) {
           console.error('Error fetching collections:', error);
@@ -454,9 +482,27 @@
               
               console.log('Fetched collection data for:', collection.handle, collectionData);
               
-              if (collectionData.shipping_date) {
-                const dateStr = collectionData.shipping_date;
-                console.log('Individual collection shipping date:', dateStr);
+              let dateStr = collectionData.shipping_date;
+              
+              // If shipping_date metafield is null, try to extract date from title
+              if (!dateStr && collectionData.title) {
+                // Look for a date pattern like YYYY-MM-DD or YYYY/MM/DD in the title
+                const dateMatch = collectionData.title.match(/(\d{4})[-\/](\d{1,2})[-\/](\d{1,2})/);
+                if (dateMatch) {
+                  dateStr = `${dateMatch[1]}-${dateMatch[2].padStart(2, '0')}-${dateMatch[3].padStart(2, '0')}`;
+                  console.log('Extracted date from title:', dateStr);
+                } else {
+                  // Try another format like "YYYY-MM-DD Delivery"
+                  const deliveryMatch = collectionData.title.match(/(\d{4})-(\d{2})-(\d{2})\s+Delivery/);
+                  if (deliveryMatch) {
+                    dateStr = `${deliveryMatch[1]}-${deliveryMatch[2]}-${deliveryMatch[3]}`;
+                    console.log('Extracted delivery date from title:', dateStr);
+                  }
+                }
+              }
+              
+              if (dateStr) {
+                console.log('Individual collection using date:', dateStr);
                 const date = this.parseDate(dateStr);
                 if (date && !isNaN(date.getTime())) {
                   // Format date as YYYY-MM-DD for consistency
@@ -471,7 +517,7 @@
                   return collectionData;
                 }
               } else {
-                console.log('No shipping date found for collection:', collectionData.title);
+                console.log('No date found for collection:', collectionData.title);
               }
               return null;
             } catch (error) {
