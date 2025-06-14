@@ -188,6 +188,7 @@
         "link": "",
         "open_in_new_tab": false,
         "media_type_1": "image",
+        "image_1": "shopify://shop_images/012-NAVY.jpg",
         "media_type_2": "image",
         "content_direction": "column",
         "vertical_on_mobile": true,
@@ -198,7 +199,7 @@
         "vertical_alignment_flex_direction_column": "flex-end",
         "gap": 16,
         "section_width": "page-width",
-        "section_height": "large",
+        "section_height": "medium",
         "section_height_custom": 50,
         "color_scheme": "scheme-5",
         "toggle_overlay": true,
@@ -208,7 +209,7 @@
         "blurred_reflection": false,
         "reflection_opacity": 75,
         "padding-block-start": 0,
-        "padding-block-end": 31
+        "padding-block-end": 24
       }
     },
     "product_list_EDUBdR": {
@@ -701,11 +702,12 @@
           "type": "_media-without-appearance",
           "static": true,
           "settings": {
-            "media_type": "video",
+            "media_type": "image",
+            "image": "shopify://shop_images/Nylon_shorts_pants1_1.jpg",
             "link": "",
             "video_loop": true,
             "video_autoplay": true,
-            "image_position": "cover",
+            "image_position": "contain",
             "video_position": "cover"
           },
           "blocks": {}
@@ -719,31 +721,41 @@
             "gap": 24
           },
           "blocks": {
-            "image_y4ApqF": {
-              "type": "image",
-              "name": "t:names.image",
+            "calendar_LAVqqd": {
+              "type": "calendar",
+              "name": "Shipping Calendar",
               "settings": {
-                "link": "",
-                "image_ratio": "adapt",
-                "width": "fill",
-                "custom_width": 100,
-                "width_mobile": "fill",
-                "custom_width_mobile": 100,
-                "height": "fit",
-                "border": "none",
-                "border_width": 1,
-                "border_opacity": 100,
-                "border_radius": 0,
-                "padding-block-start": 0,
-                "padding-block-end": 0,
-                "padding-inline-start": 0,
-                "padding-inline-end": 0
+                "title": "Shipping Calendar",
+                "date_metafield": "shipping_date",
+                "background_color": "#ffffff",
+                "text_color": "#333333",
+                "title_color": "#000000",
+                "title_size": 24,
+                "border_radius": 8,
+                "date_background_color": "#f5f5f5",
+                "active_date_background_color": "#e6f7ff",
+                "active_date_text_color": "#1890ff",
+                "active_date_hover_color": "#bae7ff",
+                "selected_date_background_color": "#1890ff",
+                "selected_date_text_color": "#ffffff",
+                "indicator_color": "#1890ff",
+                "date_border_radius": 4,
+                "button_color": "#1890ff",
+                "button_text_color": "#ffffff",
+                "button_hover_color": "#40a9ff",
+                "button_border_radius": 4,
+                "card_background_color": "#ffffff",
+                "card_title_color": "#000000",
+                "card_text_color": "#666666",
+                "card_meta_color": "#1890ff",
+                "card_link_color": "#1890ff"
               },
               "blocks": {}
             },
             "text_Hf79zK": {
               "type": "text",
               "name": "t:names.heading",
+              "disabled": true,
               "settings": {
                 "text": "<h2>Productivity Essentials</h2>",
                 "width": "fit-content",
@@ -769,6 +781,7 @@
             },
             "text_jxGhdJ": {
               "type": "text",
+              "disabled": true,
               "settings": {
                 "text": "<p>Objects that partner with your digital tools so you can focus on your most important work.</p>",
                 "width": "fit-content",
@@ -794,6 +807,7 @@
             },
             "button_zg4nUF": {
               "type": "button",
+              "disabled": true,
               "settings": {
                 "label": "Shop Now",
                 "link": "shopify://collections/all",
@@ -808,7 +822,7 @@
             }
           },
           "block_order": [
-            "image_y4ApqF",
+            "calendar_LAVqqd",
             "text_Hf79zK",
             "text_jxGhdJ",
             "button_zg4nUF"
@@ -970,6 +984,7 @@
       "block_order": [
         "group_mfTd9p"
       ],
+      "disabled": true,
       "name": "t:names.collections_bento",
       "settings": {
         "collection_list": [],
@@ -992,42 +1007,6 @@
     },
     "1749577303cb1a505e": {
       "type": "_blocks",
-      "blocks": {
-        "calendar_A8LKww": {
-          "type": "calendar",
-          "name": "Shipping Calendar",
-          "settings": {
-            "title": "Shipping Calendar",
-            "date_metafield": "shipping_date",
-            "background_color": "#ffffff",
-            "text_color": "#333333",
-            "title_color": "#000000",
-            "title_size": 24,
-            "border_radius": 8,
-            "date_background_color": "#f5f5f5",
-            "active_date_background_color": "#e6f7ff",
-            "active_date_text_color": "#1890ff",
-            "active_date_hover_color": "#bae7ff",
-            "selected_date_background_color": "#1890ff",
-            "selected_date_text_color": "#ffffff",
-            "indicator_color": "#1890ff",
-            "date_border_radius": 4,
-            "button_color": "#1890ff",
-            "button_text_color": "#ffffff",
-            "button_hover_color": "#40a9ff",
-            "button_border_radius": 4,
-            "card_background_color": "#ffffff",
-            "card_title_color": "#000000",
-            "card_text_color": "#666666",
-            "card_meta_color": "#1890ff",
-            "card_link_color": "#1890ff"
-          },
-          "blocks": {}
-        }
-      },
-      "block_order": [
-        "calendar_A8LKww"
-      ],
       "settings": {
         "content_direction": "column",
         "vertical_on_mobile": true,
