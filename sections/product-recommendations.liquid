@@ -88,6 +88,7 @@
               assign variants_to_show = product.variants | slice: 0, 1
             endif
           %}
+          <!-- RECOMMENDATIONS DEBUG: Product {{ product.title }} | Metafield: {{ show_variants_separately }} | Total variants: {{ product.variants.size }} | Showing: {{ variants_to_show.size }} -->
           {% for variant in variants_to_show %}
             <div class="resource-list__item">
               {% render 'product-card', product: product, variant: variant %}

@@ -56,6 +56,7 @@
     data-product-transition="{{ settings.transition_to_main_product }}"
   >
 {%- endif -%}
+<!-- PRODUCT-CARD DEBUG: {{ product.title }} | Variant passed: {{ variant.title | default: 'none' }} | Using variant: {{ current_variant.title }} -->
 <product-card
   class="product-card"
   data-product-variants-size="{{ product.variants.size }}"
