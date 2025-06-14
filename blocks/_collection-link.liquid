@@ -30,11 +30,11 @@
 {% endif %}
 
 {% capture title_block %}
-  {% content_for 'block', type: '_inline-collection-title', id: 'title', suffix: count %}
+  {% render '_inline-collection-title', id: 'title', suffix: count %}
 {% endcapture %}
 
 {% capture image_block %}
-  {% content_for 'block', type: '_image', id: 'image', loading: loading %}
+  {% render '_image', id: 'image', loading: loading %}
 {% endcapture %}
 
 {% if image_only %}

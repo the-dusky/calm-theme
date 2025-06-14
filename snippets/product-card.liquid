@@ -29,11 +29,15 @@
     assign has_mobile_quick_add = true
   endif
 
+  assign current_variant = variant | default: product.selected_or_first_available_variant
   assign product_card_id = 'product-card-link-' | append: block.id | append: '-' | append: product.id
+  if variant
+    assign product_card_id = product_card_id | append: '-' | append: variant.id
+  endif
   assign product_card_gap_value = product_card_gap | default: block.settings.product_card_gap
 
   if settings.transition_to_main_product
-    assign featured_media_url = product.selected_or_first_available_variant.featured_image | image_url: width: 500
+    assign featured_media_url = current_variant.featured_image | image_url: width: 500
     if featured_media_url == blank
       assign featured_media_url = product.featured_media.preview_image | image_url: width: 500
     endif
@@ -62,7 +66,7 @@
   <a
     id="{{ product_card_id | md5 }}"
     {% unless onboarding %}
-      href="{{ product.selected_or_first_available_variant.url }}"
+      href="{{ current_variant.url }}"
       on:click="/navigateToProduct"
     {% endunless %}
     class="

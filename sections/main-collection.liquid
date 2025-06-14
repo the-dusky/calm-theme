@@ -72,18 +72,28 @@
       {% paginate collection.products by 24 %}
         {% capture children %}
           {% for product in collection.products %}
-          <li
-            id="{{ section.id }}-{{ product.id }}"
-            class="product-grid__item product-grid__item--{{ forloop.index0 }}"
-            data-page="{{ paginate.current_page }}"
-            data-product-id="{{ product.id }}"
-            ref="cards[]"
-          >
-            {% # theme-check-disable %}
-            {% content_for 'block', type: 'product-card', id: 'product-card', closest.product: product %}
-            {% # theme-check-enable %}
-          </li>
-        {% endfor %}
+            {% liquid
+              assign show_variants_separately = product.metafields.custom.show_variants_separately.value
+              assign variants_to_show = product.variants
+              if show_variants_separately != true
+                assign variants_to_show = product.variants | slice: 0, 1
+              endif
+            %}
+            {% for variant in variants_to_show %}
+              <li
+                id="{{ section.id }}-{{ product.id }}{% if show_variants_separately %}-{{ variant.id }}{% endif %}"
+                class="product-grid__item product-grid__item--{{ forloop.index0 }}"
+                data-page="{{ paginate.current_page }}"
+                data-product-id="{{ product.id }}"
+                data-variant-id="{{ variant.id }}"
+                ref="cards[]"
+              >
+                {% # theme-check-disable %}
+                {% render 'product-card', product: product, variant: variant %}
+                {% # theme-check-enable %}
+              </li>
+            {% endfor %}
+          {% endfor %}
         {% endcapture %}
         {% render 'product-grid',
           section: section,

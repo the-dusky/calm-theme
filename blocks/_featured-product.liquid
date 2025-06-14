@@ -2,13 +2,13 @@
 
 {% capture product_card_children %}
   <div class="featured-product-content-top">
-    {% content_for 'block', type: 'product-title', id: 'featured-product-title' %}
+    {% render 'product-title', id: 'featured-product-title' %}
 
-    {% content_for 'block', type: '_featured-product-price', id: 'featured-product-price' %}
+    {% render '_featured-product-price', id: 'featured-product-price' %}
   </div>
-  {% content_for 'block', type: '_featured-product-gallery', id: 'featured-product-gallery' %}
+  {% render '_featured-product-gallery', id: 'featured-product-gallery' %}
   <div class="featured-product-content-bottom">
-    {%- content_for 'block', type: 'swatches', id: 'featured-product-swatches' -%}
+    {%- render 'swatches', id: 'featured-product-swatches' -%}
   </div>
 {% endcapture %}
 

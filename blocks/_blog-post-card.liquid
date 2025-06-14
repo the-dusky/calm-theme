@@ -1,13 +1,12 @@
 
 
 {% capture title %}
-  {% content_for 'block', id: 'heading', type: '_heading', text: article.title %}
+  {% render '_heading', id: 'heading', text: article.title %}
 {% endcapture %}
 
 {% capture details %}
-  {% content_for 'block',
+  {% render '_blog-post-info-text',
     id: 'blog-post-details',
-    type: '_blog-post-info-text',
     alignment: block.settings.alignment,
     article: article
   %}
@@ -20,7 +19,7 @@
   {%- if article.image -%}
     <div class="blog-post-card__image-container">
       <a href="{{ article.url }}">
-        {% content_for 'block', id: 'image', type: '_blog-post-image', image: article.image %}
+        {% render '_blog-post-image', id: 'image', image: article.image %}
       </a>
     </div>
   {%- endif -%}
