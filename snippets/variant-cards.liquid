@@ -1,0 +1,64 @@
+{% comment %}
+  Renders multiple product cards - one for each unique color variant if show_colors_separately is true,
+  otherwise renders a single regular product card
+{% endcomment %}
+
+{% liquid
+  assign show_colors_separately = product.metafields.custom.show_colors_separately.value
+%}
+
+{% if show_colors_separately == true %}
+  {% assign seen_colors = '' %}
+  {% for variant in product.variants %}
+    {% if variant.available %}
+      {% assign color_value = variant.option1 %}
+      {% if product.options.size > 1 %}
+        {% assign option1_name = product.options[0] | downcase %}
+        {% assign option2_name = product.options[1] | downcase %}
+        {% if option1_name contains 'size' %}
+          {% assign color_value = variant.option2 %}
+        {% elsif option2_name contains 'color' or option2_name contains 'colour' %}
+          {% assign color_value = variant.option2 %}
+        {% endif %}
+      {% endif %}
+      
+      {% if product.options.size > 2 %}
+        {% assign option3_name = product.options[2] | downcase %}
+        {% if option3_name contains 'color' or option3_name contains 'colour' %}
+          {% assign color_value = variant.option3 %}
+        {% endif %}
+      {% endif %}
+      
+      {% assign color_key = '|' | append: color_value | append: '|' %}
+      {% unless seen_colors contains color_key %}
+        {% assign seen_colors = seen_colors | append: color_key %}
+        <div class="resource-list__item">
+          {% render 'variant-card', product: product, variant: variant %}
+        </div>
+      {% endunless %}
+    {% endif %}
+  {% endfor %}
+{% else %}
+  {% capture product_children %}
+    <div class="product-card__image">
+      {% if product.featured_image %}
+        <img src="{{ product.featured_image | image_url: width: 300 }}" alt="{{ product.featured_image.alt | escape }}" loading="lazy" width="300" height="300">
+      {% endif %}
+    </div>
+    <div class="product-card__content">
+      <h3 class="product-card__title">{{ product.title }}</h3>
+      {% assign first_variant = product.selected_or_first_available_variant %}
+      <div class="product-card__price">
+        {% if first_variant.compare_at_price > first_variant.price %}
+          <span class="price price--on-sale">{{ first_variant.price | money }}</span>
+          <span class="price price--compare">{{ first_variant.compare_at_price | money }}</span>
+        {% else %}
+          <span class="price">{{ first_variant.price | money }}</span>
+        {% endif %}
+      </div>
+    </div>
+  {% endcapture %}
+  <div class="resource-list__item">
+    {% render 'product-card', product: product, children: product_children %}
+  </div>
+{% endif %}

@@ -1,0 +1,57 @@
+{% comment %}
+  Renders a product card for a specific variant - uses the real product-card snippet but with variant data
+{% endcomment %}
+
+{% liquid
+  assign current_variant = variant | default: product.selected_or_first_available_variant
+  
+  # Determine color value for title modification
+  assign color_value = current_variant.option1
+  if product.options.size > 1
+    assign option1_name = product.options[0] | downcase
+    assign option2_name = product.options[1] | downcase
+    if option1_name contains 'size'
+      assign color_value = current_variant.option2
+    elsif option2_name contains 'color' or option2_name contains 'colour'
+      assign color_value = current_variant.option2
+    endif
+  endif
+  
+  if product.options.size > 2
+    assign option3_name = product.options[2] | downcase
+    if option3_name contains 'color' or option3_name contains 'colour'
+      assign color_value = current_variant.option3
+    endif
+  endif
+%}
+
+{% capture variant_children %}
+  <div class="product-card__image">
+    {% if current_variant.featured_image %}
+      <img src="{{ current_variant.featured_image | image_url: width: 300 }}" alt="{{ current_variant.featured_image.alt | escape }}" loading="lazy" width="300" height="300">
+    {% elsif product.featured_image %}
+      <img src="{{ product.featured_image | image_url: width: 300 }}" alt="{{ product.featured_image.alt | escape }}" loading="lazy" width="300" height="300">
+    {% endif %}
+  </div>
+  <div class="product-card__content">
+    <h3 class="product-card__title">
+      {{ product.title }}, {{ color_value }}
+    </h3>
+    <div class="product-card__price">
+      {% if current_variant.compare_at_price > current_variant.price %}
+        <span class="price price--on-sale">
+          {{ current_variant.price | money }}
+        </span>
+        <span class="price price--compare">
+          {{ current_variant.compare_at_price | money }}
+        </span>
+      {% else %}
+        <span class="price">
+          {{ current_variant.price | money }}
+        </span>
+      {% endif %}
+    </div>
+  </div>
+{% endcapture %}
+
+{% render 'product-card', product: product, children: variant_children %}

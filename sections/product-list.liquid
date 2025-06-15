@@ -59,16 +59,27 @@
       {% else %}
         {% assign product = null %}
       {% endif %}
-      <div
-        class="resource-list__item"
-      >
-        {% content_for 'block', type: 'product-card', id: 'static-product-card', closest.product: product %}
-      </div>
+      
+      {% if product %}
+        {% liquid
+          assign show_colors_separately = product.metafields.custom.show_colors_separately.value
+        %}
+        {% render 'variant-cards', product: product %}
 
-      {% unless forloop.last %}
-        <!--@list/split-->
-      {% endunless %}
+        {% unless forloop.last %}
+            <!--@list/split-->
+          {% endunless %}
+      {% else %}
+        <div
+          class="resource-list__item"
+        >
+          {% content_for 'block', type: 'product-card', id: 'static-product-card', closest.product: product %}
+        </div>
 
+        {% unless forloop.last %}
+          <!--@list/split-->
+        {% endunless %}
+      {% endif %}
     {% endfor %}
   {% endcapture %}
 
