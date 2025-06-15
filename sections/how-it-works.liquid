@@ -1,5 +1,10 @@
 {{ 'how-it-works.css' | asset_url | stylesheet_tag }}
 
+<!-- DEBUG: How It Works Section Loading -->
+<div style="background: red; color: white; padding: 20px; text-align: center;">
+  <h1>🚨 HOW IT WORKS SECTION IS LOADING 🚨</h1>
+</div>
+
 <div class="how-it-works-section">
   <div class="container">
     <div class="how-it-works-header">
@@ -84,7 +89,7 @@
           </svg>
           <h3>{{ section.settings.community_title | default: 'Join Our Community' }}</h3>
         </div>
-        <p class="community-description">{{ section.settings.community_description | default: 'Help us shape the future of international commerce. We\'re building this together.' }}</p>
+        <p class="community-description">{{ section.settings.community_description | default: 'Help us shape the future of international commerce. We are building this together.' }}</p>
         <a href="{{ section.settings.community_link }}" class="community-button">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="m3 21 1.9-5.7a8.5 8.5 0 1 1 3.8 3.8z"></path>
@@ -115,6 +120,7 @@
   </div>
 </div>
 
+<script src="{{ 'how-it-works.js' | asset_url }}" defer></script>
 
 {% schema %}
 {
@@ -178,7 +184,7 @@
       "type": "textarea",
       "id": "community_description",
       "label": "Community Description",
-      "default": "Help us shape the future of international commerce. We're building this together."
+      "default": "Help us shape the future of international commerce. We are building this together."
     },
     {
       "type": "url",
