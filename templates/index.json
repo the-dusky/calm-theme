@@ -187,6 +187,89 @@
         "padding-block-end": 24
       }
     },
+    "how_it_works_8Y3QCp": {
+      "type": "how-it-works",
+      "blocks": {
+        "shipping_step_4fpCzw": {
+          "type": "shipping_step",
+          "settings": {
+            "title": "Place Order by Cutoff",
+            "description": "Submit your order before daily cutoff time",
+            "is_active": true,
+            "icon": "",
+            "transparency_title": "Why we're starting slow",
+            "transparency_content": "We are starting slow and trying to learn as much as possible from our customers. Join our Discord community to help shape the vision. We'd rather get it right than get it fast.",
+            "transparency_icon": ""
+          }
+        },
+        "shipping_step_GTwkhM": {
+          "type": "shipping_step",
+          "settings": {
+            "title": "Shipping from Thailand",
+            "description": "7-10 business days processing & transit",
+            "is_active": false,
+            "icon": "",
+            "transparency_title": "Our Thai connection",
+            "transparency_content": "Calm is a brand based in Thailand. We are friends with them and decided they need to be in the US and Japan. Why the US and Japan? One of us lives in the US and the other in Japan. Sometimes business is that simple.",
+            "transparency_icon": ""
+          }
+        },
+        "shipping_step_TJCcCp": {
+          "type": "shipping_step",
+          "settings": {
+            "title": "Receipt in Jersey City",
+            "description": "Package arrives at our US facility",
+            "is_active": false,
+            "icon": "",
+            "transparency_title": "About returns (for now)",
+            "transparency_content": "Currently we are unable to accept returns. We suggest buying one item to see how it fits and then expand. This will change in the future as we build out our logistics. We know it's not ideal, but we're being honest about our current constraints.",
+            "transparency_icon": ""
+          }
+        },
+        "shipping_step_cNFAhe": {
+          "type": "shipping_step",
+          "settings": {
+            "title": "Ship by Date",
+            "description": "Final delivery to your address",
+            "is_active": false,
+            "icon": "",
+            "transparency_title": "",
+            "transparency_content": "",
+            "transparency_icon": ""
+          }
+        }
+      },
+      "block_order": [
+        "shipping_step_4fpCzw",
+        "shipping_step_GTwkhM",
+        "shipping_step_TJCcCp",
+        "shipping_step_cNFAhe"
+      ],
+      "custom_css": [
+        ".shipping-steps-container {max-width: 100%;}"
+      ],
+      "name": "How It Works",
+      "settings": {
+        "heading": "The Process for now",
+        "subtitle": "Well be shipping in approx 2 week increments. Shipments will be made up of orders that were placed during the preorder for that shipment window.",
+        "transparency_note": "Check out the info below to see how it works",
+        "steps_heading": "Shipping Timeline",
+        "steps_subtitle": "Track your order journey",
+        "shipping_note": "Actual delivery times may vary based on customs processing and local shipping conditions.",
+        "commitment_text": "We believe in radical transparency. Every constraint, every decision, every why - we share it all because we think you deserve to know how your order really works.",
+        "show_community_section": true,
+        "community_title": "Join Our Community",
+        "community_description": "Help us shape the future of international commerce. We are building this together.",
+        "community_link": "",
+        "community_button_text": "Join Discord",
+        "show_support_section": true,
+        "support_question": "Questions about your shipment?",
+        "support_link": "",
+        "support_button_text": "Contact Support",
+        "show_transparency_statement": true,
+        "transparency_statement": "<p>Every business decision explained. Every constraint shared.<br/>Because transparency builds trust, and trust builds community.</p>"
+      }
+    },
     "product_list_EDUBdR": {
       "type": "product-list",
       "blocks": {
@@ -409,6 +492,7 @@
           ]
         }
       },
+      "disabled": true,
       "name": "t:names.products_grid",
       "settings": {
         "collection": "all",
@@ -578,6 +662,7 @@
   },
   "order": [
     "hero_iLBwPd",
+    "how_it_works_8Y3QCp",
     "product_list_EDUBdR",
     "media_with_content_LfPdEJ"
   ]
