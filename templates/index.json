@@ -429,6 +429,10 @@
         "padding-block-end": 64
       }
     },
+    "how_it_works_test": {
+      "type": "how-it-works",
+      "settings": {}
+    },
     "media_with_content_LfPdEJ": {
       "type": "media-with-content",
       "blocks": {
@@ -579,6 +583,7 @@
   "order": [
     "hero_iLBwPd",
     "product_list_EDUBdR",
+    "how_it_works_test",
     "media_with_content_LfPdEJ"
   ]
 }
