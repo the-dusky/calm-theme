@@ -1,0 +1,433 @@
+{{ 'shipping-tracker.css' | asset_url | stylesheet_tag }}
+
+<div class="shipping-tracker-section">
+  <div class="container">
+    <!-- Header -->
+    <div class="shipping-tracker-header">
+      <h1>{{ section.settings.heading | default: 'Thailand Shipment Tracker' }}</h1>
+      <p class="subtitle">{{ section.settings.subtitle | default: 'Track your orders across multiple shipment dates' }}</p>
+    </div>
+
+    <!-- Shipment Grid -->
+    <div class="shipment-grid">
+      {% for block in section.blocks %}
+        {% case block.type %}
+          {% when 'shipment_date' %}
+            {% assign shipment_id = block.id | replace: '-', '_' %}
+            {% assign color_scheme = block.settings.color_scheme | default: 'blue' %}
+            
+            <div class="shipment-item" data-shipment-id="{{ shipment_id }}" data-color="{{ color_scheme }}">
+              <!-- Main Card -->
+              <div class="shipment-card" onclick="toggleShipment('{{ shipment_id }}')">
+                <div class="shipment-grid-layout">
+                  <!-- Image Section -->
+                  <div class="shipment-image-section">
+                    {% if block.settings.image %}
+                      <img 
+                        src="{{ block.settings.image | image_url: width: 600 }}"
+                        alt="{{ block.settings.title }}"
+                        width="600"
+                        height="400"
+                        class="shipment-image"
+                        loading="lazy"
+                      />
+                    {% else %}
+                      <div class="shipment-placeholder-image"></div>
+                    {% endif %}
+                    <div class="shipment-image-overlay color-{{ color_scheme }}"></div>
+                    
+                    <!-- Status Badge -->
+                    <div class="shipment-status-badge">
+                      <span class="status-badge color-{{ color_scheme }}">
+                        {{ block.settings.status | default: 'upcoming' | capitalize }}
+                      </span>
+                    </div>
+                    
+                    <!-- Expand Button -->
+                    <div class="shipment-expand-button">
+                      <button type="button" class="expand-btn" onclick="event.stopPropagation(); toggleShipment('{{ shipment_id }}')">
+                        <svg class="chevron-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                          <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                      </button>
+                    </div>
+                  </div>
+                  
+                  <!-- Content Section -->
+                  <div class="shipment-content">
+                    <div class="shipment-content-inner">
+                      <h2 class="shipment-title">{{ block.settings.title }}</h2>
+                      
+                      <!-- Key Stats -->
+                      <div class="shipment-stats">
+                        {% if block.settings.ship_date %}
+                          <div class="stat-item">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                              <line x1="16" y1="2" x2="16" y2="6"></line>
+                              <line x1="8" y1="2" x2="8" y2="6"></line>
+                              <line x1="3" y1="10" x2="21" y2="10"></line>
+                            </svg>
+                            <span>Ships: {{ block.settings.ship_date }}</span>
+                          </div>
+                        {% endif %}
+                        
+                        {% if block.settings.cutoff_date %}
+                          <div class="stat-item">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                              <circle cx="12" cy="12" r="10"></circle>
+                              <polyline points="12,6 12,12 16,14"></polyline>
+                            </svg>
+                            <span>Cutoff: {{ block.settings.cutoff_date }}</span>
+                          </div>
+                        {% endif %}
+                        
+                        {% if block.settings.total_orders %}
+                          <div class="stat-item">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                              <line x1="16.5" y1="9.4" x2="7.5" y2="4.21"></line>
+                              <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+                              <polyline points="3.27,6.96 12,12.01 20.73,6.96"></polyline>
+                              <line x1="12" y1="22.08" x2="12" y2="12"></line>
+                            </svg>
+                            <span>{{ block.settings.completed_orders | default: 0 }} / {{ block.settings.total_orders }} orders</span>
+                          </div>
+                        {% endif %}
+                      </div>
+                      
+                      <!-- Rating -->
+                      <div class="shipment-rating">
+                        <div class="stars">
+                          {% for i in (1..5) %}
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2">
+                              <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"></polygon>
+                            </svg>
+                          {% endfor %}
+                        </div>
+                        <span class="rating-text">4.8 ({{ block.settings.review_count | default: 150 }} reviews)</span>
+                      </div>
+                    </div>
+                    
+                    <!-- Bottom Actions -->
+                    <div class="shipment-actions">
+                      <div class="product-count">
+                        {{ block.settings.product_count | default: 5 }} products available
+                      </div>
+                      
+                      <button 
+                        type="button" 
+                        class="view-products-btn color-{{ color_scheme }}"
+                        onclick="event.stopPropagation(); toggleShipment('{{ shipment_id }}')"
+                      >
+                        <span class="btn-text-collapsed">View Products</span>
+                        <span class="btn-text-expanded">Show Less</span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Expanded Content -->
+              <div class="shipment-expanded-content color-{{ color_scheme }}" id="expanded-{{ shipment_id }}" style="display: none;">
+                <div class="expanded-content-inner">
+                  <!-- Description -->
+                  {% if block.settings.description %}
+                    <div class="shipment-description">
+                      <p>{{ block.settings.description }}</p>
+                    </div>
+                  {% endif %}
+                  
+                  <!-- Timeline Section for processing/completed shipments -->
+                  {% if block.settings.status == 'processing' or block.settings.status == 'completed' %}
+                    <div class="shipment-timeline-section">
+                      <h3>Shipment Progress</h3>
+                      <div class="timeline-container">
+                        <div class="timeline-progress">
+                          <div class="progress-bar">
+                            <div class="progress-fill" style="width: {{ block.settings.progress_percentage | default: 75 }}%"></div>
+                          </div>
+                          <span class="progress-text">{{ block.settings.progress_percentage | default: 75 }}% Complete</span>
+                        </div>
+                        
+                        <div class="timeline-steps">
+                          {% for step in (1..5) %}
+                            {% assign step_status = 'pending' %}
+                            {% if step <= block.settings.current_step %}
+                              {% assign step_status = 'completed' %}
+                            {% elsif step == block.settings.current_step %}
+                              {% assign step_status = 'current' %}
+                            {% endif %}
+                            
+                            <div class="timeline-step {{ step_status }}">
+                              <div class="step-icon">
+                                {% case step %}
+                                  {% when 1 %}
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                      <line x1="16.5" y1="9.4" x2="7.5" y2="4.21"></line>
+                                      <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+                                    </svg>
+                                  {% when 2 %}
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                      <path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"></path>
+                                    </svg>
+                                  {% when 3 %}
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                      <circle cx="12" cy="12" r="10"></circle>
+                                      <polyline points="12,6 12,12 16,14"></polyline>
+                                    </svg>
+                                  {% when 4 %}
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                      <rect x="1" y="3" width="15" height="13"></rect>
+                                      <polygon points="16,8 20,8 23,11 23,16 16,16"></polygon>
+                                      <circle cx="5.5" cy="18.5" r="2.5"></circle>
+                                      <circle cx="18.5" cy="18.5" r="2.5"></circle>
+                                    </svg>
+                                  {% when 5 %}
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                      <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                                      <polyline points="9,22 9,12 15,12 15,22"></polyline>
+                                    </svg>
+                                {% endcase %}
+                              </div>
+                              <div class="step-content">
+                                <h4 class="step-title">
+                                  {% case step %}
+                                    {% when 1 %}Calm Thailand Working on Order
+                                    {% when 2 %}Order in Transit to US
+                                    {% when 3 %}Order Fulfillment in Progress
+                                    {% when 4 %}Orders Shipped to Customers
+                                    {% when 5 %}Orders Received
+                                  {% endcase %}
+                                </h4>
+                                <p class="step-description">
+                                  {% case step %}
+                                    {% when 1 %}Preparing and packaging your items
+                                    {% when 2 %}Shipping from Thailand to United States
+                                    {% when 3 %}Processing at US fulfillment center
+                                    {% when 4 %}Individual orders dispatched for delivery
+                                    {% when 5 %}Delivered to customers
+                                  {% endcase %}
+                                </p>
+                              </div>
+                            </div>
+                          {% endfor %}
+                        </div>
+                      </div>
+                    </div>
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+        {% endcase %}
+      {% endfor %}
+    </div>
+  </div>
+</div>
+
+<script src="{{ 'shipping-tracker.js' | asset_url }}" defer></script>
+
+{% schema %}
+{
+  "name": "Shipping Tracker",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Main Heading",
+      "default": "Thailand Shipment Tracker"
+    },
+    {
+      "type": "text",
+      "id": "subtitle", 
+      "label": "Subtitle",
+      "default": "Track your orders across multiple shipment dates"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "shipment_date",
+      "name": "Shipment Date",
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Shipment Title",
+          "default": "Spring Collection"
+        },
+        {
+          "type": "textarea",
+          "id": "description",
+          "label": "Description",
+          "default": "Handcrafted items from Northern Thailand including silk scarves, wooden crafts, and traditional ceramics"
+        },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Shipment Image"
+        },
+        {
+          "type": "select",
+          "id": "status",
+          "label": "Shipment Status",
+          "options": [
+            {
+              "value": "upcoming",
+              "label": "Upcoming"
+            },
+            {
+              "value": "active", 
+              "label": "Active"
+            },
+            {
+              "value": "processing",
+              "label": "Processing"
+            },
+            {
+              "value": "completed",
+              "label": "Completed"
+            }
+          ],
+          "default": "upcoming"
+        },
+        {
+          "type": "select",
+          "id": "color_scheme",
+          "label": "Color Scheme",
+          "options": [
+            {
+              "value": "blue",
+              "label": "Blue"
+            },
+            {
+              "value": "emerald",
+              "label": "Emerald"
+            },
+            {
+              "value": "purple",
+              "label": "Purple"
+            },
+            {
+              "value": "orange",
+              "label": "Orange"
+            },
+            {
+              "value": "teal",
+              "label": "Teal"
+            },
+            {
+              "value": "rose",
+              "label": "Rose"
+            }
+          ],
+          "default": "blue"
+        },
+        {
+          "type": "text",
+          "id": "ship_date",
+          "label": "Ship Date",
+          "default": "June 25, 2025"
+        },
+        {
+          "type": "text", 
+          "id": "cutoff_date",
+          "label": "Cutoff Date",
+          "default": "June 20, 2025"
+        },
+        {
+          "type": "number",
+          "id": "total_orders",
+          "label": "Total Orders"
+        },
+        {
+          "type": "number",
+          "id": "completed_orders", 
+          "label": "Completed Orders"
+        },
+        {
+          "type": "number",
+          "id": "product_count",
+          "label": "Number of Products",
+          "default": 5
+        },
+        {
+          "type": "number",
+          "id": "review_count",
+          "label": "Review Count",
+          "default": 150
+        },
+        {
+          "type": "range",
+          "id": "progress_percentage",
+          "label": "Progress Percentage",
+          "min": 0,
+          "max": 100,
+          "step": 5,
+          "default": 75,
+          "unit": "%"
+        },
+        {
+          "type": "range",
+          "id": "current_step",
+          "label": "Current Timeline Step",
+          "min": 1,
+          "max": 5,
+          "step": 1,
+          "default": 3
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Shipping Tracker",
+      "category": "t:categories.storytelling",
+      "blocks": [
+        {
+          "type": "shipment_date",
+          "settings": {
+            "title": "Spring Collection",
+            "description": "Handcrafted items from Northern Thailand including silk scarves, wooden crafts, and traditional ceramics",
+            "status": "completed",
+            "color_scheme": "emerald",
+            "ship_date": "June 10, 2025",
+            "cutoff_date": "June 5, 2025",
+            "total_orders": 156,
+            "completed_orders": 156,
+            "product_count": 5,
+            "progress_percentage": 100,
+            "current_step": 5
+          }
+        },
+        {
+          "type": "shipment_date",
+          "settings": {
+            "title": "Summer Essentials",
+            "description": "Traditional crafts and textiles perfect for the summer season, featuring breathable fabrics and natural materials",
+            "status": "processing",
+            "color_scheme": "blue",
+            "ship_date": "June 15, 2025",
+            "cutoff_date": "June 15, 2025",
+            "total_orders": 159,
+            "completed_orders": 127,
+            "product_count": 4,
+            "progress_percentage": 75,
+            "current_step": 3
+          }
+        },
+        {
+          "type": "shipment_date",
+          "settings": {
+            "title": "Artisan Special Edition",
+            "description": "Limited edition handmade pieces crafted by master artisans using centuries-old techniques",
+            "status": "active",
+            "color_scheme": "purple",
+            "ship_date": "June 25, 2025",
+            "cutoff_date": "June 20, 2025",
+            "product_count": 3
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

@@ -13,6 +13,13 @@ UnknownLiquidTag:
 UndefinedObject:
   enabled: false
 
+# Disable translation checks (too many false positives in multilingual themes)
+MatchingTranslations:
+  enabled: false
+  
+TranslationKeyExists:
+  enabled: false
+
 # Disable content_for block warnings (theme architecture uses this pattern)
 CaptureOnContentForBlock:
   enabled: false
