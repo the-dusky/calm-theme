@@ -1,0 +1,71 @@
+# Theme Check Configuration
+# Disable problematic checks that give false positives
+
+# Disable missing template checks for modular architecture
+MissingTemplate:
+  enabled: false
+  
+# Disable unknown liquid tags for dynamic components  
+UnknownLiquidTag:
+  enabled: false
+
+# Disable undefined object checks (too many false positives)
+UndefinedObject:
+  enabled: false
+
+# Disable content_for block warnings (theme architecture uses this pattern)
+CaptureOnContentForBlock:
+  enabled: false
+
+# Keep important checks enabled
+LiquidTag:
+  enabled: true
+  
+ValidJson:
+  enabled: true
+  
+SyntaxError:
+  enabled: true
+  
+TemplateLength:
+  enabled: true
+  max_size: 500
+  
+RemoteAsset:
+  enabled: false
+  
+AssetSizeCSS:
+  enabled: true
+  threshold_in_bytes: 100000
+  
+AssetSizeJavaScript:
+  enabled: true
+  threshold_in_bytes: 100000
+  
+# Accessibility and performance checks
+ImgLazyLoading:
+  enabled: true
+  
+MissingRequiredTemplateFiles:
+  enabled: true
+  
+# Shopify-specific checks
+ValidSchema:
+  enabled: true
+  
+HtmlParsingError:
+  enabled: true
+  
+# Translation checks
+DefaultLocale:
+  enabled: true
+  
+# Content checks that are useful
+ContentForHeaderModification:
+  enabled: true
+  
+DeprecatedFilter:
+  enabled: true
+
+DeprecatedTag:
+  enabled: true

@@ -10,6 +10,17 @@
   padding: 0 1rem;
 }
 
+/* Desktop responsive layout */
+@media (min-width: 768px) {
+  .how-it-works-section .container {
+    max-width: 80rem;
+  }
+  
+  .shipping-steps-container {
+    max-width: 75rem;
+  }
+}
+
 .how-it-works-header {
   text-align: center;
   margin-bottom: 2rem;
@@ -347,6 +358,159 @@
   margin: 0;
 }
 
+/* Hide mobile layout on desktop */
+@media (min-width: 769px) {
+  .mobile-timeline,
+  .mobile-footer {
+    display: none;
+  }
+  
+  .desktop-timeline {
+    display: block;
+  }
+  
+  /* Desktop layout styles */
+  .desktop-steps-grid {
+    position: relative;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 2rem;
+    margin-bottom: 2rem;
+  }
+  
+  .steps-connecting-line {
+    position: absolute;
+    top: 1.5rem;
+    left: 1.5rem;
+    right: 1.5rem;
+    height: 2px;
+    background-color: rgb(var(--color-border));
+    z-index: 1;
+  }
+  
+  .desktop-step-item {
+    position: relative;
+    z-index: 10;
+    text-align: center;
+  }
+  
+  .desktop-step-circle {
+    position: relative;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 3rem;
+    height: 3rem;
+    border-radius: 50%;
+    border: 2px solid rgb(var(--color-border));
+    background-color: rgb(var(--color-background));
+    color: rgb(var(--color-foreground) / 0.7);
+    margin: 0 auto 1rem;
+  }
+  
+  .desktop-step-circle.active {
+    background-color: rgb(var(--color-base-accent-1));
+    border-color: rgb(var(--color-base-accent-1));
+    color: rgb(var(--color-background));
+  }
+  
+  .desktop-step-content .step-badge {
+    display: inline-block;
+    padding: 0.25rem 0.5rem;
+    border-radius: 1rem;
+    font-size: 0.75rem;
+    background-color: rgb(var(--color-background-2));
+    color: rgb(var(--color-foreground) / 0.7);
+    margin-bottom: 0.5rem;
+  }
+  
+  .desktop-step-content .step-badge.active {
+    background-color: rgb(var(--color-base-accent-1) / 0.1);
+    color: rgb(var(--color-base-accent-1));
+  }
+  
+  .desktop-step-content .step-title {
+    margin-bottom: 0.5rem;
+    color: rgb(var(--color-foreground) / 0.7);
+  }
+  
+  .desktop-step-content .step-title.active {
+    color: rgb(var(--color-foreground));
+  }
+  
+  .desktop-step-content .step-description {
+    color: rgb(var(--color-foreground) / 0.7);
+    font-size: 0.875rem;
+    margin-bottom: 1rem;
+  }
+  
+  /* Desktop transparency grid */
+  .desktop-transparency-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+  }
+  
+  .desktop-transparency-card {
+    padding: 1.5rem;
+    background-color: rgb(var(--color-base-accent-2) / 0.5);
+    border-radius: 0.5rem;
+    border-left: 4px solid rgb(var(--color-base-accent-1) / 0.3);
+  }
+  
+  .desktop-transparency-card .transparency-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+  }
+  
+  .desktop-transparency-card .transparency-header span {
+    font-size: 0.875rem;
+    color: rgb(var(--color-foreground));
+    font-weight: 500;
+  }
+  
+  .desktop-transparency-card p {
+    font-size: 0.875rem;
+    color: rgb(var(--color-foreground) / 0.7);
+    line-height: 1.6;
+    margin: 0;
+  }
+  
+  /* Desktop footer grid */
+  .desktop-footer-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+  }
+  
+  .desktop-footer-grid .shipping-note,
+  .desktop-footer-grid .transparency-commitment {
+    margin-top: 0;
+  }
+  
+  /* Community section desktop layout */
+  .community-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 2rem;
+  }
+  
+  .community-description {
+    margin-bottom: 0;
+    flex: 1;
+  }
+  
+  .community-button {
+    flex-shrink: 0;
+  }
+}
+
+/* Hide desktop layout on mobile */
 @media (max-width: 768px) {
   .how-it-works-section {
     padding: 2rem 0;
@@ -366,5 +530,14 @@
   
   .how-it-works-header h1 {
     font-size: 1.5rem;
+  }
+  
+  .desktop-timeline {
+    display: none;
+  }
+  
+  .mobile-timeline,
+  .mobile-footer {
+    display: block;
   }
 }

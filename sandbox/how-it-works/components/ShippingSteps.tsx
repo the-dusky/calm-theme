@@ -14,7 +14,11 @@ interface Step {
   };
 }
 
-export function ShippingSteps() {
+interface ShippingStepsProps {
+  layout?: 'mobile' | 'desktop';
+}
+
+export function ShippingSteps({ layout = 'mobile' }: ShippingStepsProps) {
   const [expandedSteps, setExpandedSteps] = useState<Set<number>>(new Set());
 
   const toggleStep = (stepId: number) => {
@@ -73,6 +77,97 @@ export function ShippingSteps() {
     }
   ];
 
+  if (layout === 'desktop') {
+    return (
+      <div className="w-full max-w-6xl mx-auto bg-card rounded-lg p-8 shadow-sm border">
+        <div className="mb-8">
+          <h2 className="mb-2">Shipping Timeline</h2>
+          <p className="text-muted-foreground">Track your order journey</p>
+          <p className="text-xs text-muted-foreground mt-1">
+            💡 Click steps below for radical transparency
+          </p>
+        </div>
+        
+        {/* Desktop horizontal timeline */}
+        <div className="relative mb-8">
+          {/* Connecting line */}
+          <div className="absolute top-6 left-6 right-6 h-0.5 bg-border"></div>
+          
+          <div className="grid grid-cols-4 gap-8">
+            {steps.map((step, index) => (
+              <div key={step.id} className="relative">
+                {/* Step circle with icon */}
+                <div className={`
+                  relative z-10 flex items-center justify-center w-12 h-12 rounded-full border-2 mx-auto mb-4
+                  ${step.isActive 
+                    ? 'bg-primary border-primary text-primary-foreground' 
+                    : 'bg-background border-border text-muted-foreground'
+                  }
+                `}>
+                  {step.icon}
+                </div>
+                
+                {/* Step content */}
+                <div className="text-center">
+                  <div className="flex items-center justify-center gap-2 mb-2">
+                    <span className={`
+                      px-2 py-1 rounded-full text-xs
+                      ${step.isActive 
+                        ? 'bg-primary/10 text-primary' 
+                        : 'bg-muted text-muted-foreground'
+                      }
+                    `}>
+                      Step {step.id}
+                    </span>
+                  </div>
+                  <h3 className={`mb-2 ${step.isActive ? 'text-foreground' : 'text-muted-foreground'}`}>
+                    {step.title}
+                  </h3>
+                  <p className="text-muted-foreground text-sm mb-4">
+                    {step.description}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Desktop transparency sections */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+          {steps.filter(step => step.transparency).map((step) => (
+            <div key={`transparency-${step.id}`} className="p-6 bg-accent/50 rounded-lg border-l-4 border-primary/30">
+              <div className="flex items-center gap-2 mb-3">
+                {step.transparency!.icon}
+                <span className="text-sm text-foreground">
+                  {step.transparency!.title}
+                </span>
+              </div>
+              <p className="text-sm text-muted-foreground leading-relaxed">
+                {step.transparency!.content}
+              </p>
+            </div>
+          ))}
+        </div>
+        
+        {/* Footer sections */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className="p-4 bg-muted/50 rounded-lg">
+            <p className="text-muted-foreground">
+              <strong>Note:</strong> Actual delivery times may vary based on customs processing and local shipping conditions.
+            </p>
+          </div>
+          
+          <div className="p-4 bg-primary/5 rounded-lg border border-primary/20">
+            <p className="text-sm text-muted-foreground">
+              <strong>Our commitment:</strong> We believe in radical transparency. Every constraint, every decision, every "why" - we share it all because we think you deserve to know how your order really works.
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Mobile layout (original)
   return (
     <div className="w-full max-w-md mx-auto bg-card rounded-lg p-6 shadow-sm border">
       <div className="mb-6">
