@@ -93,6 +93,7 @@
                 "text_nptTQe": {
                   "type": "text",
                   "name": "Heading",
+                  "disabled": true,
                   "settings": {
                     "text": "<h2><em>Introducing</em></h2>",
                     "width": "100%",
@@ -118,6 +119,7 @@
                 },
                 "text_m9AcWC": {
                   "type": "text",
+                  "disabled": true,
                   "settings": {
                     "text": "<h1>Our Newest Arrivals </h1>",
                     "width": "100%",
@@ -146,37 +148,10 @@
                 "text_nptTQe",
                 "text_m9AcWC"
               ]
-            },
-            "text_ebNxhf": {
-              "type": "text",
-              "name": "Text",
-              "settings": {
-                "text": "<p>Bring order to the chaos. When all your tech essentials have a dedicated spot on your desk, you don’t have to waste any time searching for them. </p>",
-                "width": "fit-content",
-                "max_width": "none",
-                "alignment": "left",
-                "type_preset": "rte",
-                "font": "var(--font-primary--family)",
-                "font_size": "",
-                "line_height": "normal",
-                "letter_spacing": "normal",
-                "case": "none",
-                "wrap": "pretty",
-                "color": "",
-                "background": false,
-                "background_color": "#00000026",
-                "corner_radius": 0,
-                "padding-block-start": 0,
-                "padding-block-end": 0,
-                "padding-inline-start": 0,
-                "padding-inline-end": 0
-              },
-              "blocks": {}
             }
           },
           "block_order": [
-            "group_U86Qji",
-            "text_ebNxhf"
+            "group_U86Qji"
           ]
         }
       },
@@ -188,7 +163,7 @@
         "link": "",
         "open_in_new_tab": false,
         "media_type_1": "image",
-        "image_1": "shopify://shop_images/012-NAVY.jpg",
+        "image_1": "shopify://shop_images/calm_cover_copy.jpg",
         "media_type_2": "image",
         "content_direction": "column",
         "vertical_on_mobile": true,
@@ -199,7 +174,7 @@
         "vertical_alignment_flex_direction_column": "flex-end",
         "gap": 16,
         "section_width": "page-width",
-        "section_height": "medium",
+        "section_height": "small",
         "section_height_custom": 50,
         "color_scheme": "scheme-5",
         "toggle_overlay": true,
@@ -251,6 +226,7 @@
             "product_list_text_qK4EWG": {
               "type": "_product-list-text",
               "name": "t:names.collection_title",
+              "disabled": true,
               "settings": {
                 "text": "<h3>Make Your Workspace Yours</h3>",
                 "width": "fit-content",
@@ -837,8 +813,8 @@
         "section_width": "page-width",
         "extend_media": true,
         "color_scheme": "scheme-41dbb9c3-0866-4036-9494-aa0e1c1cedda",
-        "padding-block-start": 0,
-        "padding-block-end": 0
+        "padding-block-start": 24,
+        "padding-block-end": 24
       }
     },
     "collection_list_xpBxCm": {
@@ -1061,6 +1037,7 @@
     },
     "1749577303cb1a505e": {
       "type": "_blocks",
+      "disabled": true,
       "settings": {
         "content_direction": "column",
         "vertical_on_mobile": true,

@@ -9,7 +9,7 @@
  */
 {
   "current": {
-    "logo": "shopify://shop_images/color_blue_outdoors_true.svg",
+    "logo": "shopify://shop_images/outdoors-small-white.svg",
     "logo_inverse": "shopify://shop_images/outdoors-small-white.svg",
     "favicon": "shopify://shop_images/blue-logo.svg",
     "type_body_font": "poppins_n4",
@@ -36,6 +36,13 @@
     "variant_button_radius": 100,
     "variant_button_width": "default-width-buttons",
     "content_for_index": [],
+    "blocks": {
+      "back-in-stock-restock-alerts-4bb73be2-b7c2-4870-949f-c528145452a3": {
+        "type": "shopify://apps/back-in-stock-restock-alerts/blocks/main/4bb73be2-b7c2-4870-949f-c528145452a3",
+        "disabled": false,
+        "settings": {}
+      }
+    },
     "color_schemes": {
       "scheme-1": {
         "settings": {
@@ -348,13 +355,6 @@
           "selected_variant_hover_text_color": "#ffffff",
           "selected_variant_hover_border_color": "#1a1a1a"
         }
-      }
-    },
-    "blocks": {
-      "back-in-stock-restock-alerts-4bb73be2-b7c2-4870-949f-c528145452a3": {
-        "type": "shopify://apps/back-in-stock-restock-alerts/blocks/main/4bb73be2-b7c2-4870-949f-c528145452a3",
-        "disabled": false,
-        "settings": {}
       }
     }
   },
