@@ -981,60 +981,6 @@
         "padding-block-end": 64
       }
     },
-    "how_it_works_section": {
-      "type": "how-it-works",
-      "blocks": {
-        "step_1": {
-          "type": "shipping_step",
-          "settings": {
-            "title": "Place Order by Cutoff",
-            "description": "Submit your order before daily cutoff time",
-            "is_active": true,
-            "transparency_title": "Why we're starting slow",
-            "transparency_content": "We are starting slow and trying to learn as much as possible from our customers. Join our Discord community to help shape the vision. We'd rather get it right than get it fast."
-          }
-        },
-        "step_2": {
-          "type": "shipping_step",
-          "settings": {
-            "title": "Shipping from Thailand",
-            "description": "7-10 business days processing & transit",
-            "transparency_title": "Our Thai connection",
-            "transparency_content": "Calm is a brand based in Thailand. We are friends with them and decided they need to be in the US and Japan. Why the US and Japan? One of us lives in the US and the other in Japan. Sometimes business is that simple."
-          }
-        },
-        "step_3": {
-          "type": "shipping_step",
-          "settings": {
-            "title": "Receipt in Jersey City",
-            "description": "Package arrives at our US facility",
-            "transparency_title": "About returns (for now)",
-            "transparency_content": "Currently we are unable to accept returns. We suggest buying one item to see how it fits and then expand. This will change in the future as we build out our logistics. We know it's not ideal, but we're being honest about our current constraints."
-          }
-        },
-        "step_4": {
-          "type": "shipping_step",
-          "settings": {
-            "title": "Ship by Date",
-            "description": "Final delivery to your address"
-          }
-        }
-      },
-      "block_order": [
-        "step_1",
-        "step_2",
-        "step_3",
-        "step_4"
-      ],
-      "settings": {
-        "heading": "Your Order Journey",
-        "subtitle": "Here's what to expect with your international shipment",
-        "transparency_note": "We believe in radical transparency ✨",
-        "show_community_section": true,
-        "show_support_section": true,
-        "show_transparency_statement": true
-      }
-    },
     "1749577303cb1a505e": {
       "type": "_blocks",
       "disabled": true,
@@ -1072,7 +1018,6 @@
     "product_list_EDUBdR",
     "product_list_iMHf73",
     "media_with_content_LfPdEJ",
-    "how_it_works_section",
     "collection_list_xpBxCm",
     "1749577303cb1a505e"
   ]
