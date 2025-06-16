@@ -3,10 +3,16 @@
 <div class="shipping-tracker-section">
   <div class="container">
     <!-- Header -->
-    <div class="shipping-tracker-header">
-      <h1>{{ section.settings.heading | default: 'Thailand Shipment Tracker' }}</h1>
-      <p class="subtitle">{{ section.settings.subtitle | default: 'Track your orders across multiple shipment dates' }}</p>
-    </div>
+    {% if section.settings.heading != blank or section.settings.subtitle != blank %}
+      <div class="shipping-tracker-header">
+        {% if section.settings.heading != blank %}
+          <h1>{{ section.settings.heading }}</h1>
+        {% endif %}
+        {% if section.settings.subtitle != blank %}
+          <p class="subtitle">{{ section.settings.subtitle }}</p>
+        {% endif %}
+      </div>
+    {% endif %}
 
     <!-- Shipment Grid -->
     <div class="shipment-grid">
@@ -92,17 +98,6 @@
                         {% endif %}
                       </div>
                       
-                      <!-- Rating -->
-                      <div class="shipment-rating">
-                        <div class="stars">
-                          {% for i in (1..5) %}
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2">
-                              <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"></polygon>
-                            </svg>
-                          {% endfor %}
-                        </div>
-                        <span class="rating-text">4.8 ({{ block.settings.review_count | default: 150 }} reviews)</span>
-                      </div>
                     </div>
                     
                     <!-- Bottom Actions -->
@@ -114,15 +109,6 @@
                           {{ block.settings.product_count | default: 5 }} products available
                         {% endif %}
                       </div>
-                      
-                      <button 
-                        type="button" 
-                        class="view-products-btn"
-                        onclick="event.stopPropagation(); toggleShipment('{{ shipment_id }}')"
-                      >
-                        <span class="btn-text-collapsed">View Products</span>
-                        <span class="btn-text-expanded">Show Less</span>
-                      </button>
                     </div>
                   </div>
                 </div>

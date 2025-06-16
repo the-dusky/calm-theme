@@ -72,6 +72,7 @@
 /* When no image is present, content takes full width */
 .shipment-grid-layout:not(:has(.shipment-image-section)) .shipment-content {
   padding: 2rem;
+  padding-top: 3.5rem;
 }
 
 .shipment-image-section {
@@ -180,6 +181,7 @@
 
 .shipment-content {
   padding: 1.5rem;
+  padding-top: 3.5rem;
   display: flex;
   flex-direction: column;
   height: 100%;
@@ -214,35 +216,10 @@
   color: rgb(var(--color-foreground) / 0.5);
 }
 
-.shipment-rating {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  margin-bottom: 1rem;
-}
-
-.stars {
-  display: flex;
-  gap: 0.125rem;
-}
-
-.stars svg {
-  width: 1rem;
-  height: 1rem;
-  color: #fbbf24;
-}
-
-.rating-text {
-  font-size: 0.875rem;
-  color: rgb(var(--color-foreground) / 0.7);
-}
 
 .shipment-actions {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
   padding-top: 1rem;
-  border-top: 1px solid rgb(var(--color-border));
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
   margin-top: auto;
 }
 
@@ -251,37 +228,6 @@
   color: rgb(var(--color-foreground) / 0.7);
 }
 
-.view-products-btn {
-  padding: 0.5rem 1rem;
-  border: 1px solid;
-  border-radius: 0.5rem;
-  font-size: 0.875rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  background-color: transparent;
-}
-
-.view-products-btn {
-  border-color: rgb(var(--color-base-accent-1));
-  color: rgb(var(--color-base-accent-1));
-}
-
-.view-products-btn:hover {
-  background-color: rgb(var(--color-base-accent-1) / 0.05);
-}
-
-.btn-text-expanded {
-  display: none;
-}
-
-.shipment-item.expanded .btn-text-collapsed {
-  display: none;
-}
-
-.shipment-item.expanded .btn-text-expanded {
-  display: inline;
-}
 
 .shipment-expanded-content {
   margin-top: 1rem;
