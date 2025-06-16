@@ -187,6 +187,70 @@
         "padding-block-end": 24
       }
     },
+    "shipping_tracker_tKNhEx": {
+      "type": "shipping-tracker",
+      "blocks": {
+        "shipment_date_YDhhyf": {
+          "type": "shipment_date",
+          "settings": {
+            "title": "Spring Collection",
+            "description": "Handcrafted items from Northern Thailand including silk scarves, wooden crafts, and traditional ceramics",
+            "status": "completed",
+            "color_scheme": "emerald",
+            "ship_date": "June 10, 2025",
+            "cutoff_date": "June 5, 2025",
+            "total_orders": 156,
+            "completed_orders": 156,
+            "product_count": 5,
+            "review_count": 150,
+            "progress_percentage": 100,
+            "current_step": 5
+          }
+        },
+        "shipment_date_GMJVpm": {
+          "type": "shipment_date",
+          "settings": {
+            "title": "Summer Essentials",
+            "description": "Traditional crafts and textiles perfect for the summer season, featuring breathable fabrics and natural materials",
+            "status": "processing",
+            "color_scheme": "blue",
+            "ship_date": "June 15, 2025",
+            "cutoff_date": "June 15, 2025",
+            "total_orders": 159,
+            "completed_orders": 127,
+            "product_count": 4,
+            "review_count": 150,
+            "progress_percentage": 75,
+            "current_step": 3
+          }
+        },
+        "shipment_date_4BgwQQ": {
+          "type": "shipment_date",
+          "settings": {
+            "title": "Artisan Special Edition",
+            "description": "Limited edition handmade pieces crafted by master artisans using centuries-old techniques",
+            "status": "active",
+            "color_scheme": "purple",
+            "ship_date": "June 25, 2025",
+            "cutoff_date": "June 20, 2025",
+            "product_count": 3,
+            "review_count": 150,
+            "progress_percentage": 75,
+            "current_step": 3
+          }
+        }
+      },
+      "block_order": [
+        "shipment_date_YDhhyf",
+        "shipment_date_GMJVpm",
+        "shipment_date_4BgwQQ"
+      ],
+      "name": "Shipping Tracker",
+      "settings": {
+        "heading": "",
+        "subtitle": ""
+      }
+    },
     "how_it_works_8Y3QCp": {
       "type": "how-it-works",
       "blocks": {
@@ -647,6 +711,7 @@
           ]
         }
       },
+      "disabled": true,
       "name": "t:names.media_with_text",
       "settings": {
         "media_position": "left",
@@ -662,6 +727,7 @@
   },
   "order": [
     "hero_iLBwPd",
+    "shipping_tracker_tKNhEx",
     "how_it_works_8Y3QCp",
     "product_list_EDUBdR",
     "media_with_content_LfPdEJ"
