@@ -101,28 +101,8 @@
   opacity: 0.2;
 }
 
-.shipment-image-overlay.color-blue {
-  background: linear-gradient(135deg, #3b82f6, #1d4ed8);
-}
-
-.shipment-image-overlay.color-emerald {
-  background: linear-gradient(135deg, #10b981, #047857);
-}
-
-.shipment-image-overlay.color-purple {
-  background: linear-gradient(135deg, #8b5cf6, #6d28d9);
-}
-
-.shipment-image-overlay.color-orange {
-  background: linear-gradient(135deg, #f97316, #c2410c);
-}
-
-.shipment-image-overlay.color-teal {
-  background: linear-gradient(135deg, #14b8a6, #0f766e);
-}
-
-.shipment-image-overlay.color-rose {
-  background: linear-gradient(135deg, #f43f5e, #e11d48);
+.shipment-image-overlay {
+  background: linear-gradient(135deg, rgb(var(--color-base-accent-1) / 0.8), rgb(var(--color-base-accent-2) / 0.8));
 }
 
 .shipment-status-badge {
@@ -140,34 +120,9 @@
   text-transform: capitalize;
 }
 
-.status-badge.color-blue {
-  background-color: rgb(59 130 246 / 0.1);
-  color: #1d4ed8;
-}
-
-.status-badge.color-emerald {
-  background-color: rgb(16 185 129 / 0.1);
-  color: #047857;
-}
-
-.status-badge.color-purple {
-  background-color: rgb(139 92 246 / 0.1);
-  color: #6d28d9;
-}
-
-.status-badge.color-orange {
-  background-color: rgb(249 115 22 / 0.1);
-  color: #c2410c;
-}
-
-.status-badge.color-teal {
-  background-color: rgb(20 184 166 / 0.1);
-  color: #0f766e;
-}
-
-.status-badge.color-rose {
-  background-color: rgb(244 63 94 / 0.1);
-  color: #e11d48;
+.status-badge {
+  background-color: rgb(var(--color-base-accent-1) / 0.1);
+  color: rgb(var(--color-base-accent-1));
 }
 
 .shipment-expand-button {
@@ -287,58 +242,13 @@
   background-color: transparent;
 }
 
-.view-products-btn.color-blue {
-  border-color: #3b82f6;
-  color: #1d4ed8;
+.view-products-btn {
+  border-color: rgb(var(--color-base-accent-1));
+  color: rgb(var(--color-base-accent-1));
 }
 
-.view-products-btn.color-blue:hover {
-  background-color: rgb(59 130 246 / 0.05);
-}
-
-.view-products-btn.color-emerald {
-  border-color: #10b981;
-  color: #047857;
-}
-
-.view-products-btn.color-emerald:hover {
-  background-color: rgb(16 185 129 / 0.05);
-}
-
-.view-products-btn.color-purple {
-  border-color: #8b5cf6;
-  color: #6d28d9;
-}
-
-.view-products-btn.color-purple:hover {
-  background-color: rgb(139 92 246 / 0.05);
-}
-
-.view-products-btn.color-orange {
-  border-color: #f97316;
-  color: #c2410c;
-}
-
-.view-products-btn.color-orange:hover {
-  background-color: rgb(249 115 22 / 0.05);
-}
-
-.view-products-btn.color-teal {
-  border-color: #14b8a6;
-  color: #0f766e;
-}
-
-.view-products-btn.color-teal:hover {
-  background-color: rgb(20 184 166 / 0.05);
-}
-
-.view-products-btn.color-rose {
-  border-color: #f43f5e;
-  color: #e11d48;
-}
-
-.view-products-btn.color-rose:hover {
-  background-color: rgb(244 63 94 / 0.05);
+.view-products-btn:hover {
+  background-color: rgb(var(--color-base-accent-1) / 0.05);
 }
 
 .btn-text-expanded {
@@ -363,34 +273,9 @@
   transition: all 0.3s ease;
 }
 
-.shipment-expanded-content.color-blue {
-  background-color: rgb(59 130 246 / 0.03);
-  border-color: rgb(59 130 246 / 0.2);
-}
-
-.shipment-expanded-content.color-emerald {
-  background-color: rgb(16 185 129 / 0.03);
-  border-color: rgb(16 185 129 / 0.2);
-}
-
-.shipment-expanded-content.color-purple {
-  background-color: rgb(139 92 246 / 0.03);
-  border-color: rgb(139 92 246 / 0.2);
-}
-
-.shipment-expanded-content.color-orange {
-  background-color: rgb(249 115 22 / 0.03);
-  border-color: rgb(249 115 22 / 0.2);
-}
-
-.shipment-expanded-content.color-teal {
-  background-color: rgb(20 184 166 / 0.03);
-  border-color: rgb(20 184 166 / 0.2);
-}
-
-.shipment-expanded-content.color-rose {
-  background-color: rgb(244 63 94 / 0.03);
-  border-color: rgb(244 63 94 / 0.2);
+.shipment-expanded-content {
+  background-color: rgb(var(--color-base-accent-1) / 0.03);
+  border-color: rgb(var(--color-base-accent-1) / 0.2);
 }
 
 .shipment-item.expanded .shipment-expanded-content {
@@ -690,76 +575,16 @@
   background-color: transparent;
 }
 
-.btn-add-to-cart.color-blue,
-.btn-view-product.color-blue {
-  border-color: #3b82f6;
-  color: #1d4ed8;
+.btn-add-to-cart,
+.btn-view-product {
+  border-color: rgb(var(--color-base-accent-1));
+  color: rgb(var(--color-base-accent-1));
 }
 
-.btn-add-to-cart.color-blue:hover,
-.btn-view-product.color-blue:hover {
-  background-color: #3b82f6;
-  color: white;
-}
-
-.btn-add-to-cart.color-emerald,
-.btn-view-product.color-emerald {
-  border-color: #10b981;
-  color: #047857;
-}
-
-.btn-add-to-cart.color-emerald:hover,
-.btn-view-product.color-emerald:hover {
-  background-color: #10b981;
-  color: white;
-}
-
-.btn-add-to-cart.color-purple,
-.btn-view-product.color-purple {
-  border-color: #8b5cf6;
-  color: #6d28d9;
-}
-
-.btn-add-to-cart.color-purple:hover,
-.btn-view-product.color-purple:hover {
-  background-color: #8b5cf6;
-  color: white;
-}
-
-.btn-add-to-cart.color-orange,
-.btn-view-product.color-orange {
-  border-color: #f97316;
-  color: #c2410c;
-}
-
-.btn-add-to-cart.color-orange:hover,
-.btn-view-product.color-orange:hover {
-  background-color: #f97316;
-  color: white;
-}
-
-.btn-add-to-cart.color-teal,
-.btn-view-product.color-teal {
-  border-color: #14b8a6;
-  color: #0f766e;
-}
-
-.btn-add-to-cart.color-teal:hover,
-.btn-view-product.color-teal:hover {
-  background-color: #14b8a6;
-  color: white;
-}
-
-.btn-add-to-cart.color-rose,
-.btn-view-product.color-rose {
-  border-color: #f43f5e;
-  color: #e11d48;
-}
-
-.btn-add-to-cart.color-rose:hover,
-.btn-view-product.color-rose:hover {
-  background-color: #f43f5e;
-  color: white;
+.btn-add-to-cart:hover,
+.btn-view-product:hover {
+  background-color: rgb(var(--color-base-accent-1));
+  color: rgb(var(--color-base-accent-1-contrast) / 1);
 }
 
 .view-all-products {
@@ -780,69 +605,14 @@
   background-color: transparent;
 }
 
-.btn-view-all.color-blue {
-  border-color: #3b82f6;
-  color: #1d4ed8;
+.btn-view-all {
+  border-color: rgb(var(--color-base-accent-1));
+  color: rgb(var(--color-base-accent-1));
 }
 
-.btn-view-all.color-blue:hover {
-  background-color: #3b82f6;
-  color: white;
-  transform: translateY(-2px);
-}
-
-.btn-view-all.color-emerald {
-  border-color: #10b981;
-  color: #047857;
-}
-
-.btn-view-all.color-emerald:hover {
-  background-color: #10b981;
-  color: white;
-  transform: translateY(-2px);
-}
-
-.btn-view-all.color-purple {
-  border-color: #8b5cf6;
-  color: #6d28d9;
-}
-
-.btn-view-all.color-purple:hover {
-  background-color: #8b5cf6;
-  color: white;
-  transform: translateY(-2px);
-}
-
-.btn-view-all.color-orange {
-  border-color: #f97316;
-  color: #c2410c;
-}
-
-.btn-view-all.color-orange:hover {
-  background-color: #f97316;
-  color: white;
-  transform: translateY(-2px);
-}
-
-.btn-view-all.color-teal {
-  border-color: #14b8a6;
-  color: #0f766e;
-}
-
-.btn-view-all.color-teal:hover {
-  background-color: #14b8a6;
-  color: white;
-  transform: translateY(-2px);
-}
-
-.btn-view-all.color-rose {
-  border-color: #f43f5e;
-  color: #e11d48;
-}
-
-.btn-view-all.color-rose:hover {
-  background-color: #f43f5e;
-  color: white;
+.btn-view-all:hover {
+  background-color: rgb(var(--color-base-accent-1));
+  color: rgb(var(--color-base-accent-1-contrast) / 1);
   transform: translateY(-2px);
 }
 
