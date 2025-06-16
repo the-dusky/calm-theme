@@ -193,7 +193,7 @@
         "shipment_date_YDhhyf": {
           "type": "shipment_date",
           "settings": {
-            "title": "Spring Collection",
+            "title": "July 15 US",
             "description": "Handcrafted items from Northern Thailand including silk scarves, wooden crafts, and traditional ceramics",
             "status": "upcoming",
             "color_scheme": "scheme-1",
@@ -211,9 +211,9 @@
         "shipment_date_GMJVpm": {
           "type": "shipment_date",
           "settings": {
-            "title": "Summer Essentials",
+            "title": "July 15 JAPAN",
             "description": "Traditional crafts and textiles perfect for the summer season, featuring breathable fabrics and natural materials",
-            "status": "processing",
+            "status": "upcoming",
             "color_scheme": "blue",
             "ship_date": "June 15, 2025",
             "cutoff_date": "June 15, 2025",
@@ -225,28 +225,11 @@
             "current_step": 3,
             "collection": ""
           }
-        },
-        "shipment_date_4BgwQQ": {
-          "type": "shipment_date",
-          "settings": {
-            "title": "Artisan Special Edition",
-            "description": "Limited edition handmade pieces crafted by master artisans using centuries-old techniques",
-            "status": "active",
-            "color_scheme": "purple",
-            "ship_date": "June 25, 2025",
-            "cutoff_date": "June 20, 2025",
-            "product_count": 3,
-            "review_count": 150,
-            "progress_percentage": 75,
-            "current_step": 3,
-            "collection": ""
-          }
         }
       },
       "block_order": [
         "shipment_date_YDhhyf",
-        "shipment_date_GMJVpm",
-        "shipment_date_4BgwQQ"
+        "shipment_date_GMJVpm"
       ],
       "name": "Shipping Tracker",
       "settings": {
@@ -263,10 +246,10 @@
             "title": "Place Order by Cutoff",
             "description": "Submit your order before daily cutoff time",
             "is_active": true,
-            "icon": "<svg width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><rect x=\"1\" y=\"4\" width=\"22\" height=\"16\" rx=\"2\" ry=\"2\"></rect><line x1=\"1\" y1=\"10\" x2=\"23\" y2=\"10\"></line></svg>",
+            "icon": "<svg width=\"20\" height=\"20\" viewbox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><rect x=\"1\" y=\"4\" width=\"22\" height=\"16\" rx=\"2\" ry=\"2\"></rect><line x1=\"1\" y1=\"10\" x2=\"23\" y2=\"10\"></line></svg>",
             "transparency_title": "Why we're starting slow",
             "transparency_content": "We are starting slow and trying to learn as much as possible from our customers. Join our Discord community to help shape the vision. We'd rather get it right than get it fast.",
-            "transparency_icon": "<svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><circle cx=\"12\" cy=\"12\" r=\"10\"></circle><path d=\"M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3\"></path><path d=\"M12 17h.01\"></path></svg>"
+            "transparency_icon": "<svg width=\"16\" height=\"16\" viewbox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><circle cx=\"12\" cy=\"12\" r=\"10\"></circle><path d=\"M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3\"></path><path d=\"M12 17h.01\"></path></svg>"
           }
         },
         "shipping_step_GTwkhM": {
@@ -275,10 +258,10 @@
             "title": "Shipping from Thailand",
             "description": "7-10 business days processing & transit",
             "is_active": false,
-            "icon": "<svg width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z\"></path></svg>",
+            "icon": "<svg width=\"20\" height=\"20\" viewbox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z\"></path></svg>",
             "transparency_title": "Our Thai connection",
             "transparency_content": "Calm is a brand based in Thailand. We are friends with them and decided they need to be in the US and Japan. Why the US and Japan? One of us lives in the US and the other in Japan. Sometimes business is that simple.",
-            "transparency_icon": "<svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z\"></path><circle cx=\"12\" cy=\"10\" r=\"3\"></circle></svg>"
+            "transparency_icon": "<svg width=\"16\" height=\"16\" viewbox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z\"></path><circle cx=\"12\" cy=\"10\" r=\"3\"></circle></svg>"
           }
         },
         "shipping_step_TJCcCp": {
@@ -287,10 +270,10 @@
             "title": "Receipt in Jersey City",
             "description": "Package arrives at our US facility",
             "is_active": false,
-            "icon": "<svg width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z\"></path><polyline points=\"9,22 9,12 15,12 15,22\"></polyline></svg>",
+            "icon": "<svg width=\"20\" height=\"20\" viewbox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z\"></path><polyline points=\"9,22 9,12 15,12 15,22\"></polyline></svg>",
             "transparency_title": "About returns (for now)",
             "transparency_content": "Currently we are unable to accept returns. We suggest buying one item to see how it fits and then expand. This will change in the future as we build out our logistics. We know it's not ideal, but we're being honest about our current constraints.",
-            "transparency_icon": "<svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M9 12l2 2 4-4\"></path><path d=\"M21 12c.552 0 1-.448 1-1V5c0-.552-.448-1-1-1h-8c-.552 0-1 .448-1 1v6c0 .552.448 1 1 1h8z\"></path><path d=\"M3 20c.552 0 1-.448 1-1v-6c0-.552-.448-1-1-1H1c-.552 0-1 .448-1 1v6c0 .552.448 1 1 1h2z\"></path></svg>"
+            "transparency_icon": "<svg width=\"16\" height=\"16\" viewbox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M9 12l2 2 4-4\"></path><path d=\"M21 12c.552 0 1-.448 1-1V5c0-.552-.448-1-1-1h-8c-.552 0-1 .448-1 1v6c0 .552.448 1 1 1h8z\"></path><path d=\"M3 20c.552 0 1-.448 1-1v-6c0-.552-.448-1-1-1H1c-.552 0-1 .448-1 1v6c0 .552.448 1 1 1h2z\"></path></svg>"
           }
         },
         "shipping_step_cNFAhe": {
@@ -299,7 +282,7 @@
             "title": "Ship by Date",
             "description": "Final delivery to your address",
             "is_active": false,
-            "icon": "<svg width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><rect x=\"1\" y=\"3\" width=\"15\" height=\"13\"></rect><polygon points=\"16,8 20,8 23,11 23,16 16,16\"></polygon><circle cx=\"5.5\" cy=\"18.5\" r=\"2.5\"></circle><circle cx=\"18.5\" cy=\"18.5\" r=\"2.5\"></circle></svg>",
+            "icon": "<svg width=\"20\" height=\"20\" viewbox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><rect x=\"1\" y=\"3\" width=\"15\" height=\"13\"></rect><polygon points=\"16,8 20,8 23,11 23,16 16,16\"></polygon><circle cx=\"5.5\" cy=\"18.5\" r=\"2.5\"></circle><circle cx=\"18.5\" cy=\"18.5\" r=\"2.5\"></circle></svg>",
             "transparency_title": "",
             "transparency_content": "",
             "transparency_icon": ""
