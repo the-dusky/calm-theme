@@ -14,9 +14,9 @@
         {% case block.type %}
           {% when 'shipment_date' %}
             {% assign shipment_id = block.id | replace: '-', '_' %}
-            {% assign color_scheme = block.settings.color_scheme | default: 'blue' %}
+            {% assign color_scheme = block.settings.color_scheme | default: 'scheme-1' %}
             
-            <div class="shipment-item" data-shipment-id="{{ shipment_id }}" data-color="{{ color_scheme }}">
+            <div class="shipment-item color-{{ color_scheme }}" data-shipment-id="{{ shipment_id }}">
               <!-- Main Card -->
               <div class="shipment-card" onclick="toggleShipment('{{ shipment_id }}')">
                 <div class="shipment-grid-layout">
@@ -382,36 +382,10 @@
           "default": "upcoming"
         },
         {
-          "type": "select",
+          "type": "color_scheme",
           "id": "color_scheme",
           "label": "Color Scheme",
-          "options": [
-            {
-              "value": "blue",
-              "label": "Blue"
-            },
-            {
-              "value": "emerald",
-              "label": "Emerald"
-            },
-            {
-              "value": "purple",
-              "label": "Purple"
-            },
-            {
-              "value": "orange",
-              "label": "Orange"
-            },
-            {
-              "value": "teal",
-              "label": "Teal"
-            },
-            {
-              "value": "rose",
-              "label": "Rose"
-            }
-          ],
-          "default": "blue"
+          "default": "scheme-1"
         },
         {
           "type": "text",
@@ -490,7 +464,7 @@
             "title": "Spring Collection",
             "description": "Handcrafted items from Northern Thailand including silk scarves, wooden crafts, and traditional ceramics",
             "status": "completed",
-            "color_scheme": "emerald",
+            "color_scheme": "scheme-2",
             "ship_date": "June 10, 2025",
             "cutoff_date": "June 5, 2025",
             "total_orders": 156,
@@ -506,7 +480,7 @@
             "title": "Summer Essentials",
             "description": "Traditional crafts and textiles perfect for the summer season, featuring breathable fabrics and natural materials",
             "status": "processing",
-            "color_scheme": "blue",
+            "color_scheme": "scheme-3",
             "ship_date": "June 15, 2025",
             "cutoff_date": "June 15, 2025",
             "total_orders": 159,
@@ -522,7 +496,7 @@
             "title": "Artisan Special Edition",
             "description": "Limited edition handmade pieces crafted by master artisans using centuries-old techniques",
             "status": "active",
-            "color_scheme": "purple",
+            "color_scheme": "scheme-4",
             "ship_date": "June 25, 2025",
             "cutoff_date": "June 20, 2025",
             "product_count": 3
