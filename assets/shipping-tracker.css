@@ -62,10 +62,16 @@
   grid-template-columns: 1fr;
 }
 
+/* When image is present on desktop */
 @media (min-width: 768px) {
-  .shipment-grid-layout {
+  .shipment-grid-layout:has(.shipment-image-section) {
     grid-template-columns: 300px 1fr;
   }
+}
+
+/* When no image is present, content takes full width */
+.shipment-grid-layout:not(:has(.shipment-image-section)) .shipment-content {
+  padding: 2rem;
 }
 
 .shipment-image-section {
@@ -111,6 +117,13 @@
   left: 1rem;
 }
 
+.shipment-status-badge.no-image {
+  position: absolute;
+  top: 1rem;
+  right: auto;
+  left: 1rem;
+}
+
 .status-badge {
   display: inline-block;
   padding: 0.5rem 1rem;
@@ -129,6 +142,13 @@
   position: absolute;
   bottom: 1rem;
   right: 1rem;
+}
+
+.shipment-expand-button.no-image {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  bottom: auto;
 }
 
 .expand-btn {

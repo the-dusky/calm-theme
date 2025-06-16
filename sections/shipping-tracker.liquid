@@ -21,8 +21,8 @@
               <div class="shipment-card" onclick="toggleShipment('{{ shipment_id }}')">
                 <div class="shipment-grid-layout">
                   <!-- Image Section -->
-                  <div class="shipment-image-section">
-                    {% if block.settings.image %}
+                  {% if block.settings.image %}
+                    <div class="shipment-image-section">
                       <img 
                         src="{{ block.settings.image | image_url: width: 600 }}"
                         alt="{{ block.settings.title }}"
@@ -31,30 +31,27 @@
                         class="shipment-image"
                         loading="lazy"
                       />
-                    {% else %}
-                      <div class="shipment-placeholder-image"></div>
-                    {% endif %}
-                    <div class="shipment-image-overlay"></div>
-                    
-                    <!-- Status Badge -->
-                    <div class="shipment-status-badge">
+                      <div class="shipment-image-overlay"></div>
+                    </div>
+                  {% endif %}
+                  
+                  <!-- Content Section -->
+                  <div class="shipment-content">
+                    <!-- Status Badge (always visible) -->
+                    <div class="shipment-status-badge {% unless block.settings.image %}no-image{% endunless %}">
                       <span class="status-badge">
                         {{ block.settings.status | default: 'upcoming' | capitalize }}
                       </span>
                     </div>
                     
-                    <!-- Expand Button -->
-                    <div class="shipment-expand-button">
+                    <!-- Expand Button (always visible) -->
+                    <div class="shipment-expand-button {% unless block.settings.image %}no-image{% endunless %}">
                       <button type="button" class="expand-btn" onclick="event.stopPropagation(); toggleShipment('{{ shipment_id }}')">
                         <svg class="chevron-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                           <polyline points="6 9 12 15 18 9"></polyline>
                         </svg>
                       </button>
                     </div>
-                  </div>
-                  
-                  <!-- Content Section -->
-                  <div class="shipment-content">
                     <div class="shipment-content-inner">
                       <h2 class="shipment-title">{{ block.settings.title }}</h2>
                       
