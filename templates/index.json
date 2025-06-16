@@ -195,16 +195,17 @@
           "settings": {
             "title": "Spring Collection",
             "description": "Handcrafted items from Northern Thailand including silk scarves, wooden crafts, and traditional ceramics",
-            "status": "completed",
+            "status": "upcoming",
             "color_scheme": "emerald",
-            "ship_date": "June 10, 2025",
-            "cutoff_date": "June 5, 2025",
-            "total_orders": 156,
-            "completed_orders": 156,
-            "product_count": 5,
-            "review_count": 150,
-            "progress_percentage": 100,
-            "current_step": 5
+            "ship_date": "July 15th, 2025",
+            "cutoff_date": "July 10th, 2025",
+            "total_orders": 0,
+            "completed_orders": 0,
+            "product_count": 0,
+            "review_count": 0,
+            "progress_percentage": 0,
+            "current_step": 1,
+            "collection": "frontpage"
           }
         },
         "shipment_date_GMJVpm": {
@@ -221,7 +222,8 @@
             "product_count": 4,
             "review_count": 150,
             "progress_percentage": 75,
-            "current_step": 3
+            "current_step": 3,
+            "collection": ""
           }
         },
         "shipment_date_4BgwQQ": {
@@ -236,7 +238,8 @@
             "product_count": 3,
             "review_count": 150,
             "progress_percentage": 75,
-            "current_step": 3
+            "current_step": 3,
+            "collection": ""
           }
         }
       },
