@@ -91,7 +91,7 @@
           <!-- RECOMMENDATIONS DEBUG: Product {{ product.title }} | Metafield: {{ show_variants_separately }} | Total variants: {{ product.variants.size }} | Showing: {{ variants_to_show.size }} -->
           {% for variant in variants_to_show %}
             <div class="resource-list__item">
-              {% render 'product-card', product: product, variant: variant %}
+              {% content_for 'block', type: 'product-card', id: 'static-product-card', closest.product: product %}
             </div>
             {% unless forloop.last %}
               <!--@list/split-->

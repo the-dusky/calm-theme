@@ -1,4 +1,3 @@
 {%- layout none -%}
-{%- assign content_type = 'text/plain' -%}
-{{ content_type | header: 'Content-Type' }}
+{%- content_type 'text/plain' -%}
 Hello world

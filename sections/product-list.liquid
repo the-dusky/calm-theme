@@ -61,9 +61,6 @@
       {% endif %}
       
       {% if product %}
-        {% liquid
-          assign show_colors_separately = product.metafields.custom.show_colors_separately.value
-        %}
         {% render 'variant-cards', product: product %}
 
         {% unless forloop.last %}
