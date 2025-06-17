@@ -314,9 +314,9 @@
         "community_button_text": "Join Discord",
         "show_support_section": true,
         "support_question": "Questions about your shipment?",
-        "support_link": "",
+        "support_link": "https://discord.gg/4bqHQxn7rS",
         "support_button_text": "Contact Support",
-        "show_transparency_statement": true,
+        "show_transparency_statement": false,
         "transparency_statement": "<p>Every business decision explained. Every constraint shared.<br/>Because transparency builds trust, and trust builds community.</p>"
       }
     },
