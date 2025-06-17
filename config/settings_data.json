@@ -28,6 +28,7 @@
     "badge_sale_color_scheme": "scheme-1",
     "secondary_button_border_width": 0,
     "cart_type": "drawer",
+    "icon_stroke": "default",
     "popover_border": "none",
     "currency_code_enabled_product_pages": false,
     "currency_code_enabled_product_cards": false,

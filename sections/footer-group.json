@@ -359,10 +359,11 @@
                       "type": "icon",
                       "name": "Icon",
                       "settings": {
-                        "icon": "facebook",
+                        "icon": "none",
+                        "image_upload": "shopify://shop_images/Discord-Symbol-Black.svg",
                         "width": 28,
                         "link": "https://www.facebook.com/shopify",
-                        "open_in_new_tab": false
+                        "open_in_new_tab": true
                       },
                       "blocks": {}
                     },
