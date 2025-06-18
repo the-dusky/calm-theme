@@ -25,7 +25,7 @@
   endif
 %}
 
-<div class="preorder-info-card spacing-style" style="{% render 'spacing-style', settings: block.settings %}">
+<div class="preorder-info-card border-style spacing-style layout-panel-flex layout-panel-flex--column" style="{% render 'spacing-style', settings: block.settings %}">
   <div class="preorder-info-card__content">
     <div class="preorder-info-card__icon">
       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -75,18 +75,19 @@
 
 {% stylesheet %}
   .preorder-info-card {
-    border: 2px solid var(--color-accent);
-    border-radius: var(--border-radius);
-    background-color: var(--color-background-2);
-    padding: var(--padding-lg);
-    margin-bottom: var(--margin-lg);
+    position: relative;
+    transition: transform var(--hover-transition-duration) var(--hover-transition-timing),
+      box-shadow var(--hover-transition-duration) var(--hover-transition-timing);
+    will-change: transform, box-shadow;
+    z-index: var(--layer-flat);
+    gap: var(--padding-md);
+    margin-top: var(--padding-lg);
   }
 
   .preorder-info-card__content {
     display: flex;
     align-items: flex-start;
-    gap: var(--gap-md);
-    margin-bottom: var(--margin-md);
+    gap: var(--padding-md);
   }
 
   .preorder-info-card__icon {
@@ -103,10 +104,13 @@
 
   .preorder-info-card__text {
     flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: var(--padding-3xs);
   }
 
   .preorder-info-card__title {
-    margin: 0 0 var(--margin-xs) 0;
+    margin: 0;
     font-size: var(--font-size--md);
     font-weight: 600;
     color: var(--color-foreground);
@@ -121,27 +125,31 @@
   }
 
   .preorder-info-card__actions {
-    margin-bottom: var(--margin-md);
+    display: flex;
+    justify-content: flex-start;
   }
 
   .preorder-info-card__how-it-works-btn {
     background: none;
-    border: 1px solid var(--color-accent);
-    color: var(--color-accent);
+    border: 1px solid var(--color-border);
+    color: var(--color-foreground);
     padding: var(--padding-sm) var(--padding-md);
     border-radius: var(--border-radius);
     font-size: var(--font-size--sm);
     font-weight: 500;
     cursor: pointer;
-    transition: all 0.2s var(--animation-easing);
+    transition: all var(--hover-transition-duration) var(--hover-transition-timing);
     display: inline-flex;
     align-items: center;
-    gap: var(--gap-xs);
+    gap: var(--padding-xs);
+    text-decoration: none;
   }
 
   .preorder-info-card__how-it-works-btn:hover {
-    background-color: var(--color-accent);
-    color: var(--color-background);
+    background-color: var(--color-background-2);
+    border-color: var(--color-accent);
+    color: var(--color-accent);
+    transform: translateY(-1px);
   }
 
   @media screen and (max-width: 750px) {
@@ -149,6 +157,10 @@
       flex-direction: column;
       align-items: center;
       text-align: center;
+    }
+
+    .preorder-info-card__actions {
+      justify-content: center;
     }
   }
 {% endstylesheet %}
