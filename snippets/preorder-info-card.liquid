@@ -87,11 +87,12 @@
         value="{{ product.selected_or_first_available_variant.id }}"
       >
       <div class="preorder-info-card__buy-section">
-        {% content_for 'block', type: 'quantity', id: 'quantity' %}
-        {% content_for 'block',
-          type: 'add-to-cart',
-          id: 'add-to-cart',
+        {% render 'quantity-selector', product: product %}
+        {% render 'add-to-cart-button',
+          id: 'PreorderCard-AddToCart-' | append: block.id,
+          class: 'add-to-cart-button button',
           can_add_to_cart: true,
+          product: product,
           add_to_cart_text: 'products.product.add_to_cart' | t
         %}
         <span
