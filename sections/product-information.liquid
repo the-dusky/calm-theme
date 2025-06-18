@@ -288,7 +288,7 @@
           "featured_image": {% if variant.featured_image %}{{ variant.featured_image | img_url: '600x' | json }}{% else %}null{% endif %},
           "metafields": {
             "custom": {
-              "sold_out": {{ variant.metafields.custom.sold_out | json }}
+              "is_sold_out": {{ variant.metafields.custom.is_sold_out | json }}
             }
           }
         }{% unless forloop.last %},{% endunless %}

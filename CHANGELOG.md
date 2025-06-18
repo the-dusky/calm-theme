@@ -10,7 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Preorder system Phase 1 complete
 - Collection metafields schema for drop management (ship_by_date, order_by_date, drop_type)
-- Variant metafields schema for inventory control (sold_out)
+- Variant metafields schema for inventory control (is_sold_out)
 - Drop helper functions for liquid templates
 - Metafield setup documentation
 - Drop functionality test snippet

@@ -303,5 +303,5 @@ export function getDropInfo(product) {
  * @returns {boolean} True if variant is marked as sold out
  */
 export function isVariantSoldOut(variant) {
-  return variant?.metafields?.custom?.sold_out === true;
+  return variant?.metafields?.custom?.is_sold_out === true;
 }

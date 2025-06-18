@@ -43,7 +43,7 @@
       
     when 'is_variant_sold_out'
       # Check if variant is marked as sold out
-      if variant.metafields.custom.sold_out == true
+      if variant.metafields.custom.is_sold_out == true
         echo 'true'
       else
         echo 'false'

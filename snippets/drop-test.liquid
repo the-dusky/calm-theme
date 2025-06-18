@@ -68,7 +68,7 @@
     {% if product.selected_or_first_available_variant %}
       {% assign variant = product.selected_or_first_available_variant %}
       {% assign is_variant_sold_out = false %}
-      {% if variant.metafields.custom.sold_out == true %}
+      {% if variant.metafields.custom.is_sold_out == true %}
         {% assign is_variant_sold_out = true %}
       {% endif %}
       <p><strong>Variant Sold Out:</strong> {{ is_variant_sold_out }}</p>
