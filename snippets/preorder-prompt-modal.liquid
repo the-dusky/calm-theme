@@ -1,0 +1,315 @@
+<preorder-prompt-dialog id="preorder-prompt-dialog">
+  <dialog
+    class="preorder-prompt-modal dialog-modal color-{{ settings.popover_color_scheme }}"
+    ref="dialog"
+    scroll-lock
+  >
+    <button
+      ref="closeButton"
+      on:click="/closeDialog"
+      class="button preorder-prompt-modal__close"
+      aria-label="{{ 'accessibility.close_dialog' | t }}"
+    >
+      {{- 'icon-close.svg' | inline_asset_content -}}
+    </button>
+    
+    <div class="preorder-prompt-modal__content">
+      <div class="preorder-prompt-modal__header">
+        <h2 class="preorder-prompt-modal__title">{{ 'preorder.modal.title' | t: default: 'This is a preorder item' }}</h2>
+      </div>
+      
+      <div class="preorder-prompt-modal__body">
+        <div class="preorder-prompt-modal__product-info">
+          <div class="preorder-prompt-modal__product-image">
+            <!-- Product image will be populated by JavaScript -->
+          </div>
+          <div class="preorder-prompt-modal__product-details">
+            <h3 class="preorder-prompt-modal__product-title">
+              <!-- Product title will be populated by JavaScript -->
+            </h3>
+            <p class="preorder-prompt-modal__product-variant">
+              <!-- Variant info will be populated by JavaScript -->
+            </p>
+            <div class="preorder-prompt-modal__drop-info">
+              <!-- Drop information will be populated by JavaScript -->
+            </div>
+          </div>
+        </div>
+        
+        <div class="preorder-prompt-modal__info">
+          <div class="preorder-prompt-modal__info-item">
+            <strong>{{ 'preorder.modal.estimated_ship' | t: default: 'Estimated ship date:' }}</strong>
+            <span class="preorder-prompt-modal__ship-date">
+              <!-- Ship date will be populated by JavaScript -->
+            </span>
+          </div>
+          
+          <div class="preorder-prompt-modal__info-item">
+            <strong>{{ 'preorder.modal.estimated_delivery' | t: default: 'Estimated delivery:' }}</strong>
+            <span class="preorder-prompt-modal__delivery-date">
+              <!-- Delivery date will be populated by JavaScript -->
+            </span>
+          </div>
+          
+          <p class="preorder-prompt-modal__description">
+            {{ 'preorder.modal.description' | t: default: 'You will be charged now and your item will ship when it becomes available.' }}
+          </p>
+        </div>
+        
+        <div class="preorder-prompt-modal__how-it-works">
+          <button type="button" class="preorder-prompt-modal__how-it-works-btn">
+            {{ 'preorder.modal.how_it_works' | t: default: 'How preorders work' }}
+          </button>
+        </div>
+      </div>
+      
+      <div class="preorder-prompt-modal__actions">
+        <button 
+          type="button" 
+          class="button button--primary preorder-prompt-modal__confirm"
+          ref="confirmButton"
+          on:click="/confirmPreorder"
+        >
+          {{ 'preorder.modal.confirm' | t: default: 'Add to preorder' }}
+        </button>
+        
+        <button 
+          type="button" 
+          class="button button--secondary preorder-prompt-modal__cancel"
+          ref="cancelButton"
+          on:click="/closeDialog"
+        >
+          {{ 'preorder.modal.cancel' | t: default: 'Cancel' }}
+        </button>
+      </div>
+    </div>
+  </dialog>
+</preorder-prompt-dialog>
+
+{% stylesheet %}
+  .preorder-prompt-modal {
+    padding: 0;
+    border: var(--style-border-popover);
+    height: fit-content;
+    width: min(90vw, 500px);
+    max-height: 90vh;
+    overflow: hidden;
+    box-shadow: 0 5px 30px rgba(0, 0, 0, 0.15);
+    border-radius: var(--border-radius);
+
+    @media screen and (max-width: 750px) {
+      width: 95vw;
+      max-width: none;
+      border-radius: var(--border-radius);
+    }
+  }
+
+  .preorder-prompt-modal[open] {
+    display: flex;
+    flex-direction: column;
+    animation: modalSlideInTop var(--animation-speed) var(--animation-easing) forwards;
+  }
+
+  .preorder-prompt-modal.dialog-closing {
+    animation: modalSlideOutTop var(--animation-speed) var(--animation-easing) forwards;
+  }
+
+  .preorder-prompt-modal__close {
+    position: absolute;
+    top: var(--margin-2xs);
+    right: var(--margin-2xs);
+    width: var(--minimum-touch-target);
+    height: var(--minimum-touch-target);
+    color: var(--color-foreground);
+    background-color: var(--color-background);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    z-index: 2;
+    transition: transform 0.15s var(--animation-timing-bounce), opacity 0.15s var(--animation-easing);
+  }
+
+  .preorder-prompt-modal__close:active {
+    transform: scale(0.8);
+  }
+
+  .preorder-prompt-modal__close svg {
+    width: var(--icon-size-xs);
+    height: var(--icon-size-xs);
+  }
+
+  .preorder-prompt-modal__content {
+    display: flex;
+    flex-direction: column;
+    padding: var(--padding-xl);
+    padding-top: var(--padding-3xl);
+    gap: var(--gap-lg);
+    overflow-y: auto;
+    flex: 1;
+  }
+
+  .preorder-prompt-modal__header {
+    text-align: center;
+  }
+
+  .preorder-prompt-modal__title {
+    margin: 0;
+    font-size: var(--font-size--xl);
+    font-weight: 600;
+    color: var(--color-foreground);
+  }
+
+  .preorder-prompt-modal__product-info {
+    display: flex;
+    gap: var(--gap-md);
+    padding: var(--padding-md);
+    background-color: var(--color-background-2);
+    border-radius: var(--border-radius);
+
+    @media screen and (max-width: 480px) {
+      flex-direction: column;
+      text-align: center;
+    }
+  }
+
+  .preorder-prompt-modal__product-image {
+    flex-shrink: 0;
+    width: 80px;
+    height: 80px;
+    border-radius: var(--border-radius);
+    overflow: hidden;
+    background-color: var(--color-background);
+
+    @media screen and (max-width: 480px) {
+      width: 100px;
+      height: 100px;
+      margin: 0 auto;
+    }
+  }
+
+  .preorder-prompt-modal__product-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .preorder-prompt-modal__product-details {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap-xs);
+  }
+
+  .preorder-prompt-modal__product-title {
+    margin: 0;
+    font-size: var(--font-size--md);
+    font-weight: 500;
+    color: var(--color-foreground);
+    line-height: 1.3;
+  }
+
+  .preorder-prompt-modal__product-variant {
+    margin: 0;
+    font-size: var(--font-size--sm);
+    color: var(--color-foreground-60);
+  }
+
+  .preorder-prompt-modal__drop-info {
+    font-size: var(--font-size--sm);
+    color: var(--color-accent);
+    font-weight: 500;
+  }
+
+  .preorder-prompt-modal__info {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap-sm);
+  }
+
+  .preorder-prompt-modal__info-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--padding-sm) 0;
+    border-bottom: 1px solid var(--color-border);
+
+    @media screen and (max-width: 480px) {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: var(--gap-xs);
+    }
+  }
+
+  .preorder-prompt-modal__info-item:last-child {
+    border-bottom: none;
+  }
+
+  .preorder-prompt-modal__description {
+    margin: var(--margin-md) 0 0 0;
+    padding: var(--padding-md);
+    background-color: var(--color-background-2);
+    border-radius: var(--border-radius);
+    font-size: var(--font-size--sm);
+    line-height: 1.4;
+    color: var(--color-foreground-75);
+  }
+
+  .preorder-prompt-modal__how-it-works {
+    text-align: center;
+  }
+
+  .preorder-prompt-modal__how-it-works-btn {
+    background: none;
+    border: none;
+    color: var(--color-accent);
+    text-decoration: underline;
+    cursor: pointer;
+    font-size: var(--font-size--sm);
+    padding: var(--padding-sm);
+    transition: color 0.2s var(--animation-easing);
+  }
+
+  .preorder-prompt-modal__how-it-works-btn:hover {
+    color: var(--color-accent-dark);
+  }
+
+  .preorder-prompt-modal__actions {
+    display: flex;
+    gap: var(--gap-md);
+    margin-top: var(--margin-md);
+
+    @media screen and (max-width: 480px) {
+      flex-direction: column;
+    }
+  }
+
+  .preorder-prompt-modal__confirm,
+  .preorder-prompt-modal__cancel {
+    flex: 1;
+    padding: var(--padding-md) var(--padding-lg);
+    border-radius: var(--border-radius);
+    font-weight: 500;
+    transition: all 0.2s var(--animation-easing);
+  }
+
+  .preorder-prompt-modal__confirm {
+    background-color: var(--color-button);
+    color: var(--color-button-text);
+    border: none;
+  }
+
+  .preorder-prompt-modal__confirm:hover {
+    background-color: var(--color-button-hover);
+  }
+
+  .preorder-prompt-modal__cancel {
+    background-color: transparent;
+    color: var(--color-foreground);
+    border: 1px solid var(--color-border);
+  }
+
+  .preorder-prompt-modal__cancel:hover {
+    background-color: var(--color-background-2);
+  }
+{% endstylesheet %}

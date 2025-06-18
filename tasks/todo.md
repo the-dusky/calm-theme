@@ -40,11 +40,11 @@
 - [x] Test metafield functionality
 
 #### Phase 2: Add to Cart Prompt System
-- [ ] Identify and modify add to cart implementation
-- [ ] Create preorder prompt modal component
-- [ ] Implement prompt trigger logic
-- [ ] Add "How It Works" content and modal
-- [ ] Test prompt flow
+- [x] Identify and modify add to cart implementation
+- [x] Create preorder prompt modal component
+- [x] Implement prompt trigger logic
+- [x] Add "How It Works" content and modal
+- [x] Test prompt flow
 
 #### Phase 3: Drop Shopping Mode
 - [ ] Create drop selector UI component

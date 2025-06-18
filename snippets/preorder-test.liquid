@@ -1,0 +1,173 @@
+{% comment %}
+  Test snippet to verify preorder functionality
+  Usage: {% render 'preorder-test' %}
+{% endcomment %}
+
+<div class="preorder-test" style="margin: 2rem; padding: 1rem; border: 2px solid #ccc; background-color: #f9f9f9;">
+  <h3>Preorder System Test</h3>
+  
+  <div class="preorder-test__section">
+    <h4>1. Drop Helper Functions Test</h4>
+    
+    <!-- Test product data (you would replace this with actual product in implementation) -->
+    {% liquid
+      comment
+        In a real implementation, you would use actual product data like:
+        assign test_product = collections['us-drop-march'].products.first
+      endcomment
+      
+      assign test_collection = collections['us-drop-march']
+      if test_collection == blank
+        assign test_collection = collections.first
+      endif
+    %}
+    
+    {% if test_collection %}
+      <p><strong>Test Collection:</strong> {{ test_collection.title }}</p>
+      
+      <!-- Test drop detection -->
+      {% capture is_drop_result %}{% render 'drop-helpers', collection: test_collection, action: 'format_drop_name' %}{% endcapture %}
+      {% assign drop_name = is_drop_result | strip %}
+      
+      {% if drop_name != blank %}
+        <p><strong>Drop Name:</strong> {{ drop_name }}</p>
+        <p style="color: green;">✓ Drop helper functions are working</p>
+      {% else %}
+        <p style="color: orange;">⚠ No drop metafields found in test collection</p>
+      {% endif %}
+      
+      <!-- Test collection metafields -->
+      <div class="preorder-test__metafields">
+        <h5>Collection Metafields:</h5>
+        <ul>
+          <li>Ship By Date: {{ test_collection.metafields.custom.ship_by_date | default: 'Not set' }}</li>
+          <li>Drop Type: {{ test_collection.metafields.custom.drop_type | default: 'Not set' }}</li>
+          <li>Order By Date: {{ test_collection.metafields.custom.order_by_date | default: 'Not set' }}</li>
+          <li>Order Cutoff Date: {{ test_collection.metafields.custom.order_cutoff_date | default: 'Not set' }}</li>
+        </ul>
+      </div>
+    {% else %}
+      <p style="color: red;">✗ No collections found to test</p>
+    {% endif %}
+  </div>
+  
+  <div class="preorder-test__section">
+    <h4>2. JavaScript Components Test</h4>
+    <button 
+      type="button" 
+      class="button preorder-test__prompt-btn"
+      onclick="testPreorderPrompt()"
+    >
+      Test Preorder Prompt
+    </button>
+    
+    <button 
+      type="button" 
+      class="button preorder-test__how-it-works-btn"
+      onclick="testHowItWorks()"
+    >
+      Test How It Works Modal
+    </button>
+    
+    <div class="preorder-test__results" id="preorder-test-results" style="margin-top: 1rem; padding: 0.5rem; background-color: #f0f0f0; border-radius: 4px;">
+      <p><em>Test results will appear here...</em></p>
+    </div>
+  </div>
+  
+  <div class="preorder-test__section">
+    <h4>3. Add to Cart Integration Test</h4>
+    <p>To test the add to cart integration:</p>
+    <ol>
+      <li>Navigate to a product page that belongs to a collection with drop metafields</li>
+      <li>Try to add the product to cart</li>
+      <li>You should see the preorder prompt modal instead of direct cart addition</li>
+    </ol>
+  </div>
+</div>
+
+<script>
+  function testPreorderPrompt() {
+    const resultsDiv = document.getElementById('preorder-test-results');
+    
+    try {
+      // Test if preorder component exists
+      if (typeof window.preorderPromptComponent === 'undefined') {
+        resultsDiv.innerHTML = '<p style="color: red;">✗ Preorder component not found</p>';
+        return;
+      }
+      
+      // Test data for the prompt
+      const testData = {
+        product: {
+          title: 'Test Product',
+          featured_image: '/assets/placeholder.png',
+          id: '12345',
+          collections: [{
+            handle: 'test-drop',
+            title: 'Test Drop Collection',
+            metafields: {
+              custom: {
+                ship_by_date: '2024-03-15',
+                drop_type: 'US',
+                order_by_date: '2024-03-01',
+                order_cutoff_date: '2024-03-10'
+              }
+            }
+          }]
+        },
+        variant: {
+          id: '67890',
+          title: 'Test Variant',
+          featured_image: {
+            src: '/assets/placeholder.png',
+            alt: 'Test Product'
+          }
+        },
+        dropInfo: {
+          collectionHandle: 'test-drop',
+          collectionTitle: 'Test Drop Collection',
+          displayName: 'US Drop - Ships March 15',
+          shipByDate: '2024-03-15',
+          estimatedDelivery: '2024-03-22',
+          dropType: 'US'
+        },
+        onConfirm: () => {
+          resultsDiv.innerHTML += '<p style="color: green;">✓ Preorder confirmed callback triggered</p>';
+        }
+      };
+      
+      // Show the prompt
+      window.preorderPromptComponent.showPrompt(testData);
+      resultsDiv.innerHTML = '<p style="color: green;">✓ Preorder prompt modal opened successfully</p>';
+      
+    } catch (error) {
+      resultsDiv.innerHTML = `<p style="color: red;">✗ Error: ${error.message}</p>`;
+    }
+  }
+  
+  function testHowItWorks() {
+    const resultsDiv = document.getElementById('preorder-test-results');
+    
+    try {
+      // Test if how it works modal exists
+      const howItWorksDialog = document.getElementById('how-it-works-dialog');
+      if (!howItWorksDialog) {
+        resultsDiv.innerHTML = '<p style="color: red;">✗ How It Works dialog not found</p>';
+        return;
+      }
+      
+      // Test if preorder component exists
+      if (typeof window.preorderPromptComponent === 'undefined') {
+        resultsDiv.innerHTML = '<p style="color: red;">✗ Preorder component not found</p>';
+        return;
+      }
+      
+      // Show the how it works modal
+      window.preorderPromptComponent.showHowItWorks();
+      resultsDiv.innerHTML = '<p style="color: green;">✓ How It Works modal opened successfully</p>';
+      
+    } catch (error) {
+      resultsDiv.innerHTML = `<p style="color: red;">✗ Error: ${error.message}</p>`;
+    }
+  }
+</script>

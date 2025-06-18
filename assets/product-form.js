@@ -3,6 +3,7 @@ import { fetchConfig, onAnimationEnd, preloadImage } from '@theme/utilities';
 import { ThemeEvents, CartAddEvent, CartErrorEvent, VariantUpdateEvent } from '@theme/events';
 import { cartPerformance } from '@theme/performance';
 import { morph } from '@theme/morph';
+import { getDropInfo, isVariantSoldOut } from '@theme/preorder-prompt';
 
 export const ADD_TO_CART_TEXT_ANIMATION_DURATION = 2000;
 
@@ -147,6 +148,11 @@ class ProductFormComponent extends Component {
     // Check if the add to cart button is disabled and do an early return if it is
     if (this.refs.addToCartButtonContainer?.refs.addToCartButton?.getAttribute('disabled') === 'true') return;
 
+    // Check for preorder products and show prompt if needed
+    if (this.#shouldShowPreorderPrompt(event)) {
+      return; // Early return - the prompt will handle the actual submission
+    }
+
     // Send the add to cart information to the cart
     const form = this.querySelector('form');
 
@@ -265,6 +271,230 @@ class ProductFormComponent extends Component {
   #clearLiveRegionText() {
     const liveRegion = this.refs.liveRegion;
     liveRegion.textContent = '';
+  }
+
+  /**
+   * Checks if the preorder prompt should be shown for the current product/variant
+   * @param {Event} event - The form submit event
+   * @returns {boolean} True if prompt should be shown
+   */
+  #shouldShowPreorderPrompt(event) {
+    // Skip prompt if we're already in the quick-add modal
+    if (event.target.closest('.quick-add-modal')) {
+      return false;
+    }
+
+    // Get current product data from the page
+    const productData = this.#getProductData();
+    if (!productData) return false;
+
+    // Check if this is a drop/preorder product
+    const dropInfo = getDropInfo(productData);
+    if (!dropInfo) return false;
+
+    // Get current variant data
+    const variantData = this.#getCurrentVariantData(productData);
+    if (!variantData) return false;
+
+    // Show the preorder prompt
+    this.#showPreorderPrompt(event, productData, variantData, dropInfo);
+    return true;
+  }
+
+  /**
+   * Gets the current product data from the page
+   * @returns {Object|null} Product data object
+   */
+  #getProductData() {
+    try {
+      // Try to get product data from the global Theme object first
+      if (window.Theme?.product) {
+        return window.Theme.product;
+      }
+
+      // Fallback: try to find product JSON in the page
+      const productScript = document.querySelector('script[data-product-json]');
+      if (productScript) {
+        return JSON.parse(productScript.textContent);
+      }
+
+      // Last resort: extract from product page structure
+      const productId = this.dataset.productId;
+      if (productId && window.Theme?.products?.[productId]) {
+        return window.Theme.products[productId];
+      }
+
+      return null;
+    } catch (error) {
+      console.warn('Could not get product data:', error);
+      return null;
+    }
+  }
+
+  /**
+   * Gets the current variant data
+   * @param {Object} productData - The product data
+   * @returns {Object|null} Current variant data
+   */
+  #getCurrentVariantData(productData) {
+    try {
+      const variantId = this.refs.variantId?.value;
+      if (!variantId || !productData.variants) return null;
+
+      return productData.variants.find(variant => variant.id == variantId) || null;
+    } catch (error) {
+      console.warn('Could not get variant data:', error);
+      return null;
+    }
+  }
+
+  /**
+   * Shows the preorder prompt modal
+   * @param {Event} originalEvent - The original form submit event
+   * @param {Object} productData - Product data
+   * @param {Object} variantData - Variant data
+   * @param {Object} dropInfo - Drop information
+   */
+  #showPreorderPrompt(originalEvent, productData, variantData, dropInfo) {
+    const preorderComponent = window.preorderPromptComponent;
+    if (!preorderComponent) {
+      console.warn('Preorder prompt component not found, proceeding with normal add to cart');
+      this.#proceedWithAddToCart(originalEvent);
+      return;
+    }
+
+    preorderComponent.showPrompt({
+      product: productData,
+      variant: variantData,
+      dropInfo,
+      onConfirm: () => this.#proceedWithAddToCart(originalEvent)
+    });
+  }
+
+  /**
+   * Proceeds with the normal add to cart flow
+   * @param {Event} originalEvent - The original form submit event
+   */
+  #proceedWithAddToCart(originalEvent) {
+    // Re-trigger the add to cart animation
+    this.refs.addToCartButtonContainer?.handleClick(originalEvent);
+
+    // Send the add to cart information to the cart
+    const form = this.querySelector('form');
+    if (!form) throw new Error('Product form element missing');
+
+    const formData = new FormData(form);
+
+    const cartItemsComponents = document.querySelectorAll('cart-items-component');
+    let cartItemComponentsSectionIds = [];
+    cartItemsComponents.forEach((item) => {
+      if (item instanceof HTMLElement && item.dataset.sectionId) {
+        cartItemComponentsSectionIds.push(item.dataset.sectionId);
+      }
+      formData.append('sections', cartItemComponentsSectionIds.join(','));
+    });
+
+    const fetchCfg = fetchConfig('javascript', { body: formData });
+
+    fetch(Theme.routes.root + 'cart/add.js', {
+      ...fetchCfg,
+      headers: {
+        ...fetchCfg.headers,
+        Accept: 'text/html',
+      },
+    })
+      .then((response) => response.json())
+      .then((response) => {
+        // Use the same response handling logic as the original handleSubmit
+        this.#handleAddToCartResponse(response, formData, originalEvent);
+      })
+      .catch((error) => {
+        console.error(error);
+      })
+      .finally(() => {
+        cartPerformance.measureFromEvent('add:user-action', originalEvent);
+      });
+  }
+
+  /**
+   * Handles the response from the add to cart API call
+   * @param {Object} response - API response
+   * @param {FormData} formData - Original form data
+   * @param {Event} originalEvent - Original form submit event
+   */
+  #handleAddToCartResponse(response, formData, originalEvent) {
+    const { addToCartTextError } = this.refs;
+
+    if (response.status) {
+      window.dispatchEvent(new CartErrorEvent(this.id, response.message));
+
+      if (!addToCartTextError) return;
+      addToCartTextError.classList.remove('hidden');
+
+      // Reuse the text node if the user is spam-clicking
+      const textNode = addToCartTextError.childNodes[2];
+      if (textNode) {
+        textNode.textContent = response.message;
+      } else {
+        const newTextNode = document.createTextNode(response.message);
+        addToCartTextError.appendChild(newTextNode);
+      }
+
+      // Create or get existing error live region for screen readers
+      this.#setLiveRegionText(response.message);
+
+      this.#timeout = setTimeout(() => {
+        if (!addToCartTextError) return;
+        addToCartTextError.classList.add('hidden');
+
+        // Clear the announcement
+        this.#clearLiveRegionText();
+      }, 10000);
+
+      // When we add more than the maximum amount of items to the cart, we need to dispatch a cart update event
+      // because our back-end still adds the max allowed amount to the cart.
+      this.dispatchEvent(
+        new CartAddEvent({}, this.id, {
+          didError: true,
+          source: 'product-form-component',
+          itemCount: Number(formData.get('quantity')),
+          productId: this.dataset.productId,
+        })
+      );
+
+      return;
+    } else {
+      const id = formData.get('id');
+
+      if (addToCartTextError) {
+        addToCartTextError.classList.add('hidden');
+        addToCartTextError.removeAttribute('aria-live');
+      }
+
+      if (!id) throw new Error('Form ID is required');
+
+      // Add aria-live region to inform screen readers that the item was added
+      if (this.refs.addToCartButtonContainer?.refs.addToCartButton) {
+        const addToCartButton = this.refs.addToCartButtonContainer.refs.addToCartButton;
+        const addedTextElement = addToCartButton.querySelector('.add-to-cart-text--added');
+        const addedText = addedTextElement?.textContent?.trim() || Theme.translations.added;
+
+        this.#setLiveRegionText(addedText);
+
+        setTimeout(() => {
+          this.#clearLiveRegionText();
+        }, 5000);
+      }
+
+      this.dispatchEvent(
+        new CartAddEvent({}, id.toString(), {
+          source: 'product-form-component',
+          itemCount: Number(formData.get('quantity')),
+          productId: this.dataset.productId,
+          sections: response.sections,
+        })
+      );
+    }
   }
 
   /**

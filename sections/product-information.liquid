@@ -255,6 +255,65 @@
   }
 {% endstylesheet %}
 
+<!-- Expose product data for preorder system -->
+<script type="application/json" data-product-json>
+  {
+    "id": {{ section.settings.product.id | json }},
+    "title": {{ section.settings.product.title | json }},
+    "handle": {{ section.settings.product.handle | json }},
+    "featured_image": {{ section.settings.product.featured_image | img_url: '600x' | json }},
+    "collections": [
+      {% for collection in section.settings.product.collections %}
+        {
+          "id": {{ collection.id | json }},
+          "title": {{ collection.title | json }},
+          "handle": {{ collection.handle | json }},
+          "metafields": {
+            "custom": {
+              "ship_by_date": {{ collection.metafields.custom.ship_by_date | json }},
+              "drop_type": {{ collection.metafields.custom.drop_type | json }},
+              "order_by_date": {{ collection.metafields.custom.order_by_date | json }},
+              "order_cutoff_date": {{ collection.metafields.custom.order_cutoff_date | json }}
+            }
+          }
+        }{% unless forloop.last %},{% endunless %}
+      {% endfor %}
+    ],
+    "variants": [
+      {% for variant in section.settings.product.variants %}
+        {
+          "id": {{ variant.id | json }},
+          "title": {{ variant.title | json }},
+          "available": {{ variant.available | json }},
+          "price": {{ variant.price | json }},
+          "featured_image": {% if variant.featured_image %}{{ variant.featured_image | img_url: '600x' | json }}{% else %}null{% endif %},
+          "metafields": {
+            "custom": {
+              "sold_out": {{ variant.metafields.custom.sold_out | json }}
+            }
+          }
+        }{% unless forloop.last %},{% endunless %}
+      {% endfor %}
+    ]
+  }
+</script>
+
+<script type="module">
+  // Make product data available globally for the preorder system
+  (function() {
+    const productJsonScript = document.querySelector('script[data-product-json]');
+    if (productJsonScript) {
+      try {
+        const productData = JSON.parse(productJsonScript.textContent);
+        if (!window.Theme) window.Theme = {};
+        window.Theme.product = productData;
+      } catch (error) {
+        console.warn('Failed to parse product JSON:', error);
+      }
+    }
+  })();
+</script>
+
 {% schema %}
 {
   "name": "t:names.product_information",

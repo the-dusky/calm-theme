@@ -14,6 +14,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Drop helper functions for liquid templates
 - Metafield setup documentation
 - Drop functionality test snippet
+- Preorder system Phase 2 complete
+- Preorder prompt modal component with product information display
+- "How It Works" modal explaining preorder process
+- Add to cart interception for preorder products
+- Product data exposure to JavaScript for preorder detection
+- Preorder test snippet for development testing
 
 ### Changed
 - Variant picker now supports custom color display names via `color_displayname_override` metafield
