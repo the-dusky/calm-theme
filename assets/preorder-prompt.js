@@ -130,7 +130,15 @@ export class PreorderPromptComponent extends Component {
   }
 
   /**
-   * Checks if customer has opted to skip preorder confirmations
+   * Checks if customer has opted to skip preorder confirmations (public method)
+   * @returns {Promise<boolean>} True if confirmations should be skipped
+   */
+  async shouldSkipConfirmation() {
+    return this.#shouldSkipConfirmation();
+  }
+
+  /**
+   * Checks if customer has opted to skip preorder confirmations (private implementation)
    * @returns {Promise<boolean>} True if confirmations should be skipped
    */
   async #shouldSkipConfirmation() {

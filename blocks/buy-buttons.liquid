@@ -78,12 +78,27 @@
           style="{% render 'spacing-style', settings: block.settings %}"
         >
           {% content_for 'block', type: 'quantity', id: 'quantity' %}
-          {% content_for 'block',
-            type: 'add-to-cart',
-            id: 'add-to-cart',
-            can_add_to_cart: can_add_to_cart,
-            add_to_cart_text: add_to_cart_text
-          %}
+          {%- if is_drop_product -%}
+            {%- comment -%} Custom preorder button that triggers modal instead of form submission {%- endcomment -%}
+            <button 
+              type="button"
+              id="PreorderButton-{{ block.id }}"
+              class="add-to-cart-button button {{ block.settings.style_class | default: 'button-secondary' }}"
+              data-preorder-trigger
+              {% unless can_add_to_cart %}disabled{% endunless %}
+            >
+              <span class="add-to-cart-text">
+                {{ 'preorder.button.add_to_preorder' | t: default: 'Add to Preorder' }}
+              </span>
+            </button>
+          {%- else -%}
+            {% content_for 'block',
+              type: 'add-to-cart',
+              id: 'add-to-cart',
+              can_add_to_cart: can_add_to_cart,
+              add_to_cart_text: add_to_cart_text
+            %}
+          {%- endif -%}
           <span
             class="product-form-text__error hidden"
             ref="addToCartTextError"

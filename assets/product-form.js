@@ -125,6 +125,12 @@ class ProductFormComponent extends Component {
     const { signal } = this.#abortController;
     const target = this.closest('.shopify-section, dialog');
     target?.addEventListener(ThemeEvents.variantUpdate, this.#onVariantUpdate, { signal });
+    
+    // Listen for preorder button clicks
+    const preorderButton = this.querySelector('[data-preorder-trigger]');
+    if (preorderButton) {
+      preorderButton.addEventListener('click', this.#handlePreorderButtonClick, { signal });
+    }
   }
 
   disconnectedCallback() {
@@ -132,6 +138,47 @@ class ProductFormComponent extends Component {
 
     this.#abortController.abort();
   }
+
+  /**
+   * Handles preorder button clicks (bypasses form submission)
+   * @param {Event} event - The click event
+   */
+  #handlePreorderButtonClick = async (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+
+    // Get product data for preorder modal
+    const productData = this.#getProductData();
+    const variantData = this.#getCurrentVariantData(productData);
+    const dropInfo = getDropInfo(productData);
+
+    if (!productData || !variantData || !dropInfo) {
+      console.warn('Could not get product data for preorder');
+      return;
+    }
+
+    // Check if customer has opted to skip confirmations
+    const preorderComponent = window.preorderPromptComponent;
+    if (!preorderComponent) {
+      console.warn('Preorder prompt component not found');
+      return;
+    }
+
+    const shouldSkip = await preorderComponent.shouldSkipConfirmation();
+    if (shouldSkip) {
+      // Skip modal and proceed directly to add to cart
+      this.#proceedWithAddToCart(event);
+      return;
+    }
+
+    // Show the preorder modal with add-to-cart callback
+    preorderComponent.showPrompt({
+      product: productData,
+      variant: variantData,
+      dropInfo,
+      onConfirm: () => this.#proceedWithAddToCart(event)
+    });
+  };
 
   /**
    * Handles the submit event for the product form.
@@ -147,11 +194,6 @@ class ProductFormComponent extends Component {
 
     // Check if the add to cart button is disabled and do an early return if it is
     if (this.refs.addToCartButtonContainer?.refs.addToCartButton?.getAttribute('disabled') === 'true') return;
-
-    // Check for preorder products and show prompt if needed
-    if (this.#shouldShowPreorderPrompt(event)) {
-      return; // Early return - the prompt will handle the actual submission
-    }
 
     // Send the add to cart information to the cart
     const form = this.querySelector('form');
