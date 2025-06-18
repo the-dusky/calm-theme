@@ -20,11 +20,21 @@ export class PreorderPromptComponent extends Component {
    * @param {Object} options.dropInfo - Drop information
    * @param {Function} options.onConfirm - Callback to execute on confirmation
    */
-  showPrompt({ product, variant, dropInfo, onConfirm }) {
+  async showPrompt({ product, variant, dropInfo, onConfirm }) {
     this.#productData = product;
     this.#variantData = variant;
     this.#dropData = dropInfo;
     this.#originalAddToCartCallback = onConfirm;
+
+    // Check if customer has opted to skip confirmations
+    const shouldSkip = await this.#shouldSkipConfirmation();
+    if (shouldSkip) {
+      // Skip modal and proceed directly to add to cart
+      if (this.#originalAddToCartCallback) {
+        this.#originalAddToCartCallback();
+      }
+      return;
+    }
 
     this.#populateModalContent();
     this.#openModal();
@@ -37,56 +47,10 @@ export class PreorderPromptComponent extends Component {
     const modal = document.getElementById('preorder-prompt-dialog');
     if (!modal || !this.#productData || !this.#variantData || !this.#dropData) return;
 
-    // Update product image
-    const productImage = modal.querySelector('.preorder-prompt-modal__product-image');
-    if (productImage && this.#variantData.featured_image) {
-      productImage.innerHTML = `
-        <img 
-          src="${this.#variantData.featured_image.src}" 
-          alt="${this.#variantData.featured_image.alt || this.#productData.title}"
-          loading="lazy"
-        />
-      `;
-    } else if (productImage && this.#productData.featured_image) {
-      productImage.innerHTML = `
-        <img 
-          src="${this.#productData.featured_image}" 
-          alt="${this.#productData.title}"
-          loading="lazy"
-        />
-      `;
-    }
-
-    // Update product title
-    const productTitle = modal.querySelector('.preorder-prompt-modal__product-title');
-    if (productTitle) {
-      productTitle.textContent = this.#productData.title;
-    }
-
-    // Update variant info
-    const productVariant = modal.querySelector('.preorder-prompt-modal__product-variant');
-    if (productVariant && this.#variantData.title && this.#variantData.title !== 'Default Title') {
-      productVariant.textContent = this.#variantData.title;
-    } else if (productVariant) {
-      productVariant.style.display = 'none';
-    }
-
-    // Update drop info
-    const dropInfo = modal.querySelector('.preorder-prompt-modal__drop-info');
-    if (dropInfo) {
-      dropInfo.textContent = this.#dropData.displayName || this.#dropData.collectionTitle;
-    }
-
-    // Update ship date
+    // Update ship date in the shipping confirmation message
     const shipDate = modal.querySelector('.preorder-prompt-modal__ship-date');
     if (shipDate) {
       shipDate.textContent = this.#formatDate(this.#dropData.shipByDate);
-    }
-
-    // Update delivery date
-    const deliveryDate = modal.querySelector('.preorder-prompt-modal__delivery-date');
-    if (deliveryDate) {
-      deliveryDate.textContent = this.#formatDate(this.#dropData.estimatedDelivery);
     }
   }
 
@@ -144,11 +108,78 @@ export class PreorderPromptComponent extends Component {
    * Handles the confirm preorder action
    */
   confirmPreorder = () => {
+    // Check if "don't show again" is checked and handle customer preference
+    this.#handleDontShowAgainPreference();
+    
     if (this.#originalAddToCartCallback) {
       this.#originalAddToCartCallback();
     }
     this.#closeModal();
   };
+
+  /**
+   * Handles the "don't show again" checkbox preference
+   */
+  #handleDontShowAgainPreference() {
+    const modal = document.getElementById('preorder-prompt-dialog');
+    const checkbox = modal?.querySelector('#skip-preorder-confirmation');
+    
+    if (checkbox && checkbox.checked) {
+      this.#saveCustomerPreference();
+    }
+  }
+
+  /**
+   * Checks if customer has opted to skip preorder confirmations
+   * @returns {Promise<boolean>} True if confirmations should be skipped
+   */
+  async #shouldSkipConfirmation() {
+    // Check localStorage first (works for both logged in and guest users)
+    if (localStorage.getItem('skipPreorderConfirmation') === 'true') {
+      return true;
+    }
+
+    // If customer is logged in, check their metafield
+    if (window.Theme?.customer?.id) {
+      try {
+        // Check if customer metafield exists (this would be populated from Liquid template)
+        const skipConfirmation = window.Theme?.customer?.metafields?.custom?.skip_preorder_confirmation;
+        return skipConfirmation === true || skipConfirmation === 'true';
+      } catch (error) {
+        console.warn('Error checking customer preference:', error);
+      }
+    }
+
+    return false;
+  }
+
+  /**
+   * Saves customer preference to skip preorder confirmation
+   */
+  async #saveCustomerPreference() {
+    // Always save to localStorage for immediate effect
+    localStorage.setItem('skipPreorderConfirmation', 'true');
+
+    // If customer is logged in, also attempt to save to their metafields
+    if (window.Theme?.customer?.id) {
+      try {
+        // Use a simpler approach - submit a form to update customer metafield
+        // This is more reliable than trying to use Admin API from frontend
+        const formData = new FormData();
+        formData.append('customer[metafields][custom][skip_preorder_confirmation]', 'true');
+        
+        // Submit to customer update endpoint (this would need to be handled by theme or app)
+        await fetch('/account/update-preferences', {
+          method: 'POST',
+          body: formData
+        }).catch(error => {
+          console.warn('Could not save customer metafield preference:', error);
+        });
+      } catch (error) {
+        console.warn('Error saving customer preference:', error);
+      }
+    }
+  }
 
   /**
    * Closes the preorder prompt modal

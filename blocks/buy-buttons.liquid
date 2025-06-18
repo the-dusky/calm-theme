@@ -5,6 +5,17 @@
     assign product = collections.all.products.first
   endif
 
+  # Check if this is a preorder/drop product
+  assign is_drop_product = false
+  assign drop_collection = blank
+  for collection in product.collections
+    if collection.metafields.custom.ship_by_date != blank or collection.metafields.custom.drop_location != blank
+      assign is_drop_product = true
+      assign drop_collection = collection
+      break
+    endif
+  endfor
+
   assign variant = block.settings.product.selected_or_first_available_variant
   assign inventory_quantity = variant.inventory_quantity
   assign inventory_policy = variant.inventory_policy
@@ -41,13 +52,16 @@
   {{ block.shopify_attributes }}
 >
   {%- if product != blank -%}
-    {%- assign product_form_id = 'BuyButtons-ProductForm-' | append: block.id -%}
-    <product-form-component
-      data-section-id="{{ section.id }}"
-      data-product-id="{{ product.id }}"
-      data-product-url="{{ product.url }}"
-      on:submit="/handleSubmit"
-    >
+    {%- if is_drop_product -%}
+      {%- render 'preorder-info-card', product: product, drop_collection: drop_collection, block: block -%}
+    {%- else -%}
+      {%- assign product_form_id = 'BuyButtons-ProductForm-' | append: block.id -%}
+      <product-form-component
+        data-section-id="{{ section.id }}"
+        data-product-id="{{ product.id }}"
+        data-product-url="{{ product.url }}"
+        on:submit="/handleSubmit"
+      >
       <div
         class="visually-hidden"
         aria-live="assertive"
@@ -89,6 +103,7 @@
         </div>
       {%- endform -%}
     </product-form-component>
+    {%- endif -%}
   {%- else -%}
     <div class="product-form-buttons">
       <button

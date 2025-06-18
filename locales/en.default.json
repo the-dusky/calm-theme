@@ -314,13 +314,16 @@
     }
   },
   "preorder": {
+    "info_card": {
+      "title": "This is a preorder item",
+      "description": "I will ship out to customers on or before %{ship_date}.",
+      "how_it_works": "How it works"
+    },
     "modal": {
       "title": "This is a preorder item",
-      "estimated_ship": "Estimated ship date:",
-      "estimated_delivery": "Estimated delivery:",
-      "description": "You will be charged now and your item will ship when it becomes available.",
-      "how_it_works": "How preorders work",
-      "confirm": "Add to preorder",
+      "shipping_confirmation": "This will ship on or before",
+      "dont_show_again": "Don't show this confirmation message anymore",
+      "confirm": "Add to Cart",
       "cancel": "Cancel"
     },
     "how_it_works": {
