@@ -39,7 +39,12 @@
         {{ 'preorder.info_card.title' | t: default: 'This is a preorder item' }}{{ location_text }}
       </h3>
       <p class="preorder-info-card__description">
-        {{ 'preorder.info_card.description' | t: ship_date: formatted_ship_date, default: 'I will ship out to customers on or before %{ship_date}.' }}
+        {% assign description_text = 'preorder.info_card.description' | t: ship_date: formatted_ship_date %}
+        {% if description_text contains 'Translation missing' %}
+          I will ship out to customers on or before {{ formatted_ship_date }}.
+        {% else %}
+          {{ description_text }}
+        {% endif %}
       </p>
     </div>
   </div>
