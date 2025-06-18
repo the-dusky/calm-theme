@@ -92,21 +92,40 @@ export class PreorderPromptComponent extends Component {
 
   /**
    * Formats a date string for display
-   * @param {string} dateString - ISO date string
+   * @param {string} dateString - ISO date string or various date formats
    * @returns {string} Formatted date
    */
   #formatDate(dateString) {
     if (!dateString) return 'TBD';
     
     try {
-      const date = new Date(dateString);
+      // Handle various date formats that might come from Shopify
+      let date;
+      
+      // Try parsing as-is first
+      date = new Date(dateString);
+      
+      // If invalid, try common Shopify date formats
+      if (isNaN(date.getTime())) {
+        // Try YYYY-MM-DD format
+        if (typeof dateString === 'string' && dateString.match(/^\d{4}-\d{2}-\d{2}$/)) {
+          date = new Date(dateString + 'T00:00:00');
+        }
+      }
+      
+      // If still invalid, return TBD
+      if (isNaN(date.getTime())) {
+        console.warn('Could not parse date:', dateString);
+        return 'TBD';
+      }
+      
       return date.toLocaleDateString('en-US', { 
         month: 'long', 
         day: 'numeric',
         year: date.getFullYear() !== new Date().getFullYear() ? 'numeric' : undefined
       });
     } catch (error) {
-      console.warn('Invalid date format:', dateString);
+      console.warn('Invalid date format:', dateString, error);
       return 'TBD';
     }
   }
@@ -252,13 +271,19 @@ export function getDropInfo(product) {
       let estimatedDelivery = null;
       if (shipByDate) {
         try {
-          const shipDate = new Date(shipByDate);
+          let shipDate = new Date(shipByDate);
+          
+          // Handle YYYY-MM-DD format specifically
+          if (isNaN(shipDate.getTime()) && typeof shipByDate === 'string' && shipByDate.match(/^\d{4}-\d{2}-\d{2}$/)) {
+            shipDate = new Date(shipByDate + 'T00:00:00');
+          }
+          
           if (!isNaN(shipDate.getTime())) {
             const deliveryDate = new Date(shipDate.getTime() + (7 * 24 * 60 * 60 * 1000));
             estimatedDelivery = deliveryDate.toISOString().split('T')[0];
           }
         } catch (error) {
-          console.warn('Invalid ship date:', shipByDate);
+          console.warn('Invalid ship date:', shipByDate, error);
         }
       }
 
@@ -268,7 +293,13 @@ export function getDropInfo(product) {
         displayName = `${dropLocation} Drop`;
         if (shipByDate) {
           try {
-            const shipDate = new Date(shipByDate);
+            let shipDate = new Date(shipByDate);
+            
+            // Handle YYYY-MM-DD format specifically
+            if (isNaN(shipDate.getTime()) && typeof shipByDate === 'string' && shipByDate.match(/^\d{4}-\d{2}-\d{2}$/)) {
+              shipDate = new Date(shipByDate + 'T00:00:00');
+            }
+            
             if (!isNaN(shipDate.getTime())) {
               const formattedDate = shipDate.toLocaleDateString('en-US', { 
                 month: 'long', 
@@ -277,7 +308,7 @@ export function getDropInfo(product) {
               displayName += ` - Ships ${formattedDate}`;
             }
           } catch (error) {
-            console.warn('Invalid ship date for display:', shipByDate);
+            console.warn('Invalid ship date for display:', shipByDate, error);
           }
         }
       }
