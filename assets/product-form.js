@@ -376,9 +376,6 @@ class ProductFormComponent extends Component {
    * @param {Event} originalEvent - The original form submit event
    */
   #proceedWithAddToCart(originalEvent) {
-    // Re-trigger the add to cart animation
-    this.refs.addToCartButtonContainer?.handleClick(originalEvent);
-
     // Send the add to cart information to the cart
     const form = this.querySelector('form');
     if (!form) throw new Error('Product form element missing');
@@ -486,6 +483,11 @@ class ProductFormComponent extends Component {
         }, 5000);
       }
 
+      // Trigger the add to cart animation on successful add
+      if (this.refs.addToCartButtonContainer) {
+        this.refs.addToCartButtonContainer.animateAddToCart();
+      }
+
       this.dispatchEvent(
         new CartAddEvent({}, id.toString(), {
           source: 'product-form-component',
@@ -496,6 +498,7 @@ class ProductFormComponent extends Component {
       );
     }
   }
+
 
   /**
    * @param {VariantUpdateEvent} event
