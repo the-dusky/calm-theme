@@ -58,7 +58,18 @@
             <legend>
               {{ product_option.name | escape -}}
               {%- if variant_style == 'swatch' -%}
-                <span class="variant-option__swatch-value">{{ product_option.selected_value }}</span>
+                {% liquid
+                  assign selected_display_name = product_option.selected_value
+                  for option_value in product_option.values
+                    if option_value.selected
+                      if option_value.variant.metafields.custom.color_displayname_override != blank
+                        assign selected_display_name = option_value.variant.metafields.custom.color_displayname_override
+                      endif
+                      break
+                    endif
+                  endfor
+                %}
+                <span class="variant-option__swatch-value">{{ selected_display_name }}</span>
               {%- endif %}
             </legend>
             {%- for product_option_value in product_option.values -%}
@@ -102,7 +113,13 @@
                     mode: 'unscaled'
                   %}
                 {% else %}
-                  <span class="variant-option__button-label__text">{{ product_option_value | escape }}</span>
+                  {% liquid
+                    assign display_name = product_option_value
+                    if product_option_value.variant.metafields.custom.color_displayname_override != blank
+                      assign display_name = product_option_value.variant.metafields.custom.color_displayname_override
+                    endif
+                  %}
+                  <span class="variant-option__button-label__text">{{ display_name | escape }}</span>
                 {% endif %}
                 {% render 'strikethrough-variant', product_option: product_option_value %}
               </label>
@@ -156,10 +173,16 @@
                       selected="selected"
                     {% endif %}
                   >
+                    {% liquid
+                      assign display_name = product_option_value
+                      if product_option_value.variant.metafields.custom.color_displayname_override != blank
+                        assign display_name = product_option_value.variant.metafields.custom.color_displayname_override
+                      endif
+                    %}
                     {% if product_option_value.available == false %}
-                      {{ product_option_value | escape }} - {{ 'content.unavailable' | t }}
+                      {{ display_name | escape }} - {{ 'content.unavailable' | t }}
                     {% else %}
-                      {{ product_option_value | escape }}
+                      {{ display_name | escape }}
                     {% endif %}
                   </option>
                 {%- endfor -%}
@@ -477,7 +500,12 @@
   }
 
   #size-chart {
-    display: flex;
-    justify-content: flex-end;
+    text-align: right;
+    width: 100%;
+  }
+
+  #size-chart > * {
+    margin-left: auto;
+    margin-right: 0;
   }
 {% endstylesheet %}

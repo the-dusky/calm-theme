@@ -37,11 +37,17 @@
               on:pointerenter="product-card/previewVariant/{{ featured_media.id }}"
               on:pointerleave="product-card/resetVariant"
             >
+              {% liquid
+                assign aria_label = product_option_value.name
+                if product_option_value.variant.metafields.custom.color_displayname_override != blank
+                  assign aria_label = product_option_value.variant.metafields.custom.color_displayname_override
+                endif
+              %}
               <input
                 type="radio"
                 name="{{ product_option.name | escape }}-{{ product_resource.id }}-swatch"
                 value="{{ product_option_value | escape }}"
-                aria-label="{{ product_option_value.name }}"
+                aria-label="{{ aria_label }}"
                 data-input-id="{{ product_option.position }}-{{ forloop.index0 }}"
                 data-option-media-id="{{ featured_media.id }}"
                 data-option-value-id="{{ product_option_value.id }}"

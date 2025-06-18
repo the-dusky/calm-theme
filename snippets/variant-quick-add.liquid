@@ -30,7 +30,18 @@
       <legend>
         {{ product_option.name | escape -}}
         {%- if variant_style == 'swatch' and product_resource.options_with_values.size > 1 -%}
-          <span class="variant-option__swatch-value">{{ product_option.selected_value }}</span>
+          {% liquid
+            assign selected_display_name = product_option.selected_value
+            for option_value in product_option.values
+              if option_value.selected
+                if option_value.variant.metafields.custom.color_displayname_override != blank
+                  assign selected_display_name = option_value.variant.metafields.custom.color_displayname_override
+                endif
+                break
+              endif
+            endfor
+          %}
+          <span class="variant-option__swatch-value">{{ selected_display_name }}</span>
         {%- endif %}
       </legend>
       {%- for product_option_value in product_option.values -%}
@@ -80,7 +91,13 @@
           {% if variant_style == 'swatch' %}
             {% render 'swatch', swatch: product_option_value.swatch, variant_image: featured_media %}
           {% else %}
-            <span>{{ product_option_value | escape }}</span>
+            {% liquid
+              assign display_name = product_option_value
+              if product_option_value.variant.metafields.custom.color_displayname_override != blank
+                assign display_name = product_option_value.variant.metafields.custom.color_displayname_override
+              endif
+            %}
+            <span>{{ display_name | escape }}</span>
           {% endif %}
           {% render 'strikethrough-variant', product_option: product_option_value %}
         </label>

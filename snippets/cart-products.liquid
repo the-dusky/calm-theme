@@ -168,7 +168,14 @@
                           <div class="cart-items__variant">
                             <dt class="visually-hidden">{{ option.name }}:</dt>
                             <dd>
-                              {{- option.value -}}
+                              {% liquid
+                                assign display_value = option.value
+                                assign option_name_lower = option.name | downcase
+                                if item.variant.metafields.custom.color_displayname_override != blank and option_name_lower contains 'color'
+                                  assign display_value = item.variant.metafields.custom.color_displayname_override
+                                endif
+                              %}
+                              {{- display_value -}}
                               {%- if forloop.last != true %},&nbsp;{% endif -%}
                             </dd>
                           </div>

@@ -23,6 +23,11 @@
       assign color_value = current_variant.option3
     endif
   endif
+  
+  # Override with custom color display name if available
+  if current_variant.metafields.custom.color_displayname_override != blank
+    assign color_value = current_variant.metafields.custom.color_displayname_override
+  endif
 %}
 
 {% capture variant_children %}
