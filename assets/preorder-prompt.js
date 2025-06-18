@@ -247,7 +247,6 @@ export function getDropInfo(product) {
       const shipByDate = metafields.ship_by_date;
       const dropType = metafields.drop_type;
       const orderByDate = metafields.order_by_date;
-      const orderCutoffDate = metafields.order_cutoff_date;
 
       // Calculate estimated delivery (ship date + 7 days)
       let estimatedDelivery = null;
@@ -290,8 +289,7 @@ export function getDropInfo(product) {
         shipByDate,
         estimatedDelivery,
         dropType,
-        orderByDate,
-        orderCutoffDate
+        orderByDate
       };
     }
   }

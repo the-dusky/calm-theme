@@ -41,7 +41,6 @@
         <li><strong>Drop Type:</strong> {{ drop_info.metafields.custom.drop_type | default: 'Not set' }}</li>
         <li><strong>Ship By:</strong> {{ drop_info.metafields.custom.ship_by_date | date: '%B %d, %Y' | default: 'Not set' }}</li>
         <li><strong>Order By:</strong> {{ drop_info.metafields.custom.order_by_date | date: '%B %d, %Y' | default: 'Not set' }}</li>
-        <li><strong>Order Cutoff:</strong> {{ drop_info.metafields.custom.order_cutoff_date | date: '%B %d, %Y' | default: 'Not set' }}</li>
       </ul>
       
       <!-- Test drop name formatting -->
