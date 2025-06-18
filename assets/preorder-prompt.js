@@ -241,11 +241,11 @@ export function getDropInfo(product) {
     // Check if collection has drop metafields
     // Handle both nested metafields structure and flat structure
     const metafields = collection.metafields?.custom || collection.metafields || {};
-    const hasDropMetafields = metafields.ship_by_date || metafields.drop_type;
+    const hasDropMetafields = metafields.ship_by_date || metafields.drop_location;
     
     if (hasDropMetafields) {
       const shipByDate = metafields.ship_by_date;
-      const dropType = metafields.drop_type;
+      const dropLocation = metafields.drop_location;
       const orderByDate = metafields.order_by_date;
 
       // Calculate estimated delivery (ship date + 7 days)
@@ -264,8 +264,8 @@ export function getDropInfo(product) {
 
       // Format display name
       let displayName = collection.title || collection.name || 'Drop';
-      if (dropType) {
-        displayName = `${dropType} Drop`;
+      if (dropLocation) {
+        displayName = `${dropLocation} Drop`;
         if (shipByDate) {
           try {
             const shipDate = new Date(shipByDate);
@@ -288,7 +288,7 @@ export function getDropInfo(product) {
         displayName,
         shipByDate,
         estimatedDelivery,
-        dropType,
+        dropLocation,
         orderByDate
       };
     }

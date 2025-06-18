@@ -41,7 +41,7 @@
         <h5>Collection Metafields:</h5>
         <ul>
           <li>Ship By Date: {{ test_collection.metafields.custom.ship_by_date | default: 'Not set' }}</li>
-          <li>Drop Type: {{ test_collection.metafields.custom.drop_type | default: 'Not set' }}</li>
+          <li>Drop Location: {{ test_collection.metafields.custom.drop_location | default: 'Not set' }}</li>
           <li>Order By Date: {{ test_collection.metafields.custom.order_by_date | default: 'Not set' }}</li>
         </ul>
       </div>
@@ -107,7 +107,7 @@
             metafields: {
               custom: {
                 ship_by_date: '2024-03-15',
-                drop_type: 'US',
+                drop_location: 'US',
                 order_by_date: '2024-03-01'
               }
             }

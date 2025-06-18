@@ -38,15 +38,15 @@
       <h5>Drop Information:</h5>
       <ul>
         <li><strong>Collection:</strong> {{ drop_info.title }}</li>
-        <li><strong>Drop Type:</strong> {{ drop_info.metafields.custom.drop_type | default: 'Not set' }}</li>
+        <li><strong>Drop Location:</strong> {{ drop_info.metafields.custom.drop_location | default: 'Not set' }}</li>
         <li><strong>Ship By:</strong> {{ drop_info.metafields.custom.ship_by_date | date: '%B %d, %Y' | default: 'Not set' }}</li>
         <li><strong>Order By:</strong> {{ drop_info.metafields.custom.order_by_date | date: '%B %d, %Y' | default: 'Not set' }}</li>
       </ul>
       
       <!-- Test drop name formatting -->
       {% assign drop_name = drop_info.title %}
-      {% if drop_info.metafields.custom.drop_type != blank %}
-        {% assign drop_name = drop_info.metafields.custom.drop_type | append: ' Drop' %}
+      {% if drop_info.metafields.custom.drop_location != blank %}
+        {% assign drop_name = drop_info.metafields.custom.drop_location | append: ' Drop' %}
       {% endif %}
       {% if drop_info.metafields.custom.ship_by_date != blank %}
         {% assign ship_date = drop_info.metafields.custom.ship_by_date | date: '%B %d' %}
@@ -85,8 +85,8 @@
             {% if collection.metafields.custom.ship_by_date %}
               - Ship: {{ collection.metafields.custom.ship_by_date | date: '%B %d' }}
             {% endif %}
-            {% if collection.metafields.custom.drop_type %}
-              - Type: {{ collection.metafields.custom.drop_type }}
+            {% if collection.metafields.custom.drop_location %}
+              - Location: {{ collection.metafields.custom.drop_location }}
             {% endif %}
           </li>
         {% endfor %}

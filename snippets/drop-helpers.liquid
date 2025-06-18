@@ -14,7 +14,7 @@
     when 'is_drop_product'
       # Check if product belongs to any collection with drop metafields
       for collection in product.collections
-        if collection.metafields.custom.ship_by_date != blank or collection.metafields.custom.drop_type != blank
+        if collection.metafields.custom.ship_by_date != blank or collection.metafields.custom.drop_location != blank
           echo 'true'
           break
         endif
@@ -23,7 +23,7 @@
     when 'get_drop_info'
       # Get drop information from the first collection with drop metafields
       for collection in product.collections
-        if collection.metafields.custom.ship_by_date != blank or collection.metafields.custom.drop_type != blank
+        if collection.metafields.custom.ship_by_date != blank or collection.metafields.custom.drop_location != blank
           echo collection.handle
           break
         endif
@@ -32,8 +32,8 @@
     when 'format_drop_name'
       # Format collection name for display: "US Drop - Ships March 15"
       assign drop_name = collection.title
-      if collection.metafields.custom.drop_type != blank
-        assign drop_name = collection.metafields.custom.drop_type | append: ' Drop'
+      if collection.metafields.custom.drop_location != blank
+        assign drop_name = collection.metafields.custom.drop_location | append: ' Drop'
       endif
       if collection.metafields.custom.ship_by_date != blank
         assign ship_date = collection.metafields.custom.ship_by_date | date: '%B %d'

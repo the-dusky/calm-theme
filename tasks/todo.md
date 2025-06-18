@@ -33,7 +33,7 @@
 - [x] Create collection metafields for drop management
   - [x] `ship_by_date` (date)
   - [x] `order_by_date` (date) 
-  - [x] `drop_type` (text: US/JP)
+  - [x] `drop_location` (text: US/JP/EU)
 - [x] Create variant `is_sold_out` boolean metafield
 - [x] Create liquid helper functions for drop detection
 - [x] Test metafield functionality
