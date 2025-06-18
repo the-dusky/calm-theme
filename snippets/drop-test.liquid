@@ -1,0 +1,99 @@
+{% comment %}
+  Test snippet for drop functionality - Remove after testing
+  
+  Usage: {% render 'drop-test', product: product %}
+{% endcomment %}
+
+<div style="border: 2px solid red; padding: 10px; margin: 10px 0; font-family: monospace;">
+  <h4>DROP SYSTEM TEST</h4>
+  
+  <h5>Product: {{ product.title }}</h5>
+  
+  <!-- Test if product is in a drop -->
+  {% assign is_drop_product = false %}
+  {% liquid
+    for collection in product.collections
+      if collection.metafields.custom.ship_by_date != blank or collection.metafields.custom.drop_type != blank
+        assign is_drop_product = true
+        break
+      endif
+    endfor
+  %}
+  
+  <p><strong>Is Drop Product:</strong> {{ is_drop_product }}</p>
+  
+  {% if is_drop_product %}
+    <!-- Get drop info -->
+    {% assign drop_info = blank %}
+    {% liquid
+      for collection in product.collections
+        if collection.metafields.custom.ship_by_date != blank or collection.metafields.custom.drop_type != blank
+          assign drop_info = collection
+          break
+        endif
+      endfor
+    %}
+    
+    {% if drop_info %}
+      <h5>Drop Information:</h5>
+      <ul>
+        <li><strong>Collection:</strong> {{ drop_info.title }}</li>
+        <li><strong>Drop Type:</strong> {{ drop_info.metafields.custom.drop_type | default: 'Not set' }}</li>
+        <li><strong>Ship By:</strong> {{ drop_info.metafields.custom.ship_by_date | date: '%B %d, %Y' | default: 'Not set' }}</li>
+        <li><strong>Order By:</strong> {{ drop_info.metafields.custom.order_by_date | date: '%B %d, %Y' | default: 'Not set' }}</li>
+        <li><strong>Order Cutoff:</strong> {{ drop_info.metafields.custom.order_cutoff_date | date: '%B %d, %Y' | default: 'Not set' }}</li>
+      </ul>
+      
+      <!-- Test drop name formatting -->
+      {% assign drop_name = drop_info.title %}
+      {% if drop_info.metafields.custom.drop_type != blank %}
+        {% assign drop_name = drop_info.metafields.custom.drop_type | append: ' Drop' %}
+      {% endif %}
+      {% if drop_info.metafields.custom.ship_by_date != blank %}
+        {% assign ship_date = drop_info.metafields.custom.ship_by_date | date: '%B %d' %}
+        {% assign drop_name = drop_name | append: ' - Ships ' | append: ship_date %}
+      {% endif %}
+      
+      <p><strong>Formatted Drop Name:</strong> {{ drop_name }}</p>
+      
+      <!-- Test expected delivery calculation -->
+      {% if drop_info.metafields.custom.ship_by_date != blank %}
+        {% assign ship_date = drop_info.metafields.custom.ship_by_date %}
+        {% assign delivery_timestamp = ship_date | date: '%s' | plus: 604800 %}
+        {% assign expected_delivery = delivery_timestamp | date: '%B %d' %}
+        <p><strong>Expected Delivery:</strong> {{ expected_delivery }}</p>
+      {% endif %}
+    {% endif %}
+    
+    <!-- Test variant sold out status -->
+    {% if product.selected_or_first_available_variant %}
+      {% assign variant = product.selected_or_first_available_variant %}
+      {% assign is_variant_sold_out = false %}
+      {% if variant.metafields.custom.sold_out == true %}
+        {% assign is_variant_sold_out = true %}
+      {% endif %}
+      <p><strong>Variant Sold Out:</strong> {{ is_variant_sold_out }}</p>
+    {% endif %}
+    
+  {% else %}
+    <p><em>Product is not in any drop collections</em></p>
+    
+    <h5>Product Collections:</h5>
+    {% if product.collections.size > 0 %}
+      <ul>
+        {% for collection in product.collections %}
+          <li>{{ collection.title }}
+            {% if collection.metafields.custom.ship_by_date %}
+              - Ship: {{ collection.metafields.custom.ship_by_date | date: '%B %d' }}
+            {% endif %}
+            {% if collection.metafields.custom.drop_type %}
+              - Type: {{ collection.metafields.custom.drop_type }}
+            {% endif %}
+          </li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p><em>No collections</em></p>
+    {% endif %}
+  {% endif %}
+</div>

@@ -27,6 +27,37 @@
 
 ## Current Tasks
 
+### Preorder System Implementation (Priority)
+
+#### Phase 1: Core Infrastructure (Current)
+- [x] Create collection metafields for drop management
+  - [x] `ship_by_date` (date)
+  - [x] `order_by_date` (date) 
+  - [x] `order_cutoff_date` (date)
+  - [x] `drop_type` (text: US/JP)
+- [x] Create variant `sold_out` boolean metafield
+- [x] Create liquid helper functions for drop detection
+- [x] Test metafield functionality
+
+#### Phase 2: Add to Cart Prompt System
+- [ ] Identify and modify add to cart implementation
+- [ ] Create preorder prompt modal component
+- [ ] Implement prompt trigger logic
+- [ ] Add "How It Works" content and modal
+- [ ] Test prompt flow
+
+#### Phase 3: Drop Shopping Mode
+- [ ] Create drop selector UI component
+- [ ] Implement session storage for drop selection
+- [ ] Add drop context to product pages
+- [ ] Test drop browsing experience
+
+#### Phase 4: Order Management
+- [ ] Implement automatic order tagging with collection handles
+- [ ] Update cart to show preorder information
+- [ ] Test order processing flow
+
+### Calendar Component (Existing)
 - [ ] Review calendar component implementation
 - [ ] Update calendar component to handle multiple collections per date
 - [ ] Ensure proper block structure in all theme components

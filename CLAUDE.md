@@ -1,5 +1,26 @@
 # Claude Notes
 
+## Context
+
+Always read the CHANGELOG.md for context
+Always look at tasks/todo.md for next steps
+
+use PNPM - always
+
+## Tasks
+
+Use the tasks/todo.md file as the source of truth. Work on it in order, asking if we are ready to move on.
+
+## Git
+
+Commit after finishing task sections
+- shopify theme check
+
+Once we build is succesful
+- update the changelog and cross of todos
+- Then `git add` . and `git commit` and push
+
+
 ## Shopify Theme Section Debugging (Based on Official Shopify Documentation)
 
 ### Issue: Section not appearing in "Add Section" modal
