@@ -53,8 +53,9 @@
 >
   {%- if product != blank -%}
     {%- if is_drop_product -%}
+      {%- comment -%} Show preorder info card above the normal add to cart form {%- endcomment -%}
       {%- render 'preorder-info-card', product: product, drop_collection: drop_collection, block: block -%}
-    {%- else -%}
+    {%- endif -%}
       {%- assign product_form_id = 'BuyButtons-ProductForm-' | append: block.id -%}
       <product-form-component
         data-section-id="{{ section.id }}"
@@ -95,15 +96,16 @@
               {{- 'icon-error.svg' | inline_asset_content -}}
             </span>
           </span>
-          {% content_for 'block',
-            type: 'accelerated-checkout',
-            id: 'accelerated-checkout',
-            can_add_to_cart: can_add_to_cart
-          %}
+          {%- unless is_drop_product -%}
+            {% content_for 'block',
+              type: 'accelerated-checkout',
+              id: 'accelerated-checkout',
+              can_add_to_cart: can_add_to_cart
+            %}
+          {%- endunless -%}
         </div>
       {%- endform -%}
     </product-form-component>
-    {%- endif -%}
   {%- else -%}
     <div class="product-form-buttons">
       <button

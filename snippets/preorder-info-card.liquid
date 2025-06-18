@@ -62,50 +62,6 @@
       </svg>
     </button>
   </div>
-  
-  <!-- Still include the add to cart form for normal functionality -->
-  {%- assign product_form_id = 'PreorderCard-ProductForm-' | append: block.id -%}
-  <product-form-component
-    data-section-id="{{ section.id }}"
-    data-product-id="{{ product.id }}"
-    data-product-url="{{ product.url }}"
-    on:submit="/handleSubmit"
-    class="preorder-info-card__form"
-  >
-    <div
-      class="visually-hidden"
-      aria-live="assertive"
-      role="status"
-      aria-atomic="true"
-      ref="liveRegion"
-    ></div>
-    {%- form 'product', product, id: product_form_id, novalidate: 'novalidate', data-type: 'add-to-cart-form' -%}
-      <input
-        type="hidden"
-        name="id"
-        ref="variantId"
-        value="{{ product.selected_or_first_available_variant.id }}"
-      >
-      <div class="preorder-info-card__buy-section">
-        {% render 'quantity-selector', product: product %}
-        {% render 'add-to-cart-button',
-          id: 'PreorderCard-AddToCart-' | append: block.id,
-          class: 'add-to-cart-button button',
-          can_add_to_cart: true,
-          product: product,
-          add_to_cart_text: 'products.product.add_to_cart' | t
-        %}
-        <span
-          class="product-form-text__error hidden"
-          ref="addToCartTextError"
-        >
-          <span class="svg-wrapper product-form-icon--error">
-            {{- 'icon-error.svg' | inline_asset_content -}}
-          </span>
-        </span>
-      </div>
-    {%- endform -%}
-  </product-form-component>
 </div>
 
 <script>
@@ -188,48 +144,11 @@
     color: var(--color-background);
   }
 
-  .preorder-info-card__form {
-    border-top: 1px solid var(--color-border);
-    padding-top: var(--padding-md);
-  }
-
-  .preorder-info-card__buy-section {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--gap-sm);
-    align-items: flex-end;
-  }
-
-  .preorder-info-card__buy-section .quantity-selector {
-    flex-shrink: 0;
-  }
-
-  .preorder-info-card__buy-section .add-to-cart-button {
-    flex: 1;
-    min-width: 185px;
-  }
-
-  .preorder-info-card__buy-section .product-form-text__error {
-    flex-basis: 100%;
-    display: flex;
-    align-items: flex-start;
-    gap: var(--gap-xs);
-  }
-
   @media screen and (max-width: 750px) {
     .preorder-info-card__content {
       flex-direction: column;
       align-items: center;
       text-align: center;
-    }
-
-    .preorder-info-card__buy-section {
-      flex-direction: column;
-      align-items: stretch;
-    }
-
-    .preorder-info-card__buy-section .add-to-cart-button {
-      min-width: unset;
     }
   }
 {% endstylesheet %}
