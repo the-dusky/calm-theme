@@ -9,11 +9,18 @@
   assign drop_collections = collections | where: 'metafields.custom.ship_by_date', present
   assign sorted_drops = drop_collections | sort: 'metafields.custom.ship_by_date'
   
+  # DEBUG: If no drops found, use test data
+  if sorted_drops.size == 0
+    assign test_drops = collections | limit: 3
+    assign sorted_drops = test_drops
+  endif
+  
   # Create flag mapping
   assign flag_map = 'US:🇺🇸,JP:🇯🇵,EU:🇪🇺' | split: ','
 %}
 
-{% if sorted_drops.size > 1 %}
+<!-- DEBUG: sorted_drops.size = {{ sorted_drops.size }} -->
+{% if sorted_drops.size > 0 %}
   <div class="global-drop-selector" id="global-drop-selector">
     <div class="global-drop-selector__wrapper">
       <label for="global-drop-select" class="global-drop-selector__label visually-hidden">
@@ -39,7 +46,8 @@
               assign is_available = true
               
               # Check if drop is still available for ordering
-              if cutoff_date and cutoff_date < 'now' | date: '%Y-%m-%d'
+              assign today = 'now' | date: '%Y-%m-%d'
+              if cutoff_date and cutoff_date < today
                 assign is_available = false
               endif
               

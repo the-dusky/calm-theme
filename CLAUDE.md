@@ -46,6 +46,28 @@ Multi-phase preorder implementation using metafields:
 - `/snippets/drop-helpers.liquid` - Liquid helper functions
 - `/docs/METAFIELD_SETUP.md` - Metafield configuration guide
 
+#### Site-Wide Drop System
+Global drop selection system with localStorage persistence:
+
+**Core Components:**
+- `/snippets/global-drop-selector.liquid` - Header drop selector with country flags
+- `/snippets/switch-drop-button.liquid` - Product-level drop switching buttons
+- `/assets/global-drop-manager.js` - localStorage and DOM management
+- `/sections/drop-products.liquid` - Homepage sections for current/future drops
+
+**Features:**
+- Country flag mapping (US 🇺🇸, JP 🇯🇵, EU 🇪🇺)
+- localStorage persistence across browser sessions
+- Real-time product filtering based on selected drop
+- Responsive design with mobile support
+- Integration with existing preorder metafield system
+
+**Setup Requirements:**
+- Collections must have `ship_by_date`, `drop_type`, `order_cutoff_date` metafields
+- Include `{% render 'global-drop-selector' %}` in header-actions
+- Add drop-products sections via theme customizer
+- Include `global-drop-manager.js` in theme assets
+
 #### Component Architecture
 - Modular section/snippet system with proper block structure
 - All sections require `presets` array to appear in theme editor
@@ -90,6 +112,51 @@ When given a task, analyze and respond with:
 3. Update CHANGELOG.md and mark todos complete
 4. Commit with `git add . && git commit` and push
 5. Theme auto-deploys from GitHub (no manual push needed)
+
+## Development Server & Testing Process
+
+### Starting Local Development with Logging
+To properly monitor development and debug issues:
+
+```bash
+# 1. Create logs directory
+mkdir -p logs
+
+# 2. Start dev server with logging
+shopify theme dev > logs/shopify_dev.log 2>&1 &
+
+# 3. Monitor logs in real-time (optional)
+tail -f logs/shopify_dev.log
+```
+
+### Using Playwright for Testing
+With the dev server running, use Playwright MCP to:
+
+1. **Navigate to local server**: `http://127.0.0.1:9292`
+2. **Inspect page elements**: Take snapshots and check UI components
+3. **Monitor console errors**: Check for JavaScript errors
+4. **Test interactions**: Click elements, fill forms, test dropdowns
+5. **Cross-reference logs**: Check `logs/shopify_dev.log` for server-side issues
+
+### Benefits of This Approach
+- **Real-time monitoring**: See Liquid syntax errors immediately
+- **Live testing**: Test changes as they sync from file edits
+- **Comprehensive debugging**: View both client-side (Playwright) and server-side (logs) issues
+- **Development efficiency**: No need to constantly restart servers
+
+### Example Workflow
+```bash
+# Start logged development
+shopify theme dev > logs/shopify_dev.log 2>&1 &
+
+# Make code changes (auto-sync)
+# Use Playwright to test changes
+# Check logs for any issues
+cat logs/shopify_dev.log
+
+# Stop server when done
+pkill -f "shopify theme dev"
+```
 
 
 ## Shopify Theme Section Debugging (Based on Official Shopify Documentation)
