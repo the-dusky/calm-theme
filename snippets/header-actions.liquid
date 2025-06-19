@@ -6,6 +6,8 @@
 <header-actions
   {{- block.shopify_attributes -}}
 >
+  {% render 'global-drop-selector' %}
+
   {% if shop.customer_accounts_enabled %}
     {% render 'account-popover' %}
     {% render 'account-drawer' %}

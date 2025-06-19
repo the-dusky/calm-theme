@@ -1,0 +1,177 @@
+{% comment %}
+  Global Drop Selector
+  Site-wide drop selection component for header
+  Uses localStorage to persist user's preferred drop selection
+{% endcomment %}
+
+{% liquid
+  # Get all collections with drop information
+  assign drop_collections = collections | where: 'metafields.custom.ship_by_date', present
+  assign sorted_drops = drop_collections | sort: 'metafields.custom.ship_by_date'
+  
+  # Create flag mapping
+  assign flag_map = 'US:🇺🇸,JP:🇯🇵,EU:🇪🇺' | split: ','
+%}
+
+{% if sorted_drops.size > 1 %}
+  <div class="global-drop-selector" id="global-drop-selector">
+    <div class="global-drop-selector__wrapper">
+      <label for="global-drop-select" class="global-drop-selector__label visually-hidden">
+        {{ 'header.drop_selector.label' | t: default: 'Choose your drop:' }}
+      </label>
+      
+      <div class="global-drop-selector__select-wrapper">
+        <select 
+          id="global-drop-select" 
+          class="global-drop-selector__select"
+          data-global-drop-selector
+          aria-label="{{ 'header.drop_selector.label' | t: default: 'Choose your drop' }}"
+        >
+          <option value="" disabled>
+            {{ 'header.drop_selector.placeholder' | t: default: 'Select drop...' }}
+          </option>
+          
+          {% for collection in sorted_drops %}
+            {%- liquid
+              assign ship_date = collection.metafields.custom.ship_by_date
+              assign drop_type = collection.metafields.custom.drop_type | default: 'Standard'
+              assign cutoff_date = collection.metafields.custom.order_cutoff_date
+              assign is_available = true
+              
+              # Check if drop is still available for ordering
+              if cutoff_date and cutoff_date < 'now' | date: '%Y-%m-%d'
+                assign is_available = false
+              endif
+              
+              # Get flag for this drop
+              assign flag_emoji = '🌍'
+              for flag_pair in flag_map
+                assign flag_parts = flag_pair | split: ':'
+                if flag_parts[0] == drop_type
+                  assign flag_emoji = flag_parts[1]
+                  break
+                endif
+              endfor
+            -%}
+            
+            <option 
+              value="{{ collection.handle }}"
+              data-ship-date="{{ ship_date }}"
+              data-drop-type="{{ drop_type }}"
+              data-cutoff-date="{{ cutoff_date }}"
+              data-collection-id="{{ collection.id }}"
+              data-flag="{{ flag_emoji }}"
+              {% unless is_available %}disabled{% endunless %}
+            >
+              {{ flag_emoji }} {{ drop_type }} Drop - Ships {{ ship_date | date: '%b %d' }}
+              {% unless is_available %} (Closed){% endunless %}
+            </option>
+          {% endfor %}
+        </select>
+        
+        <svg class="global-drop-selector__caret" viewBox="0 0 10 6" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M1 1.5L5 4.5L9 1.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      
+      <div id="global-drop-info" class="global-drop-selector__info" style="display: none;">
+        <span class="global-drop-selector__selected-flag" data-selected-flag></span>
+        <span class="global-drop-selector__selected-text" data-selected-text></span>
+      </div>
+    </div>
+  </div>
+{% endif %}
+
+<style>
+  .global-drop-selector {
+    position: relative;
+    margin-inline-end: var(--gap-md);
+  }
+  
+  .global-drop-selector__wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: var(--gap-xs);
+  }
+  
+  .global-drop-selector__select-wrapper {
+    position: relative;
+    display: inline-block;
+    min-width: 140px;
+  }
+  
+  .global-drop-selector__select {
+    appearance: none;
+    background: rgb(var(--color-background));
+    border: 1px solid rgba(var(--color-foreground), 0.2);
+    border-radius: 0.3rem;
+    padding: 0.5rem 2rem 0.5rem 0.75rem;
+    font-size: var(--font-size--xs);
+    cursor: pointer;
+    transition: border-color 0.2s ease;
+    width: 100%;
+    color: rgb(var(--color-foreground));
+  }
+  
+  .global-drop-selector__select:focus {
+    outline: none;
+    border-color: rgb(var(--color-accent));
+    box-shadow: 0 0 0 2px rgba(var(--color-accent), 0.1);
+  }
+  
+  .global-drop-selector__select:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+  
+  .global-drop-selector__caret {
+    position: absolute;
+    right: 0.5rem;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 0.75rem;
+    height: 0.5rem;
+    pointer-events: none;
+    color: rgba(var(--color-foreground), 0.6);
+  }
+  
+  .global-drop-selector__info {
+    display: flex;
+    align-items: center;
+    gap: var(--gap-2xs);
+    font-size: var(--font-size--xs);
+    color: rgb(var(--color-foreground));
+  }
+  
+  .global-drop-selector__selected-flag {
+    font-size: 1rem;
+  }
+  
+  .global-drop-selector__selected-text {
+    font-weight: 500;
+  }
+  
+  /* Mobile responsive */
+  @media screen and (max-width: 750px) {
+    .global-drop-selector {
+      margin-inline-end: var(--gap-sm);
+    }
+    
+    .global-drop-selector__select {
+      min-width: 120px;
+      font-size: var(--font-size--2xs);
+      padding: 0.4rem 1.75rem 0.4rem 0.6rem;
+    }
+    
+    .global-drop-selector__info {
+      display: none; /* Hide detailed info on mobile */
+    }
+  }
+  
+  @media screen and (max-width: 500px) {
+    .global-drop-selector__select {
+      min-width: 100px;
+    }
+  }
+</style>

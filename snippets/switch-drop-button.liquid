@@ -1,0 +1,158 @@
+{% comment %}
+  Switch Drop Button
+  Button component for switching to a different drop
+  
+  @param {string} target_drop_handle - Handle of the drop to switch to
+  @param {string} button_text - Custom button text (optional)
+  @param {string} button_class - Additional CSS classes (optional)
+  @param {boolean} show_flag - Whether to show country flag (default: true)
+{% endcomment %}
+
+{% liquid
+  assign target_drop_handle = target_drop_handle | default: ''
+  assign button_text = button_text | default: ''
+  assign button_class = button_class | default: 'button-secondary'
+  assign show_flag = show_flag | default: true
+  
+  # Find the target drop collection
+  assign target_collection = collections[target_drop_handle]
+  
+  if target_collection and target_collection.metafields.custom.ship_by_date
+    assign drop_type = target_collection.metafields.custom.drop_type | default: 'Standard'
+    assign ship_date = target_collection.metafields.custom.ship_by_date
+    
+    # Get flag for this drop
+    assign flag_emoji = '🌍'
+    case drop_type
+      when 'US'
+        assign flag_emoji = '🇺🇸'
+      when 'JP'  
+        assign flag_emoji = '🇯🇵'
+      when 'EU'
+        assign flag_emoji = '🇪🇺'
+    endcase
+    
+    # Generate button text if not provided
+    if button_text == blank
+      if show_flag
+        assign button_text = flag_emoji | append: ' Switch to ' | append: drop_type | append: ' Drop'
+      else
+        assign button_text = 'Switch to ' | append: drop_type | append: ' Drop'
+      endif
+    endif
+%}
+
+{% if target_collection %}
+  <button 
+    type="button"
+    class="switch-drop-button {{ button_class }}"
+    data-switch-drop="{{ target_drop_handle }}"
+    data-drop-type="{{ drop_type }}"
+    data-ship-date="{{ ship_date }}"
+    data-flag="{{ flag_emoji }}"
+    aria-label="Switch to {{ drop_type }} drop shipping {{ ship_date | date: '%B %d, %Y' }}"
+  >
+    <span class="switch-drop-button__content">
+      {% if show_flag %}
+        <span class="switch-drop-button__flag">{{ flag_emoji }}</span>
+      {% endif %}
+      <span class="switch-drop-button__text">
+        {{ button_text }}
+      </span>
+    </span>
+    
+    <span class="switch-drop-button__ship-info">
+      Ships {{ ship_date | date: '%b %d' }}
+    </span>
+  </button>
+{% endif %}
+
+<style>
+  .switch-drop-button {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--gap-2xs);
+    padding: var(--padding-sm) var(--padding-md);
+    border: 1px solid rgba(var(--color-foreground), 0.2);
+    border-radius: var(--border-radius);
+    background: rgb(var(--color-background));
+    color: rgb(var(--color-foreground));
+    font-size: var(--font-size--sm);
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-decoration: none;
+    min-width: 140px;
+  }
+  
+  .switch-drop-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(var(--color-foreground), 0.1);
+    border-color: rgb(var(--color-accent));
+    background: rgba(var(--color-accent), 0.05);
+  }
+  
+  .switch-drop-button:active {
+    transform: translateY(0);
+  }
+  
+  .switch-drop-button.current-drop {
+    background: rgb(var(--color-accent));
+    color: rgb(var(--color-background));
+    border-color: rgb(var(--color-accent));
+  }
+  
+  .switch-drop-button.current-drop:hover {
+    transform: none;
+    opacity: 0.9;
+  }
+  
+  .switch-drop-button__content {
+    display: flex;
+    align-items: center;
+    gap: var(--gap-xs);
+  }
+  
+  .switch-drop-button__flag {
+    font-size: 1.1em;
+  }
+  
+  .switch-drop-button__text {
+    white-space: nowrap;
+  }
+  
+  .switch-drop-button__ship-info {
+    font-size: var(--font-size--xs);
+    opacity: 0.7;
+    font-weight: 400;
+  }
+  
+  .current-drop .switch-drop-button__ship-info {
+    opacity: 0.9;
+  }
+  
+  /* Compact variant for inline use */
+  .switch-drop-button--compact {
+    flex-direction: row;
+    min-width: auto;
+    padding: var(--padding-xs) var(--padding-sm);
+  }
+  
+  .switch-drop-button--compact .switch-drop-button__ship-info {
+    display: none;
+  }
+  
+  /* Small variant for mobile */
+  @media screen and (max-width: 500px) {
+    .switch-drop-button {
+      min-width: 120px;
+      padding: var(--padding-xs) var(--padding-sm);
+      font-size: var(--font-size--xs);
+    }
+    
+    .switch-drop-button__text {
+      font-size: var(--font-size--2xs);
+    }
+  }
+</style>

@@ -303,6 +303,12 @@
     "product_title": "Product title",
     "collection_title": "Collection title"
   },
+  "header": {
+    "drop_selector": {
+      "label": "Choose your drop",
+      "placeholder": "Select drop..."
+    }
+  },
   "products": {
     "product": {
       "add_to_cart": "Add to cart",

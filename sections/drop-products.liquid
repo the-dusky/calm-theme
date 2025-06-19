@@ -1,0 +1,359 @@
+{% comment %}
+  Drop-Aware Product Grid Section
+  Shows products filtered by current drop selection
+  Can be configured for "Available This Drop" or "Future Drops"
+{% endcomment %}
+
+{% liquid
+  assign section_type = section.settings.section_type | default: 'current'
+  assign max_products = section.settings.max_products | default: 8
+  assign columns_desktop = section.settings.columns_desktop | default: 4
+  assign columns_mobile = section.settings.columns_mobile | default: 2
+  
+  # Get all collections with drop information
+  assign drop_collections = collections | where: 'metafields.custom.ship_by_date', present
+  assign all_drop_products = blank
+  
+  # Collect all products from drop collections
+  for collection in drop_collections
+    assign all_drop_products = all_drop_products | concat: collection.products
+  endfor
+  
+  # Remove duplicates by creating unique product list
+  assign unique_products = blank
+  assign processed_ids = blank
+  
+  for product in all_drop_products
+    unless processed_ids contains product.id
+      assign unique_products = unique_products | concat: product
+      assign processed_ids = processed_ids | append: product.id | append: ','
+    endunless
+  endfor
+  
+  # Limit products for performance
+  assign display_products = unique_products | slice: 0, max_products
+%}
+
+<div 
+  class="drop-products-section spacing-style color-{{ section.settings.color_scheme }}"
+  style="{% render 'spacing-style', settings: section.settings %}"
+  data-drop-section="{{ section_type }}"
+  data-section-id="{{ section.id }}"
+>
+  <div class="container">
+    <div class="drop-products-section__header">
+      <h2 class="drop-products-section__title drop-section-title">
+        {% case section_type %}
+          {% when 'current' %}
+            🌍 Available This Drop
+          {% when 'future' %}
+            🔮 Products Coming in Future Drops
+          {% else %}
+            {{ section.settings.heading | default: 'Drop Products' }}
+        {% endcase %}
+      </h2>
+      
+      {% if section.settings.description != blank %}
+        <p class="drop-products-section__description">
+          {{ section.settings.description }}
+        </p>
+      {% endif %}
+    </div>
+
+    {% if display_products.size > 0 %}
+      <div 
+        class="drop-products-grid product-grid"
+        style="
+          --columns-desktop: {{ columns_desktop }};
+          --columns-mobile: {{ columns_mobile }};
+          gap: {{ section.settings.gap }}px;
+        "
+      >
+        {% for product in display_products %}
+          {%- liquid
+            # Get drop collections for this product
+            assign product_drops = blank
+            assign product_drop_handles = blank
+            
+            for collection in product.collections
+              if collection.metafields.custom.ship_by_date
+                assign product_drops = product_drops | concat: collection
+                assign product_drop_handles = product_drop_handles | append: collection.handle
+                unless forloop.last
+                  assign product_drop_handles = product_drop_handles | append: ','
+                endunless
+              endif
+            endfor
+            
+            # Find other available drops for switch buttons
+            assign other_drops = blank
+            for collection in drop_collections
+              assign found = false
+              for product_collection in product.collections
+                if product_collection.handle == collection.handle
+                  assign found = true
+                  break
+                endif
+              endfor
+              unless found
+                assign other_drops = other_drops | concat: collection
+              endunless
+            endfor
+          -%}
+          
+          <div 
+            class="drop-product-card"
+            data-drop-product="{{ product_drop_handles }}"
+            data-product-id="{{ product.id }}"
+          >
+            {% render 'product-card', 
+              product: product,
+              section_id: section.id
+            %}
+            
+            <div class="product-drop-overlay">
+              <div class="product-drop-indicator">
+                <!-- Will be populated by JavaScript -->
+              </div>
+              
+              {% if other_drops.size > 0 %}
+                <div class="product-drop-switches" style="display: none;">
+                  {% for other_drop in other_drops limit: 2 %}
+                    {% render 'switch-drop-button', 
+                      target_drop_handle: other_drop.handle,
+                      button_class: 'switch-drop-button--compact'
+                    %}
+                  {% endfor %}
+                </div>
+              {% endif %}
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="drop-products-section__empty">
+        <p>{{ section.settings.empty_message | default: 'No products available for this drop yet.' }}</p>
+      </div>
+    {% endif %}
+  </div>
+</div>
+
+<style>
+  .drop-products-section {
+    padding: var(--padding-section-vertical) 0;
+  }
+  
+  .drop-products-section__header {
+    text-align: center;
+    margin-bottom: var(--margin-xl);
+  }
+  
+  .drop-products-section__title {
+    font-size: var(--font-size--2xl);
+    font-weight: 700;
+    margin-bottom: var(--margin-sm);
+    color: rgb(var(--color-foreground));
+  }
+  
+  .drop-products-section__description {
+    font-size: var(--font-size--md);
+    color: rgba(var(--color-foreground), 0.8);
+    max-width: 600px;
+    margin: 0 auto;
+    line-height: 1.6;
+  }
+  
+  .drop-products-grid {
+    display: grid;
+    grid-template-columns: repeat(var(--columns-mobile), 1fr);
+    gap: var(--gap-md);
+  }
+  
+  @media screen and (min-width: 750px) {
+    .drop-products-grid {
+      grid-template-columns: repeat(var(--columns-desktop), 1fr);
+    }
+  }
+  
+  .drop-product-card {
+    position: relative;
+    transition: transform 0.2s ease, opacity 0.3s ease;
+  }
+  
+  .drop-product-card.drop-unavailable {
+    opacity: 0.6;
+  }
+  
+  .drop-product-card.drop-available {
+    opacity: 1;
+  }
+  
+  .drop-products-section__empty {
+    text-align: center;
+    padding: var(--padding-2xl);
+    color: rgba(var(--color-foreground), 0.6);
+  }
+  
+  .product-drop-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    pointer-events: none;
+    z-index: 2;
+  }
+  
+  .product-drop-indicator {
+    position: absolute;
+    top: var(--padding-xs);
+    right: var(--padding-xs);
+    pointer-events: auto;
+  }
+  
+  .product-drop-switches {
+    position: absolute;
+    bottom: var(--padding-xs);
+    left: var(--padding-xs);
+    right: var(--padding-xs);
+    display: flex;
+    gap: var(--gap-xs);
+    pointer-events: auto;
+  }
+  
+  .drop-product-card:hover .product-drop-switches {
+    display: flex !important;
+  }
+  
+  /* Product drop indicator styles are in global-drop-manager.js */
+</style>
+
+{% schema %}
+{
+  "name": "Drop Products",
+  "settings": [
+    {
+      "type": "select",
+      "id": "section_type",
+      "label": "Section Type",
+      "options": [
+        {
+          "value": "current",
+          "label": "Available This Drop"
+        },
+        {
+          "value": "future",
+          "label": "Future Drops"
+        },
+        {
+          "value": "custom",
+          "label": "Custom"
+        }
+      ],
+      "default": "current"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Custom Heading",
+      "info": "Only used when Section Type is set to Custom"
+    },
+    {
+      "type": "textarea",
+      "id": "description",
+      "label": "Description"
+    },
+    {
+      "type": "text",
+      "id": "empty_message",
+      "label": "Empty State Message",
+      "default": "No products available for this drop yet."
+    },
+    {
+      "type": "range",
+      "id": "max_products",
+      "label": "Maximum Products",
+      "min": 4,
+      "max": 20,
+      "step": 2,
+      "default": 8
+    },
+    {
+      "type": "range",
+      "id": "columns_desktop",
+      "label": "Columns (Desktop)",
+      "min": 2,
+      "max": 6,
+      "step": 1,
+      "default": 4
+    },
+    {
+      "type": "range",
+      "id": "columns_mobile",
+      "label": "Columns (Mobile)",
+      "min": 1,
+      "max": 3,
+      "step": 1,
+      "default": 2
+    },
+    {
+      "type": "range",
+      "id": "gap",
+      "label": "Grid Gap",
+      "min": 8,
+      "max": 40,
+      "step": 4,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color Scheme",
+      "default": "scheme-1"
+    },
+    {
+      "type": "header",
+      "content": "Spacing"
+    },
+    {
+      "type": "range",
+      "id": "padding-block-start",
+      "label": "Top Padding",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "default": 60
+    },
+    {
+      "type": "range",
+      "id": "padding-block-end",
+      "label": "Bottom Padding",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "default": 60
+    }
+  ],
+  "presets": [
+    {
+      "name": "Available This Drop",
+      "settings": {
+        "section_type": "current",
+        "heading": "Available This Drop",
+        "description": "Shop products available in your selected drop"
+      }
+    },
+    {
+      "name": "Future Drops",
+      "settings": {
+        "section_type": "future", 
+        "heading": "Coming in Future Drops",
+        "description": "Products coming soon in upcoming drops"
+      }
+    }
+  ]
+}
+{% endschema %}
