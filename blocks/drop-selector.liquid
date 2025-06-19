@@ -10,10 +10,10 @@
     assign product = product
   endif
   
-  comment 'Find all collections with drop information for this product'
+  # Find all collections with drop information for this product
   assign drop_collections = product.collections | where: 'metafields.custom.ship_by_date', present
   
-  comment 'Sort collections by ship date'
+  # Sort collections by ship date
   assign sorted_drops = drop_collections | sort: 'metafields.custom.ship_by_date'
 -%}
 
@@ -42,7 +42,7 @@
               assign cutoff_date = collection.metafields.custom.order_cutoff_date
               assign is_available = true
               
-              comment 'Check if drop is still available for ordering'
+              # Check if drop is still available for ordering
               if cutoff_date and cutoff_date < 'now' | date: '%Y-%m-%d'
                 assign is_available = false
               endif
