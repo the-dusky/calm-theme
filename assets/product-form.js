@@ -164,14 +164,8 @@ class ProductFormComponent extends Component {
       return;
     }
 
-    const shouldSkip = await preorderComponent.shouldSkipConfirmation();
-    if (shouldSkip) {
-      // Skip modal and trigger hidden add-to-cart button directly
-      preorderComponent.switchToAddToCartAndTrigger();
-      return;
-    }
-
-    // Show the preorder modal (which will handle button switching on confirm)
+    // Always show the preorder modal first
+    // The modal will handle checking customer preferences and button switching
     preorderComponent.showPrompt({
       product: productData,
       variant: variantData,

@@ -26,16 +26,7 @@ export class PreorderPromptComponent extends Component {
     this.#dropData = dropInfo;
     this.#originalAddToCartCallback = onConfirm;
 
-    // Check if customer has opted to skip confirmations
-    const shouldSkip = await this.#shouldSkipConfirmation();
-    if (shouldSkip) {
-      // Skip modal and proceed directly to add to cart
-      if (this.#originalAddToCartCallback) {
-        this.#originalAddToCartCallback();
-      }
-      return;
-    }
-
+    // Always show modal first - preference checking happens on confirm
     this.#populateModalContent();
     this.#openModal();
   }
@@ -107,14 +98,17 @@ export class PreorderPromptComponent extends Component {
   /**
    * Handles the confirm preorder action
    */
-  confirmPreorder = () => {
+  confirmPreorder = async () => {
     // Check if "don't show again" is checked and handle customer preference
     this.#handleDontShowAgainPreference();
     
-    // Hide preorder button and show add-to-cart button, then trigger it
-    this.#switchToAddToCartAndTrigger();
-    
+    // Close modal first
     this.#closeModal();
+    
+    // Small delay to ensure modal is closed, then switch buttons and trigger
+    setTimeout(() => {
+      this.#switchToAddToCartAndTrigger();
+    }, 100);
   };
 
   /**
