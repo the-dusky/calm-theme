@@ -20,6 +20,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add to cart interception for preorder products
 - Product data exposure to JavaScript for preorder detection
 - Preorder test snippet for development testing
+- How It Works dedicated page system with reusable components
+- How It Works page template (`/templates/page.how-it-works.json`)
+- Reusable How It Works content snippet with variant support (modal/page/section)
+- Theme section for How It Works page (`/sections/how-it-works-page.liquid`)
+- "Learn more" link integration in preorder info card
+- Modal and page styling with responsive design
 
 ### Changed
 - Variant picker now supports custom color display names via `color_displayname_override` metafield
