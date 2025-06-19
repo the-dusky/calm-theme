@@ -231,6 +231,7 @@
         "shipment_date_YDhhyf",
         "shipment_date_GMJVpm"
       ],
+      "disabled": true,
       "name": "Shipping Tracker",
       "settings": {
         "heading": "",
@@ -542,7 +543,6 @@
           ]
         }
       },
-      "disabled": true,
       "name": "t:names.products_grid",
       "settings": {
         "collection": "all",
@@ -713,9 +713,9 @@
   },
   "order": [
     "hero_iLBwPd",
+    "product_list_EDUBdR",
     "shipping_tracker_tKNhEx",
     "how_it_works_8Y3QCp",
-    "product_list_EDUBdR",
     "media_with_content_LfPdEJ"
   ]
 }
