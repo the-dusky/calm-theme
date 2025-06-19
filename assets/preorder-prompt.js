@@ -111,10 +111,48 @@ export class PreorderPromptComponent extends Component {
     // Check if "don't show again" is checked and handle customer preference
     this.#handleDontShowAgainPreference();
     
-    if (this.#originalAddToCartCallback) {
-      this.#originalAddToCartCallback();
-    }
+    // Hide preorder button and show add-to-cart button, then trigger it
+    this.#switchToAddToCartAndTrigger();
+    
     this.#closeModal();
+  };
+
+  /**
+   * Switches from preorder button to add-to-cart button and auto-triggers it (public method)
+   */
+  switchToAddToCartAndTrigger() {
+    this.#switchToAddToCartAndTrigger();
+  }
+
+  /**
+   * Switches from preorder button to add-to-cart button and auto-triggers it (private implementation)
+   */
+  #switchToAddToCartAndTrigger() {
+    // Find the preorder button and hidden cart button
+    const preorderButton = document.querySelector('[data-preorder-trigger]');
+    const hiddenCartContainer = document.querySelector('.preorder-hidden-cart-button');
+    
+    if (!preorderButton || !hiddenCartContainer) {
+      console.warn('Could not find preorder button or hidden cart button');
+      return;
+    }
+
+    // Hide the preorder button
+    preorderButton.style.display = 'none';
+    
+    // Show and position the add-to-cart button in the same location
+    hiddenCartContainer.style.display = 'block';
+    
+    // Find the actual add-to-cart button and trigger it
+    const addToCartButton = hiddenCartContainer.querySelector('button[type="submit"], button[name="add"]');
+    if (addToCartButton) {
+      // Small delay to ensure DOM is updated
+      setTimeout(() => {
+        addToCartButton.click();
+      }, 50);
+    } else {
+      console.warn('Could not find add-to-cart button to trigger');
+    }
   };
 
   /**

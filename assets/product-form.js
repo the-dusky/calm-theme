@@ -140,7 +140,7 @@ class ProductFormComponent extends Component {
   }
 
   /**
-   * Handles preorder button clicks (bypasses form submission)
+   * Handles preorder button clicks (shows modal)
    * @param {Event} event - The click event
    */
   #handlePreorderButtonClick = async (event) => {
@@ -166,17 +166,17 @@ class ProductFormComponent extends Component {
 
     const shouldSkip = await preorderComponent.shouldSkipConfirmation();
     if (shouldSkip) {
-      // Skip modal and proceed directly to add to cart
-      this.#proceedWithAddToCart(event);
+      // Skip modal and trigger hidden add-to-cart button directly
+      preorderComponent.switchToAddToCartAndTrigger();
       return;
     }
 
-    // Show the preorder modal with add-to-cart callback
+    // Show the preorder modal (which will handle button switching on confirm)
     preorderComponent.showPrompt({
       product: productData,
       variant: variantData,
       dropInfo,
-      onConfirm: () => this.#proceedWithAddToCart(event)
+      onConfirm: null // No callback needed - modal handles button switching
     });
   };
 
