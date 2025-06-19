@@ -156,7 +156,14 @@ export class PreorderPromptComponent extends Component {
     const modal = document.getElementById('preorder-prompt-dialog');
     const checkbox = modal?.querySelector('#skip-preorder-confirmation');
     
+    console.log('Checking checkbox preference:', {
+      modal: !!modal,
+      checkbox: !!checkbox,
+      checked: checkbox?.checked
+    });
+    
     if (checkbox && checkbox.checked) {
+      console.log('Saving customer preference to skip confirmations');
       this.#saveCustomerPreference();
     }
   }
@@ -175,7 +182,11 @@ export class PreorderPromptComponent extends Component {
    */
   async #shouldSkipConfirmation() {
     // Check localStorage first (works for both logged in and guest users)
-    if (localStorage.getItem('skipPreorderConfirmation') === 'true') {
+    const localStorageValue = localStorage.getItem('skipPreorderConfirmation');
+    console.log('Checking skip confirmation - localStorage:', localStorageValue);
+    
+    if (localStorageValue === 'true') {
+      console.log('Skipping confirmation due to localStorage preference');
       return true;
     }
 
@@ -184,12 +195,22 @@ export class PreorderPromptComponent extends Component {
       try {
         // Check if customer metafield exists (this would be populated from Liquid template)
         const skipConfirmation = window.Theme?.customer?.metafields?.custom?.skip_preorder_confirmation;
-        return skipConfirmation === true || skipConfirmation === 'true';
+        console.log('Checking skip confirmation - customer metafield:', {
+          customerId: window.Theme.customer.id,
+          metafieldValue: skipConfirmation,
+          customerData: window.Theme.customer
+        });
+        
+        if (skipConfirmation === true || skipConfirmation === 'true') {
+          console.log('Skipping confirmation due to customer metafield preference');
+          return true;
+        }
       } catch (error) {
         console.warn('Error checking customer preference:', error);
       }
     }
 
+    console.log('Not skipping confirmation - no preference found');
     return false;
   }
 
@@ -197,11 +218,15 @@ export class PreorderPromptComponent extends Component {
    * Saves customer preference to skip preorder confirmation
    */
   async #saveCustomerPreference() {
+    console.log('Saving customer preference to skip preorder confirmations');
+    
     // Always save to localStorage for immediate effect
     localStorage.setItem('skipPreorderConfirmation', 'true');
+    console.log('Saved to localStorage: skipPreorderConfirmation = true');
 
     // If customer is logged in, also attempt to save to their metafields
     if (window.Theme?.customer?.id) {
+      console.log('Customer is logged in, attempting to save metafield');
       try {
         // Use a simpler approach - submit a form to update customer metafield
         // This is more reliable than trying to use Admin API from frontend
@@ -212,12 +237,20 @@ export class PreorderPromptComponent extends Component {
         await fetch('/account/update-preferences', {
           method: 'POST',
           body: formData
+        }).then(response => {
+          if (response.ok) {
+            console.log('Successfully saved customer metafield preference');
+          } else {
+            console.warn('Failed to save customer metafield preference:', response.status);
+          }
         }).catch(error => {
           console.warn('Could not save customer metafield preference:', error);
         });
       } catch (error) {
         console.warn('Error saving customer preference:', error);
       }
+    } else {
+      console.log('Customer not logged in, only localStorage preference saved');
     }
   }
 
