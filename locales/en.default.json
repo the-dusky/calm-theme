@@ -310,7 +310,13 @@
       "added_to_cart": "Added to cart",
       "add_to_cart_error": "Error adding to cart",
       "sold_out": "Sold out",
-      "unavailable": "Unavailable"
+      "unavailable": "Unavailable",
+      "drop_selector": {
+        "label": "Choose your drop:",
+        "placeholder": "Select a drop...",
+        "ships_on": "Ships on:",
+        "order_by": "Order by:"
+      }
     }
   },
   "preorder": {

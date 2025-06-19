@@ -10,7 +10,7 @@
 {% endcomment %}
 
 {% liquid
-  # Format the ship by date
+  # Format the ship by date - will be updated by drop selector
   assign ship_by_date = drop_collection.metafields.custom.ship_by_date
   assign formatted_ship_date = 'TBD'
   if ship_by_date != blank
@@ -22,6 +22,13 @@
   assign location_text = ''
   if drop_location != blank
     assign location_text = ' (' | append: drop_location | append: ')'
+  endif
+  
+  # Check if product has multiple drops
+  assign drop_collections = product.collections | where: 'metafields.custom.ship_by_date', present
+  assign has_multiple_drops = false
+  if drop_collections.size > 1
+    assign has_multiple_drops = true
   endif
 %}
 
@@ -37,15 +44,23 @@
     <div class="preorder-info-card__text">
       <h3 class="preorder-info-card__title">
         {{ 'preorder.info_card.title' | t: default: 'This is a preorder item' }}{{ location_text }}
+        {% if has_multiple_drops %}
+          <span class="preorder-info-card__drop-indicator">(Multiple drops available)</span>
+        {% endif %}
       </h3>
       <p class="preorder-info-card__description">
         {% assign description_text = 'preorder.info_card.description' | t: ship_date: formatted_ship_date %}
         {% if description_text contains 'Translation missing' %}
-          I will ship out to customers on or before {{ formatted_ship_date }}.
+          I will ship out to customers on or before <span data-ship-date>{{ formatted_ship_date }}</span>.
         {% else %}
-          {{ description_text }}
+          {{ description_text | replace: formatted_ship_date, '<span data-ship-date>' | append: formatted_ship_date | append: '</span>' }}
         {% endif %}
       </p>
+      {% if has_multiple_drops %}
+        <p class="preorder-info-card__drop-hint">
+          <small>💡 Use the drop selector above to choose your preferred shipping option</small>
+        </p>
+      {% endif %}
     </div>
   </div>
   
@@ -133,6 +148,31 @@
     color: #1e40af;
     line-height: 1.4;
     opacity: 0.8;
+  }
+
+  .preorder-info-card__drop-indicator {
+    font-size: var(--font-size--xs);
+    font-weight: 400;
+    color: #059669;
+    background-color: #d1fae5;
+    padding: 2px 6px;
+    border-radius: 4px;
+    margin-left: 8px;
+  }
+
+  .preorder-info-card__drop-hint {
+    margin: var(--padding-xs) 0 0 0;
+    font-size: var(--font-size--xs);
+    color: #059669;
+    background-color: #ecfdf5;
+    padding: var(--padding-xs);
+    border-radius: 4px;
+    border-left: 3px solid #10b981;
+  }
+
+  [data-ship-date] {
+    font-weight: 600;
+    color: #1e40af;
   }
 
   .preorder-info-card__actions {

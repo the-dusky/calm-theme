@@ -96,6 +96,22 @@
           ref="variantId"
           value="{{ product.selected_or_first_available_variant.id }}"
         >
+        {%- if is_drop_product -%}
+          <input
+            type="hidden"
+            name="properties[Drop Collection]"
+            id="drop-collection-input-{{ block.id }}"
+            value="{{ drop_collection.handle }}"
+            data-drop-collection-input
+          >
+          <input
+            type="hidden"
+            name="properties[Ship Date]"
+            id="ship-date-input-{{ block.id }}"
+            value="{{ drop_collection.metafields.custom.ship_by_date }}"
+            data-ship-date-input
+          >
+        {%- endif -%}
         <div
           class="product-form-buttons spacing-style{% if block.settings.stacking %} product-form-buttons--stacked{% endif %}"
           style="{% render 'spacing-style', settings: block.settings %}"

@@ -1,0 +1,170 @@
+{%- liquid
+  comment
+    Drop Selector Block
+    Allows customers to choose between different drops for a product
+    Integrates with collection metafields: ship_by_date, drop_type, order_cutoff_date
+  endcomment
+
+  assign product = product | default: block.settings.product
+  if product == blank and template contains 'product'
+    assign product = product
+  endif
+  
+  comment 'Find all collections with drop information for this product'
+  assign drop_collections = product.collections | where: 'metafields.custom.ship_by_date', present
+  
+  comment 'Sort collections by ship date'
+  assign sorted_drops = drop_collections | sort: 'metafields.custom.ship_by_date'
+-%}
+
+{% if sorted_drops.size > 1 %}
+  <div class="drop-selector product-block" {{ block.shopify_attributes }}>
+    <div class="drop-selector__wrapper">
+      <label for="drop-select-{{ block.id }}" class="drop-selector__label">
+        {{ 'product.drop_selector.label' | t: default: 'Choose your drop:' }}
+      </label>
+      
+      <div class="drop-selector__select-wrapper">
+        <select 
+          id="drop-select-{{ block.id }}" 
+          class="drop-selector__select"
+          data-drop-selector
+          aria-describedby="drop-info-{{ block.id }}"
+        >
+          <option value="" disabled selected>
+            {{ 'product.drop_selector.placeholder' | t: default: 'Select a drop...' }}
+          </option>
+          
+          {% for collection in sorted_drops %}
+            {%- liquid
+              assign ship_date = collection.metafields.custom.ship_by_date
+              assign drop_type = collection.metafields.custom.drop_type | default: 'Standard'
+              assign cutoff_date = collection.metafields.custom.order_cutoff_date
+              assign is_available = true
+              
+              comment 'Check if drop is still available for ordering'
+              if cutoff_date and cutoff_date < 'now' | date: '%Y-%m-%d'
+                assign is_available = false
+              endif
+            -%}
+            
+            <option 
+              value="{{ collection.handle }}"
+              data-ship-date="{{ ship_date }}"
+              data-drop-type="{{ drop_type }}"
+              data-cutoff-date="{{ cutoff_date }}"
+              data-collection-id="{{ collection.id }}"
+              {% unless is_available %}disabled{% endunless %}
+            >
+              {{ drop_type }} Drop - Ships {{ ship_date | date: '%B %d, %Y' }}
+              {% unless is_available %} (Closed){% endunless %}
+            </option>
+          {% endfor %}
+        </select>
+        
+        <svg class="drop-selector__caret" viewBox="0 0 10 6" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M1 1.5L5 4.5L9 1.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      
+      <div id="drop-info-{{ block.id }}" class="drop-selector__info" style="display: none;">
+        <div class="drop-selector__shipping-info">
+          <p class="drop-selector__ship-date">
+            <strong>{{ 'product.drop_selector.ships_on' | t: default: 'Ships on:' }}</strong>
+            <span data-ship-date-display></span>
+          </p>
+          <p class="drop-selector__order-cutoff" data-cutoff-info style="display: none;">
+            <strong>{{ 'product.drop_selector.order_by' | t: default: 'Order by:' }}</strong>
+            <span data-cutoff-date-display></span>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <style>
+    .drop-selector {
+      margin: 1rem 0;
+    }
+    
+    .drop-selector__label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      font-size: 0.9rem;
+    }
+    
+    .drop-selector__select-wrapper {
+      position: relative;
+      display: inline-block;
+      width: 100%;
+    }
+    
+    .drop-selector__select {
+      appearance: none;
+      background: rgb(var(--color-background));
+      border: 1px solid rgba(var(--color-foreground), 0.2);
+      border-radius: 0.4rem;
+      padding: 0.75rem 2.5rem 0.75rem 1rem;
+      width: 100%;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: border-color 0.2s ease;
+    }
+    
+    .drop-selector__select:focus {
+      outline: none;
+      border-color: rgb(var(--color-accent));
+      box-shadow: 0 0 0 2px rgba(var(--color-accent), 0.1);
+    }
+    
+    .drop-selector__select:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+    
+    .drop-selector__caret {
+      position: absolute;
+      right: 1rem;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 1rem;
+      height: 0.6rem;
+      pointer-events: none;
+      color: rgba(var(--color-foreground), 0.6);
+    }
+    
+    .drop-selector__info {
+      margin-top: 0.75rem;
+      padding: 0.75rem;
+      background: rgba(var(--color-accent), 0.05);
+      border-radius: 0.4rem;
+      border-left: 3px solid rgb(var(--color-accent));
+    }
+    
+    .drop-selector__shipping-info p {
+      margin: 0 0 0.5rem 0;
+      font-size: 0.9rem;
+    }
+    
+    .drop-selector__shipping-info p:last-child {
+      margin-bottom: 0;
+    }
+    
+    .drop-selector__shipping-info strong {
+      color: rgb(var(--color-foreground));
+    }
+  </style>
+{% endif %}
+
+{% schema %}
+{
+  "name": "Drop Selector",
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "Allows customers to choose between different drops when a product is available in multiple collections with shipping dates."
+    }
+  ]
+}
+{% endschema %}
