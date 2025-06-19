@@ -99,8 +99,8 @@ export class PreorderPromptComponent extends Component {
    * Handles the confirm preorder action
    */
   confirmPreorder = async () => {
-    // Check if "don't show again" is checked and handle customer preference
-    this.#handleDontShowAgainPreference();
+    // Note: Checkbox preference is now handled immediately when checkbox is clicked
+    // No need to check it here anymore
     
     // Close modal first
     this.#closeModal();
@@ -149,24 +149,6 @@ export class PreorderPromptComponent extends Component {
     }
   };
 
-  /**
-   * Handles the "don't show again" checkbox preference
-   */
-  #handleDontShowAgainPreference() {
-    const modal = document.getElementById('preorder-prompt-dialog');
-    const checkbox = modal?.querySelector('#skip-preorder-confirmation');
-    
-    console.log('Checking checkbox preference:', {
-      modal: !!modal,
-      checkbox: !!checkbox,
-      checked: checkbox?.checked
-    });
-    
-    if (checkbox && checkbox.checked) {
-      console.log('Saving customer preference to skip confirmations');
-      this.#saveCustomerPreference();
-    }
-  }
 
   /**
    * Checks if customer has opted to skip preorder confirmations (public method)
@@ -215,7 +197,14 @@ export class PreorderPromptComponent extends Component {
   }
 
   /**
-   * Saves customer preference to skip preorder confirmation
+   * Saves customer preference to skip preorder confirmation (public method)
+   */
+  async saveCustomerPreference() {
+    return this.#saveCustomerPreference();
+  }
+
+  /**
+   * Saves customer preference to skip preorder confirmation (private implementation)
    */
   async #saveCustomerPreference() {
     console.log('Saving customer preference to skip preorder confirmations');
@@ -288,6 +277,14 @@ class PreorderPromptDialog extends DialogComponent {
         signal: this.#abortController.signal
       });
     }
+
+    // Set up checkbox listener to immediately save preference
+    const checkbox = this.querySelector('#skip-preorder-confirmation');
+    if (checkbox) {
+      checkbox.addEventListener('change', this.#handleCheckboxChange, {
+        signal: this.#abortController.signal
+      });
+    }
   }
 
   disconnectedCallback() {
@@ -312,6 +309,30 @@ class PreorderPromptDialog extends DialogComponent {
     const preorderComponent = window.preorderPromptComponent;
     if (preorderComponent) {
       preorderComponent.showHowItWorks();
+    }
+  };
+
+  /**
+   * Handles checkbox change - immediately save preference when checked
+   */
+  #handleCheckboxChange = (event) => {
+    const checkbox = event.target;
+    console.log('Checkbox changed:', {
+      checked: checkbox.checked,
+      id: checkbox.id
+    });
+
+    if (checkbox.checked) {
+      console.log('Checkbox checked - immediately saving customer preference');
+      const preorderComponent = window.preorderPromptComponent;
+      if (preorderComponent) {
+        // Call the public method to save preference immediately
+        preorderComponent.saveCustomerPreference();
+      }
+    } else {
+      console.log('Checkbox unchecked - could clear preference here if needed');
+      // Optionally handle unchecking - maybe clear the preference
+      // For now, we'll keep the preference once set
     }
   };
 }
