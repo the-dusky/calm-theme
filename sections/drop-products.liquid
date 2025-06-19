@@ -107,7 +107,8 @@
             data-product-id="{{ product.id }}"
           >
             {% render 'product-card', 
-              product: product
+              product: product,
+              children: blocks
             %}
             
             <div class="product-drop-overlay">
