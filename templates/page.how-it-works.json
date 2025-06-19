@@ -1,19 +1,44 @@
-/*
- * ------------------------------------------------------------
- * IMPORTANT: The contents of this file are auto-generated.
- *
- * This file may be updated by the Shopify admin theme editor
- * or related systems. Please exercise caution as any changes
- * made to this file may be overwritten.
- * ------------------------------------------------------------
- */
 {
   "sections": {
-    "contact_banner": {
+    "main": {
       "type": "main-page",
+      "blocks": {
+        "heading": {
+          "type": "text",
+          "name": "Title",
+          "settings": {
+            "text": "<h1>How It Works</h1>",
+            "width": "100%",
+            "max_width": "normal",
+            "alignment": "center",
+            "type_preset": "h1",
+            "font": "var(--font-body--family)",
+            "font_size": "2.5rem",
+            "line_height": "normal",
+            "letter_spacing": "normal",
+            "case": "none",
+            "wrap": "pretty",
+            "color": "var(--color-foreground)",
+            "background": false,
+            "background_color": "#00000026",
+            "corner_radius": 0,
+            "padding-block-start": 0,
+            "padding-block-end": 32,
+            "padding-inline-start": 0,
+            "padding-inline-end": 0
+          },
+          "blocks": {}
+        }
+      },
+      "block_order": [
+        "heading"
+      ],
       "settings": {
-        "padding-block-start": 0,
-        "padding-block-end": 32
+        "content_direction": "column",
+        "gap": 48,
+        "color_scheme": "",
+        "padding-block-start": 80,
+        "padding-block-end": 0
       }
     },
     "how-it-works-content": {
@@ -26,7 +51,7 @@
     }
   },
   "order": [
-    "contact_banner",
+    "main",
     "how-it-works-content"
   ]
 }

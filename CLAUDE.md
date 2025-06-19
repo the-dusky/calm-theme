@@ -1,5 +1,15 @@
 # Claude Notes
 
+## Project Rules
+
+Do not escape characters using backslashes in liquid. 
+  - Example: {{ 'preorder.how_it_works.step3.description' | t: default: 'Once ready, your order ships by the estimated date. You\'ll receive tracking information.' }}
+  - This should be: {{ 'preorder.how_it_works.step3.description' | t: default: "Once ready, your order ships by the estimated date. You'll receive tracking information." }}
+  - Rule of Thumb
+	  - Use double quotes (") if your string includes an apostrophe (')
+	  - Use single quotes (') if your string includes double quotes (")
+
+
 ## Task Analysis Workflow
 
   When I describe a task, first analyze what I'm
