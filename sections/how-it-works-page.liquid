@@ -1,0 +1,57 @@
+{% comment %}
+  How It Works Page Section
+  
+  This section renders the complete how it works content for a dedicated page.
+  It uses the reusable how-it-works-content snippet with full page features.
+{% endcomment %}
+
+{% liquid
+  assign show_detailed_process = section.settings.show_detailed_process | default: true
+  assign show_faq = section.settings.show_faq | default: true
+  assign show_contact_support = section.settings.show_contact_support | default: true
+%}
+
+<div class="how-it-works-page-section how-it-works-page-section--{{ section.id }}" {{ section.shopify_attributes }}>
+  {% render 'how-it-works-content', 
+    variant: 'page',
+    show_detailed_process: show_detailed_process,
+    show_faq: show_faq,
+    show_contact_support: show_contact_support
+  %}
+</div>
+
+{% schema %}
+{
+  "name": "How It Works Page",
+  "tag": "section",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "show_detailed_process",
+      "label": "Show detailed process steps",
+      "default": true,
+      "info": "Display additional details for each step"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_faq",
+      "label": "Show FAQ section",
+      "default": true,
+      "info": "Display frequently asked questions"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_contact_support",
+      "label": "Show contact support section",
+      "default": true,
+      "info": "Display support contact options"
+    }
+  ],
+  "presets": [
+    {
+      "name": "How It Works Page",
+      "category": "Preorder"
+    }
+  ]
+}
+{% endschema %}

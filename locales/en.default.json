@@ -317,7 +317,8 @@
     "info_card": {
       "title": "This is a preorder item",
       "description": "I will ship out to customers on or before %{ship_date}.",
-      "how_it_works": "How it works"
+      "how_it_works": "How it works",
+      "learn_more": "Learn more"
     },
     "modal": {
       "title": "This is a preorder item",
@@ -328,22 +329,50 @@
     },
     "how_it_works": {
       "title": "How preorders work",
+      "page_intro": "Learn how our preorder system works and what to expect when you place a preorder with us.",
       "step1": {
         "title": "Place your order",
-        "description": "Add items to your cart and complete checkout. Your payment method will be charged immediately."
+        "description": "Add items to your cart and complete checkout. Your payment method will be charged immediately.",
+        "detail1": "Browse preorder collections and select your items",
+        "detail2": "Complete checkout with your preferred payment method",
+        "detail3": "Receive immediate order confirmation via email"
       },
       "step2": {
         "title": "We prepare your order",
-        "description": "Your items are being crafted with care. We'll keep you updated on the progress."
+        "description": "Your items are being crafted with care. We'll keep you updated on the progress.",
+        "detail1": "Items are carefully crafted and quality checked",
+        "detail2": "We send progress updates via email when available",
+        "detail3": "Your order is prepared for shipping as the date approaches"
       },
       "step3": {
         "title": "Your order ships",
-        "description": "Once ready, your order ships by the estimated date. You'll receive tracking information."
+        "description": "Once ready, your order ships by the estimated date. You'll receive tracking information.",
+        "detail1": "Orders ship on or before the estimated ship date",
+        "detail2": "Tracking information is provided once shipped",
+        "detail3": "Delivery typically takes 3-7 business days"
       },
       "note": {
         "title": "Important:",
         "description": "Preorder items cannot be combined with regular items in the same order. Ship dates are estimates and may change based on production schedules."
       },
+      "faq_title": "Frequently Asked Questions",
+      "faq1": {
+        "question": "When will I be charged?",
+        "answer": "You will be charged immediately when you place your preorder. This secures your spot in the production queue."
+      },
+      "faq2": {
+        "question": "Can I cancel my preorder?",
+        "answer": "Preorders can be cancelled within 24 hours of placing the order. After that, we begin production and cancellations are not possible."
+      },
+      "faq3": {
+        "question": "What if my ship date changes?",
+        "answer": "If ship dates need to be adjusted, we will notify you immediately via email with the updated timeline."
+      },
+      "support_title": "Need Help?",
+      "support_description": "If you have questions about your preorder, our support team is here to help.",
+      "support_email": "support@example.com",
+      "contact_support": "Contact Support",
+      "view_faq": "View FAQ",
       "got_it": "Got it"
     }
   }

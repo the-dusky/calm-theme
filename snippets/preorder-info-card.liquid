@@ -61,6 +61,13 @@
         <path d="M7 7h10v10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
       </svg>
     </button>
+    
+    <a 
+      href="/pages/how-it-works" 
+      class="preorder-info-card__learn-more-link"
+    >
+      {{ 'preorder.info_card.learn_more' | t: default: 'Learn more' }}
+    </a>
   </div>
 </div>
 
@@ -131,6 +138,8 @@
   .preorder-info-card__actions {
     display: flex;
     justify-content: flex-start;
+    align-items: center;
+    gap: var(--padding-md);
   }
 
   .preorder-info-card__how-it-works-btn {
@@ -156,6 +165,19 @@
     transform: translateY(-1px);
   }
 
+  .preorder-info-card__learn-more-link {
+    color: #1e40af;
+    text-decoration: underline;
+    font-size: var(--font-size--sm);
+    font-weight: 500;
+    transition: color var(--hover-transition-duration) var(--hover-transition-timing);
+  }
+
+  .preorder-info-card__learn-more-link:hover {
+    color: #3b82f6;
+    text-decoration: none;
+  }
+
   @media screen and (max-width: 750px) {
     .preorder-info-card__content {
       flex-direction: column;
@@ -165,6 +187,8 @@
 
     .preorder-info-card__actions {
       justify-content: center;
+      flex-direction: column;
+      gap: var(--padding-sm);
     }
   }
 {% endstylesheet %}

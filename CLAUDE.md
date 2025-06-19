@@ -1,5 +1,33 @@
 # Claude Notes
 
+## Task Analysis Workflow
+
+  When I describe a task, first analyze what I'm
+   asking for and respond with:
+
+  1. "Here's the prompt I would execute:"
+  2. [Show the complete, optimized prompt]
+  3. "This will use: [list of MCP servers/tools
+  needed]"
+  4. "Should I proceed with this approach?
+  (y/n)"
+
+  Always include MCP server usage when
+  appropriate:
+  - Use Playwright MCP for any UI changes,
+  visual verification, or frontend testing
+  - Use Shopify MCP for any Shopify-related
+  development
+  - Always tell me what servers you are using so
+   I know if you are not using any too
+
+  For UI tasks, always include:
+  - Before/after screenshots
+  - Functional testing of interactions
+  - Specific page URLs to test
+
+  Wait for my confirmation before executing unless I add a -y to the end of my prompt, if I do that show me the updated prompt and auto execute
+
 ## Context
 
 Always read the CHANGELOG.md for context
@@ -11,10 +39,12 @@ use PNPM - always
 
 Use the tasks/todo.md file as the source of truth. Work on it in order, asking if we are ready to move on.
 
-## Git
+## Sync / Deploy
 
 Commit after finishing task sections
 - shopify theme check
+
+Theme's are set to auto pull from github, we don't want to use "shopify theme push", we just want to commit and push to git
 
 Once we build is succesful
 - update the changelog and cross of todos

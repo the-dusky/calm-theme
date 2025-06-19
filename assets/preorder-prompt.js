@@ -287,9 +287,16 @@ class PreorderPromptDialog extends DialogComponent {
         preorderComponent.saveCustomerPreference();
       }
     } else {
-      console.log('Checkbox unchecked - could clear preference here if needed');
-      // Optionally handle unchecking - maybe clear the preference
-      // For now, we'll keep the preference once set
+      console.log('Checkbox unchecked - clearing customer preference');
+      // Clear the preference when unchecked
+      localStorage.removeItem('skipPreorderConfirmation');
+      console.log('Cleared localStorage: skipPreorderConfirmation');
+      
+      // Update debug display if present
+      const debugSpan = document.getElementById('debug-localstorage');
+      if (debugSpan) {
+        debugSpan.textContent = 'null';
+      }
     }
   };
 }
