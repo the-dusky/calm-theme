@@ -164,8 +164,16 @@ class ProductFormComponent extends Component {
       return;
     }
 
-    // Always show the preorder modal first
-    // The modal will handle checking customer preferences and button switching
+    // Check localStorage BEFORE showing modal
+    const shouldSkip = await preorderComponent.shouldSkipConfirmation();
+    if (shouldSkip) {
+      console.log('Skipping modal due to localStorage preference - switching buttons directly');
+      // Skip modal and directly switch buttons and trigger cart addition
+      preorderComponent.switchToAddToCartAndTrigger();
+      return;
+    }
+
+    // Show the preorder modal if no skip preference
     preorderComponent.showPrompt({
       product: productData,
       variant: variantData,
