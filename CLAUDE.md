@@ -1,64 +1,95 @@
-# Claude Notes
+# CLAUDE.md
 
-## Project Rules
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-Do not escape characters using backslashes in liquid. 
-  - Example: {{ 'preorder.how_it_works.step3.description' | t: default: 'Once ready, your order ships by the estimated date. You\'ll receive tracking information.' }}
-  - This should be: {{ 'preorder.how_it_works.step3.description' | t: default: "Once ready, your order ships by the estimated date. You'll receive tracking information." }}
-  - Rule of Thumb
-	  - Use double quotes (") if your string includes an apostrophe (')
-	  - Use single quotes (') if your string includes double quotes (")
+## Development Commands
 
+### Theme Development
+- `shopify theme check` - Run theme linting and validation
+- Git-based deployment - Theme auto-pulls from GitHub, no need for `shopify theme push`
 
-## Task Analysis Workflow
+### Package Management
+- Use **pnpm** for all package management (not npm or yarn)
 
-  When I describe a task, first analyze what I'm
-   asking for and respond with:
+## Project Architecture
 
-  1. "Here's the prompt I would execute:"
-  2. [Show the complete, optimized prompt]
-  3. "This will use: [list of MCP servers/tools
-  needed]"
-  4. "Should I proceed with this approach?
-  (y/n)"
+### Shopify Theme Structure (Tinker Theme Base)
+This is a Shopify Online Store 2.0 theme built on the Tinker theme foundation with custom preorder functionality.
 
-  Always include MCP server usage when
-  appropriate:
-  - Use Playwright MCP for any UI changes,
-  visual verification, or frontend testing
-  - Use Shopify MCP for any Shopify-related
-  development
-  - Always tell me what servers you are using so
-   I know if you are not using any too
+**Key Directories:**
+- `/sections/` - Theme sections with proper schema and presets
+- `/snippets/` - Reusable Liquid components  
+- `/blocks/` - Theme blocks for sections
+- `/templates/` - JSON page templates
+- `/assets/` - CSS, JS, and media files
+- `/config/` - Theme settings and configuration
+- `/locales/` - Translation files
+- `/sandbox/` - React prototypes and development components
 
-  For UI tasks, always include:
-  - Before/after screenshots
-  - Functional testing of interactions
-  - Specific page URLs to test
+### Core Systems
 
-  Wait for my confirmation before executing unless I add a -y to the end of my prompt, if I do that show me the updated prompt and auto execute
+#### Preorder System
+Multi-phase preorder implementation using metafields:
 
-## Context
+**Collection Metafields (namespace: `custom`):**
+- `ship_by_date` (date) - When drop ships
+- `order_by_date` (date) - Supplier order deadline  
+- `order_cutoff_date` (date) - Customer order cutoff
+- `drop_type` (text) - "US" or "JP" fulfillment location
 
-Always read the CHANGELOG.md for context
-Always look at tasks/todo.md for next steps
+**Variant Metafields:**
+- `sold_out` (boolean) - Override inventory status
 
-use PNPM - always
+**Key Files:**
+- `/snippets/preorder-prompt-modal.liquid` - Add to cart interception
+- `/snippets/how-it-works-modal.liquid` - Preorder explanation
+- `/snippets/drop-helpers.liquid` - Liquid helper functions
+- `/docs/METAFIELD_SETUP.md` - Metafield configuration guide
 
-## Tasks
+#### Component Architecture
+- Modular section/snippet system with proper block structure
+- All sections require `presets` array to appear in theme editor
+- Custom color variant display via `color_displayname_override` metafield
+- Responsive design with mobile-first approach
 
-Use the tasks/todo.md file as the source of truth. Work on it in order, asking if we are ready to move on.
+## Development Rules
 
-## Sync / Deploy
+### Liquid Template Rules
+- **Never escape with backslashes** in Liquid strings
+- Use double quotes (") when string contains apostrophes (')
+- Use single quotes (') when string contains double quotes (")
 
-Commit after finishing task sections
-- shopify theme check
+### Shopify Section Requirements
+- All sections must have `presets` array in schema to appear in "Add Section" modal
+- Each preset requires `name` attribute minimum
+- Use category references like `"t:categories.storytelling"` for grouping
+- Categories must exist in `/locales/en.default.schema.json`
 
-Theme's are set to auto pull from github, we don't want to use "shopify theme push", we just want to commit and push to git
+### Task Management Workflow
+When given a task, analyze and respond with:
+1. "Here's the prompt I would execute:"
+2. [Complete optimized prompt]
+3. "This will use: [MCP servers/tools needed]"
+4. "Should I proceed? (y/n)"
 
-Once we build is succesful
-- update the changelog and cross of todos
-- Then `git add` . and `git commit` and push
+**MCP Server Usage:**
+- Playwright MCP for UI changes and testing
+- Shopify MCP for Shopify-specific development
+- Always specify which servers will be used
+
+**Auto-execution:** Add `-y` to prompt for immediate execution after confirmation
+
+## Context Files
+- Always read `CHANGELOG.md` for project context
+- Check `tasks/todo.md` for current priorities and next steps
+- Reference `.theme-check.yml` for linting configuration
+
+## Deployment Process
+1. Complete development work
+2. Run `shopify theme check` for validation
+3. Update CHANGELOG.md and mark todos complete
+4. Commit with `git add . && git commit` and push
+5. Theme auto-deploys from GitHub (no manual push needed)
 
 
 ## Shopify Theme Section Debugging (Based on Official Shopify Documentation)
