@@ -3,7 +3,7 @@
   - Modal version (compact)
   - Full page version (detailed)
   - Homepage section (embedded)
-  
+
   Parameters:
   - variant: 'modal' | 'page' | 'section' (default: 'modal')
   - show_detailed_process: boolean (default: false)
@@ -19,11 +19,13 @@
 %}
 
 <div class="how-it-works-content how-it-works-content--{{ variant }}">
-  
   {% if variant == 'page' %}
     <div class="how-it-works-content__intro">
       <p class="how-it-works-content__description">
-        {{ 'preorder.how_it_works.page_intro' | t: default: 'Learn how our preorder system works and what to expect when you place a preorder with us.' }}
+        {{
+          'preorder.how_it_works.page_intro'
+          | t: default: 'Learn how our preorder system works and what to expect when you place a preorder with us.'
+        }}
       </p>
     </div>
   {% endif %}
@@ -37,21 +39,44 @@
         </svg>
       </div>
       <div class="how-it-works-content__step-content">
-        <h3 class="how-it-works-content__step-title">{{ 'preorder.how_it_works.step1.title' | t: default: 'Place your order' }}</h3>
-        <p class="how-it-works-content__step-description">{{ 'preorder.how_it_works.step1.description' | t: default: 'Add items to your cart and complete checkout. Your payment method will be charged immediately.' }}</p>
-        
+        <h3 class="how-it-works-content__step-title">
+          {{ 'preorder.how_it_works.step1.title' | t: default: 'Place your order' }}
+        </h3>
+        <p class="how-it-works-content__step-description">
+          {{
+            'preorder.how_it_works.step1.description'
+            | t:
+              default: 'Add items to your cart and complete checkout. Your payment method will be charged immediately.'
+          }}
+        </p>
+
         {% if show_detailed_process %}
           <div class="how-it-works-content__step-details">
             <ul>
-              <li>{{ 'preorder.how_it_works.step1.detail1' | t: default: 'Browse preorder collections and select your items' }}</li>
-              <li>{{ 'preorder.how_it_works.step1.detail2' | t: default: 'Complete checkout with your preferred payment method' }}</li>
-              <li>{{ 'preorder.how_it_works.step1.detail3' | t: default: 'Receive immediate order confirmation via email' }}</li>
+              <li>
+                {{
+                  'preorder.how_it_works.step1.detail1'
+                  | t: default: 'Browse preorder collections and select your items'
+                }}
+              </li>
+              <li>
+                {{
+                  'preorder.how_it_works.step1.detail2'
+                  | t: default: 'Complete checkout with your preferred payment method'
+                }}
+              </li>
+              <li>
+                {{
+                  'preorder.how_it_works.step1.detail3'
+                  | t: default: 'Receive immediate order confirmation via email'
+                }}
+              </li>
             </ul>
           </div>
         {% endif %}
       </div>
     </div>
-    
+
     <div class="how-it-works-content__step">
       <div class="how-it-works-content__step-icon">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -60,21 +85,43 @@
         </svg>
       </div>
       <div class="how-it-works-content__step-content">
-        <h3 class="how-it-works-content__step-title">{{ 'preorder.how_it_works.step2.title' | t: default: 'We prepare your order' }}</h3>
-        <p class="how-it-works-content__step-description">{{ 'preorder.how_it_works.step2.description' | t: default: 'Your items are being crafted with care. We\'ll keep you updated on the progress.' }}</p>
-        
+        <h3 class="how-it-works-content__step-title">
+          {{ 'preorder.how_it_works.step2.title' | t: default: 'We prepare your order' }}
+        </h3>
+        <p class="how-it-works-content__step-description">
+          {{
+            'preorder.how_it_works.step2.description'
+            | t: default: "Your items are being crafted with care. We'll keep you updated on the progress."
+          }}
+        </p>
+
         {% if show_detailed_process %}
           <div class="how-it-works-content__step-details">
             <ul>
-              <li>{{ 'preorder.how_it_works.step2.detail1' | t: default: 'Items are carefully crafted and quality checked' }}</li>
-              <li>{{ 'preorder.how_it_works.step2.detail2' | t: default: 'We send progress updates via email when available' }}</li>
-              <li>{{ 'preorder.how_it_works.step2.detail3' | t: default: 'Your order is prepared for shipping as the date approaches' }}</li>
+              <li>
+                {{
+                  'preorder.how_it_works.step2.detail1'
+                  | t: default: 'Items are carefully crafted and quality checked'
+                }}
+              </li>
+              <li>
+                {{
+                  'preorder.how_it_works.step2.detail2'
+                  | t: default: 'We send progress updates via email when available'
+                }}
+              </li>
+              <li>
+                {{
+                  'preorder.how_it_works.step2.detail3'
+                  | t: default: 'Your order is prepared for shipping as the date approaches'
+                }}
+              </li>
             </ul>
           </div>
         {% endif %}
       </div>
     </div>
-    
+
     <div class="how-it-works-content__step">
       <div class="how-it-works-content__step-icon">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -84,22 +131,38 @@
         </svg>
       </div>
       <div class="how-it-works-content__step-content">
-        <h3 class="how-it-works-content__step-title">{{ 'preorder.how_it_works.step3.title' | t: default: 'Your order ships' }}</h3>
-        <p class="how-it-works-content__step-description">{{ 'preorder.how_it_works.step3.description' | t: default: 'Once ready, your order ships by the estimated date. You\'ll receive tracking information.' }}</p>
-        
+        <h3 class="how-it-works-content__step-title">
+          {{ 'preorder.how_it_works.step3.title' | t: default: 'Your order ships' }}
+        </h3>
+        <p class="how-it-works-content__step-description">
+          {{ 'preorder.how_it_works.step3.description' | t: default: 'Once ready, your order ships by the estimated date. You\'ll receive tracking information.' }}
+        </p>
+
         {% if show_detailed_process %}
           <div class="how-it-works-content__step-details">
             <ul>
-              <li>{{ 'preorder.how_it_works.step3.detail1' | t: default: 'Orders ship on or before the estimated ship date' }}</li>
-              <li>{{ 'preorder.how_it_works.step3.detail2' | t: default: 'Tracking information is provided once shipped' }}</li>
-              <li>{{ 'preorder.how_it_works.step3.detail3' | t: default: 'Delivery typically takes 3-7 business days' }}</li>
+              <li>
+                {{
+                  'preorder.how_it_works.step3.detail1'
+                  | t: default: 'Orders ship on or before the estimated ship date'
+                }}
+              </li>
+              <li>
+                {{
+                  'preorder.how_it_works.step3.detail2'
+                  | t: default: 'Tracking information is provided once shipped'
+                }}
+              </li>
+              <li>
+                {{ 'preorder.how_it_works.step3.detail3' | t: default: 'Delivery typically takes 3-7 business days' }}
+              </li>
             </ul>
           </div>
         {% endif %}
       </div>
     </div>
   </div>
-  
+
   <div class="how-it-works-content__note">
     <div class="how-it-works-content__note-icon">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -109,38 +172,75 @@
       </svg>
     </div>
     <div class="how-it-works-content__note-content">
-      <p><strong>{{ 'preorder.how_it_works.note.title' | t: default: 'Important:' }}</strong> {{ 'preorder.how_it_works.note.description' | t: default: 'Preorder items cannot be combined with regular items in the same order. Ship dates are estimates and may change based on production schedules.' }}</p>
+      <p>
+        <strong>{{ 'preorder.how_it_works.note.title' | t: default: 'Important:' }}</strong>
+        {{
+          'preorder.how_it_works.note.description'
+          | t:
+            default: 'Preorder items cannot be combined with regular items in the same order. Ship dates are estimates and may change based on production schedules.'
+        }}
+      </p>
     </div>
   </div>
 
   {% if show_faq and variant == 'page' %}
     <div class="how-it-works-content__faq">
-      <h2 class="how-it-works-content__faq-title">{{ 'preorder.how_it_works.faq_title' | t: default: 'Frequently Asked Questions' }}</h2>
-      
+      <h2 class="how-it-works-content__faq-title">
+        {{ 'preorder.how_it_works.faq_title' | t: default: 'Frequently Asked Questions' }}
+      </h2>
+
       <div class="how-it-works-content__faq-item">
         <h3>{{ 'preorder.how_it_works.faq1.question' | t: default: 'When will I be charged?' }}</h3>
-        <p>{{ 'preorder.how_it_works.faq1.answer' | t: default: 'You will be charged immediately when you place your preorder. This secures your spot in the production queue.' }}</p>
+        <p>
+          {{
+            'preorder.how_it_works.faq1.answer'
+            | t:
+              default: 'You will be charged immediately when you place your preorder. This secures your spot in the production queue.'
+          }}
+        </p>
       </div>
-      
+
       <div class="how-it-works-content__faq-item">
         <h3>{{ 'preorder.how_it_works.faq2.question' | t: default: 'Can I cancel my preorder?' }}</h3>
-        <p>{{ 'preorder.how_it_works.faq2.answer' | t: default: 'Preorders can be cancelled within 24 hours of placing the order. After that, we begin production and cancellations are not possible.' }}</p>
+        <p>
+          {{
+            'preorder.how_it_works.faq2.answer'
+            | t:
+              default: 'Preorders can be cancelled within 24 hours of placing the order. After that, we begin production and cancellations are not possible.'
+          }}
+        </p>
       </div>
-      
+
       <div class="how-it-works-content__faq-item">
         <h3>{{ 'preorder.how_it_works.faq3.question' | t: default: 'What if my ship date changes?' }}</h3>
-        <p>{{ 'preorder.how_it_works.faq3.answer' | t: default: 'If ship dates need to be adjusted, we will notify you immediately via email with the updated timeline.' }}</p>
+        <p>
+          {{
+            'preorder.how_it_works.faq3.answer'
+            | t:
+              default: 'If ship dates need to be adjusted, we will notify you immediately via email with the updated timeline.'
+          }}
+        </p>
       </div>
     </div>
   {% endif %}
 
   {% if show_contact_support and variant == 'page' %}
     <div class="how-it-works-content__support">
-      <h2 class="how-it-works-content__support-title">{{ 'preorder.how_it_works.support_title' | t: default: 'Need Help?' }}</h2>
-      <p>{{ 'preorder.how_it_works.support_description' | t: default: 'If you have questions about your preorder, our support team is here to help.' }}</p>
-      
+      <h2 class="how-it-works-content__support-title">
+        {{ 'preorder.how_it_works.support_title' | t: default: 'Need Help?' }}
+      </h2>
+      <p>
+        {{
+          'preorder.how_it_works.support_description'
+          | t: default: 'If you have questions about your preorder, our support team is here to help.'
+        }}
+      </p>
+
       <div class="how-it-works-content__support-actions">
-        <a href="mailto:{{ 'preorder.how_it_works.support_email' | t: default: 'support@example.com' }}" class="button button--primary">
+        <a
+          href="mailto:{{ 'preorder.how_it_works.support_email' | t: default: 'support@example.com' }}"
+          class="button button--primary"
+        >
           {{ 'preorder.how_it_works.contact_support' | t: default: 'Contact Support' }}
         </a>
         <a href="/pages/faq" class="button button--secondary">
