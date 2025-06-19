@@ -9,6 +9,10 @@
  */
 {
   "sections": {
+    "heading": {
+      "type": "header",
+      "settings": {}
+    },
     "main": {
       "type": "main-page",
       "settings": {
@@ -29,6 +33,7 @@
     }
   },
   "order": [
+    "heading",
     "main",
     "how-it-works-content"
   ]
