@@ -314,9 +314,6 @@
     }
   },
   "preorder": {
-    "button": {
-      "add_to_preorder": "Add to Preorder"
-    },
     "info_card": {
       "title": "This is a preorder item",
       "description": "I will ship out to customers on or before %{ship_date}.",
