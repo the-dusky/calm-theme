@@ -46,10 +46,10 @@
 - [x] Test prompt flow
 
 #### Phase 3: Drop Shopping Mode
-- [ ] Create drop selector UI component
-- [ ] Implement session storage for drop selection
-- [ ] Add drop context to product pages
-- [ ] Test drop browsing experience
+- [x] Create drop selector UI component
+- [x] Implement session storage for drop selection
+- [x] Add drop context to product pages
+- [x] Test drop browsing experience
 
 #### Phase 4: Order Management
 - [ ] Implement automatic order tagging with collection handles
