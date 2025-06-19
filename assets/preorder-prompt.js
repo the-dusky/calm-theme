@@ -196,7 +196,7 @@ export class PreorderPromptComponent extends Component {
     // Update debug display if present
     const debugSpan = document.getElementById('debug-localstorage');
     if (debugSpan) {
-      debugSpan.textContent = 'true';
+      //debugSpan.textContent = 'true';
     }
   }
 

@@ -57,14 +57,14 @@
 >
   {%- if product != blank -%}
     
-    {%- comment -%} DEBUG: Show preorder flow values {%- endcomment -%}
+    {%- comment -%} DEBUG: Show preorder flow values 
     <div style="background: #f0f0f0; padding: 10px; margin: 10px 0; border: 1px solid #ccc; font-family: monospace; font-size: 12px;">
       <strong>DEBUG - Preorder Flow:</strong><br>
       is_drop_product: {{ is_drop_product }}<br>
       show_preorder_flow: {{ show_preorder_flow }}<br>
       localStorage value: <span id="debug-localstorage">Checking...</span>
     </div>
-    
+    {%- endcomment -%}
     <script>
       // Show localStorage value in debug panel
       document.addEventListener('DOMContentLoaded', function() {
