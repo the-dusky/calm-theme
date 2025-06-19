@@ -328,28 +328,37 @@
       "cancel": "Cancel"
     },
     "how_it_works": {
-      "title": "How preorders work",
+      "title": "How It Works",
+      "modal_subtitle": "Your shipping timeline",
       "page_intro": "Learn how our preorder system works and what to expect when you place a preorder with us.",
       "step1": {
-        "title": "Place your order",
+        "title": "Place Order",
         "description": "Add items to your cart and complete checkout. Your payment method will be charged immediately.",
+        "modal_description": "Complete checkout",
         "detail1": "Browse preorder collections and select your items",
         "detail2": "Complete checkout with your preferred payment method",
         "detail3": "Receive immediate order confirmation via email"
       },
       "step2": {
-        "title": "We prepare your order",
+        "title": "We Prepare",
         "description": "Your items are being crafted with care. We'll keep you updated on the progress.",
+        "modal_description": "Items crafted",
         "detail1": "Items are carefully crafted and quality checked",
         "detail2": "We send progress updates via email when available",
         "detail3": "Your order is prepared for shipping as the date approaches"
       },
       "step3": {
-        "title": "Your order ships",
+        "title": "Processing",
         "description": "Once ready, your order ships by the estimated date. You'll receive tracking information.",
+        "modal_description": "Quality check",
         "detail1": "Orders ship on or before the estimated ship date",
         "detail2": "Tracking information is provided once shipped",
         "detail3": "Delivery typically takes 3-7 business days"
+      },
+      "step4": {
+        "title": "Ships",
+        "description": "Final delivery to your address",
+        "modal_description": "To your door"
       },
       "note": {
         "title": "Important:",
@@ -373,7 +382,11 @@
       "support_email": "support@example.com",
       "contact_support": "Contact Support",
       "view_faq": "View FAQ",
-      "got_it": "Got it"
+      "got_it": "Got it",
+      "transparency1": "Starting slow to learn from you",
+      "transparency2": "Items cannot be combined with regular orders",
+      "transparency3": "Dates are estimates and may change",
+      "transparency_statement": "Radical transparency. Every decision explained."
     }
   }
 }

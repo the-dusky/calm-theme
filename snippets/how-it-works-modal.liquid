@@ -15,11 +15,99 @@
     
     <div class="how-it-works-modal__content">
       <div class="how-it-works-modal__header">
-        <h2 class="how-it-works-modal__title">{{ 'preorder.how_it_works.title' | t: default: 'How preorders work' }}</h2>
+        <h2 class="how-it-works-modal__title">{{ 'preorder.how_it_works.title' | t: default: 'How It Works' }}</h2>
+        <p class="how-it-works-modal__subtitle">{{ 'preorder.how_it_works.modal_subtitle' | t: default: 'Your shipping timeline' }}</p>
       </div>
       
       <div class="how-it-works-modal__body">
-        {% render 'how-it-works-content', variant: 'modal' %}
+        <!-- Horizontal timeline -->
+        <div class="timeline">
+          <div class="timeline__line"></div>
+          
+          <div class="timeline__steps">
+            <div class="timeline__step timeline__step--active">
+              <div class="timeline__step-icon">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
+                  <path d="M16 8l-6 6-2-2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </div>
+              <div class="timeline__step-content">
+                <h4 class="timeline__step-title">{{ 'preorder.how_it_works.step1.title' | t: default: 'Place Order' }}</h4>
+                <p class="timeline__step-description">{{ 'preorder.how_it_works.step1.modal_description' | t: default: 'Complete checkout' }}</p>
+              </div>
+            </div>
+            
+            <div class="timeline__step">
+              <div class="timeline__step-icon">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
+                  <path d="M12 6v6l4 2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </div>
+              <div class="timeline__step-content">
+                <h4 class="timeline__step-title">{{ 'preorder.how_it_works.step2.title' | t: default: 'We Prepare' }}</h4>
+                <p class="timeline__step-description">{{ 'preorder.how_it_works.step2.modal_description' | t: default: 'Items crafted' }}</p>
+              </div>
+            </div>
+            
+            <div class="timeline__step">
+              <div class="timeline__step-icon">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <rect x="2" y="3" width="20" height="14" rx="2" ry="2" stroke="currentColor" stroke-width="2"/>
+                  <line x1="8" y1="21" x2="16" y2="21" stroke="currentColor" stroke-width="2"/>
+                  <line x1="12" y1="17" x2="12" y2="21" stroke="currentColor" stroke-width="2"/>
+                </svg>
+              </div>
+              <div class="timeline__step-content">
+                <h4 class="timeline__step-title">{{ 'preorder.how_it_works.step3.title' | t: default: 'Processing' }}</h4>
+                <p class="timeline__step-description">{{ 'preorder.how_it_works.step3.modal_description' | t: default: 'Quality check' }}</p>
+              </div>
+            </div>
+            
+            <div class="timeline__step">
+              <div class="timeline__step-icon">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" stroke="currentColor" stroke-width="2"/>
+                  <circle cx="12" cy="10" r="3" stroke="currentColor" stroke-width="2"/>
+                </svg>
+              </div>
+              <div class="timeline__step-content">
+                <h4 class="timeline__step-title">{{ 'preorder.how_it_works.step4.title' | t: default: 'Ships' }}</h4>
+                <p class="timeline__step-description">{{ 'preorder.how_it_works.step4.modal_description' | t: default: 'To your door' }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Transparency notes -->
+        <div class="transparency-notes">
+          <div class="transparency-notes__item">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" stroke="currentColor" stroke-width="2"/>
+            </svg>
+            <span>{{ 'preorder.how_it_works.transparency1' | t: default: 'Starting slow to learn from you' }}</span>
+          </div>
+          <div class="transparency-notes__item">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" stroke="currentColor" stroke-width="2"/>
+            </svg>
+            <span>{{ 'preorder.how_it_works.transparency2' | t: default: 'Items cannot be combined with regular orders' }}</span>
+          </div>
+          <div class="transparency-notes__item">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" stroke="currentColor" stroke-width="2"/>
+            </svg>
+            <span>{{ 'preorder.how_it_works.transparency3' | t: default: 'Dates are estimates and may change' }}</span>
+          </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="how-it-works-modal__footer">
+          <p class="how-it-works-modal__footer-text">
+            {{ 'preorder.how_it_works.transparency_statement' | t: default: 'Radical transparency. Every decision explained.' }}
+          </p>
+        </div>
       </div>
       
       <div class="how-it-works-modal__actions">
@@ -41,7 +129,7 @@
     padding: 0;
     border: var(--style-border-popover);
     height: fit-content;
-    width: min(90vw, 600px);
+    width: min(90vw, 640px);
     max-height: 90vh;
     overflow: hidden;
     box-shadow: 0 5px 30px rgba(0, 0, 0, 0.15);
@@ -101,86 +189,123 @@
 
   .how-it-works-modal__header {
     text-align: center;
-    border-bottom: 1px solid var(--color-border);
-    padding-bottom: var(--padding-md);
+    margin-bottom: var(--margin-lg);
   }
 
   .how-it-works-modal__title {
-    margin: 0;
+    margin: 0 0 var(--margin-xs) 0;
     font-size: var(--font-size--xl);
     font-weight: 600;
     color: var(--color-foreground);
   }
 
-  /* Modal-specific overrides for the reusable content */
-  .how-it-works-modal .how-it-works-content__steps {
-    display: flex;
-    flex-direction: column;
-    gap: var(--gap-lg);
+  .how-it-works-modal__subtitle {
+    margin: 0;
+    font-size: var(--font-size--sm);
+    color: var(--color-foreground-75);
   }
 
-  .how-it-works-modal .how-it-works-content__step {
-    display: flex;
-    gap: var(--gap-md);
-    align-items: flex-start;
+  /* Timeline styles */
+  .timeline {
+    position: relative;
+    margin-bottom: var(--margin-xl);
   }
 
-  .how-it-works-modal .how-it-works-content__step-icon {
-    flex-shrink: 0;
-    width: 48px;
-    height: 48px;
+  .timeline__line {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    right: 20px;
+    height: 2px;
+    background-color: var(--color-border);
+    z-index: 1;
+  }
+
+  .timeline__steps {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--gap-sm);
+    position: relative;
+    z-index: 2;
+  }
+
+  .timeline__step {
+    text-align: center;
+  }
+
+  .timeline__step-icon {
+    width: 40px;
+    height: 40px;
     border-radius: 50%;
-    background-color: var(--color-accent);
-    color: var(--color-background);
+    border: 2px solid var(--color-border);
+    background-color: var(--color-background);
+    color: var(--color-foreground-50);
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-top: var(--margin-xs);
+    margin: 0 auto var(--margin-sm) auto;
+    position: relative;
+    z-index: 3;
+    transition: all 0.2s var(--animation-easing);
   }
 
-  .how-it-works-modal .how-it-works-content__step-content {
-    flex: 1;
+  .timeline__step--active .timeline__step-icon {
+    background-color: var(--color-accent);
+    border-color: var(--color-accent);
+    color: var(--color-background);
   }
 
-  .how-it-works-modal .how-it-works-content__step-title {
-    margin: 0 0 var(--margin-xs) 0;
-    font-size: var(--font-size--md);
+  .timeline__step-content {
+    padding: 0 var(--padding-xs);
+  }
+
+  .timeline__step-title {
+    margin: 0 0 var(--margin-2xs) 0;
+    font-size: var(--font-size--xs);
     font-weight: 600;
     color: var(--color-foreground);
+    line-height: 1.2;
   }
 
-  .how-it-works-modal .how-it-works-content__step-description {
+  .timeline__step-description {
     margin: 0;
-    font-size: var(--font-size--sm);
-    line-height: 1.4;
+    font-size: var(--font-size--xs);
     color: var(--color-foreground-75);
+    line-height: 1.2;
   }
 
-  .how-it-works-modal .how-it-works-content__note {
+  /* Transparency notes */
+  .transparency-notes {
     display: flex;
+    flex-direction: column;
     gap: var(--gap-sm);
-    padding: var(--padding-md);
-    background-color: var(--color-background-2);
-    border-radius: var(--border-radius);
-    border-left: 4px solid var(--color-accent);
-    margin-top: var(--margin-md);
+    margin-bottom: var(--margin-lg);
   }
 
-  .how-it-works-modal .how-it-works-content__note-icon {
+  .transparency-notes__item {
+    display: flex;
+    align-items: center;
+    gap: var(--gap-sm);
+    font-size: var(--font-size--xs);
+    color: var(--color-foreground-75);
+    line-height: 1.3;
+  }
+
+  .transparency-notes__item svg {
     flex-shrink: 0;
     color: var(--color-accent);
-    margin-top: var(--margin-2xs);
   }
 
-  .how-it-works-modal .how-it-works-content__note-content {
-    flex: 1;
+  /* Footer */
+  .how-it-works-modal__footer {
+    text-align: center;
   }
 
-  .how-it-works-modal .how-it-works-content__note-content p {
+  .how-it-works-modal__footer-text {
     margin: 0;
-    font-size: var(--font-size--sm);
-    line-height: 1.4;
+    font-size: var(--font-size--xs);
     color: var(--color-foreground-75);
+    font-style: italic;
   }
 
   .how-it-works-modal__actions {
@@ -204,5 +329,36 @@
 
   .how-it-works-modal__close-btn:hover {
     background-color: var(--color-button-hover);
+  }
+
+  /* Mobile adjustments */
+  @media screen and (max-width: 750px) {
+    .timeline__steps {
+      gap: var(--gap-xs);
+    }
+
+    .timeline__step-icon {
+      width: 32px;
+      height: 32px;
+    }
+
+    .timeline__step-icon svg {
+      width: 14px;
+      height: 14px;
+    }
+
+    .timeline__step-title,
+    .timeline__step-description {
+      font-size: var(--font-size--2xs);
+    }
+
+    .transparency-notes__item {
+      font-size: var(--font-size--2xs);
+    }
+
+    .transparency-notes__item svg {
+      width: 10px;
+      height: 10px;
+    }
   }
 {% endstylesheet %}

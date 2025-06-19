@@ -7,7 +7,7 @@
           "type": "text",
           "name": "Title",
           "settings": {
-            "text": "<h1>How Preorders Work</h1>",
+            "text": "<h1>How It Works</h1>",
             "width": "100%",
             "max_width": "normal",
             "alignment": "center",
@@ -51,7 +51,7 @@
     }
   },
   "order": [
-    "main",
+    "main-page",
     "how-it-works-content"
   ]
 }
