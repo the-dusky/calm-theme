@@ -163,7 +163,7 @@ export class PreorderPromptComponent extends Component {
    * @returns {Promise<boolean>} True if confirmations should be skipped
    */
   async #shouldSkipConfirmation() {
-    // Check localStorage first (works for both logged in and guest users)
+    // Check localStorage only
     const localStorageValue = localStorage.getItem('skipPreorderConfirmation');
     console.log('Checking skip confirmation - localStorage:', localStorageValue);
     
@@ -172,27 +172,7 @@ export class PreorderPromptComponent extends Component {
       return true;
     }
 
-    // If customer is logged in, check their metafield
-    if (window.Theme?.customer?.id) {
-      try {
-        // Check if customer metafield exists (this would be populated from Liquid template)
-        const skipConfirmation = window.Theme?.customer?.metafields?.custom?.skip_preorder_confirmation;
-        console.log('Checking skip confirmation - customer metafield:', {
-          customerId: window.Theme.customer.id,
-          metafieldValue: skipConfirmation,
-          customerData: window.Theme.customer
-        });
-        
-        if (skipConfirmation === true || skipConfirmation === 'true') {
-          console.log('Skipping confirmation due to customer metafield preference');
-          return true;
-        }
-      } catch (error) {
-        console.warn('Error checking customer preference:', error);
-      }
-    }
-
-    console.log('Not skipping confirmation - no preference found');
+    console.log('Not skipping confirmation - no localStorage preference found');
     return false;
   }
 
@@ -209,37 +189,14 @@ export class PreorderPromptComponent extends Component {
   async #saveCustomerPreference() {
     console.log('Saving customer preference to skip preorder confirmations');
     
-    // Always save to localStorage for immediate effect
+    // Save to localStorage only
     localStorage.setItem('skipPreorderConfirmation', 'true');
     console.log('Saved to localStorage: skipPreorderConfirmation = true');
-
-    // If customer is logged in, also attempt to save to their metafields
-    if (window.Theme?.customer?.id) {
-      console.log('Customer is logged in, attempting to save metafield');
-      try {
-        // Use a simpler approach - submit a form to update customer metafield
-        // This is more reliable than trying to use Admin API from frontend
-        const formData = new FormData();
-        formData.append('customer[metafields][custom][skip_preorder_confirmation]', 'true');
-        
-        // Submit to customer update endpoint (this would need to be handled by theme or app)
-        await fetch('/account/update-preferences', {
-          method: 'POST',
-          body: formData
-        }).then(response => {
-          if (response.ok) {
-            console.log('Successfully saved customer metafield preference');
-          } else {
-            console.warn('Failed to save customer metafield preference:', response.status);
-          }
-        }).catch(error => {
-          console.warn('Could not save customer metafield preference:', error);
-        });
-      } catch (error) {
-        console.warn('Error saving customer preference:', error);
-      }
-    } else {
-      console.log('Customer not logged in, only localStorage preference saved');
+    
+    // Update debug display if present
+    const debugSpan = document.getElementById('debug-localstorage');
+    if (debugSpan) {
+      debugSpan.textContent = 'true';
     }
   }
 

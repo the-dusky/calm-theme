@@ -16,20 +16,9 @@
     endif
   endfor
 
-  # Check if customer has opted to skip preorder confirmations
-  assign customer_skips_preorder = false
-  if customer and customer.metafields.custom.skip_preorder_confirmation == true
-    assign customer_skips_preorder = true
-  endif
-
-  # Determine if we should show preorder flow
-  # Show preorder flow only if:
-  # 1. This IS a drop/preorder product AND
-  # 2. Customer has NOT opted to skip preorder confirmations
-  assign show_preorder_flow = false
-  if is_drop_product and customer_skips_preorder == false
-    assign show_preorder_flow = true
-  endif
+  # For preorder products, always show preorder flow initially
+  # JavaScript will check localStorage and handle skipping the modal
+  assign show_preorder_flow = is_drop_product
 
   assign variant = block.settings.product.selected_or_first_available_variant
   assign inventory_quantity = variant.inventory_quantity
@@ -67,6 +56,25 @@
   {{ block.shopify_attributes }}
 >
   {%- if product != blank -%}
+    
+    {%- comment -%} DEBUG: Show preorder flow values {%- endcomment -%}
+    <div style="background: #f0f0f0; padding: 10px; margin: 10px 0; border: 1px solid #ccc; font-family: monospace; font-size: 12px;">
+      <strong>DEBUG - Preorder Flow:</strong><br>
+      is_drop_product: {{ is_drop_product }}<br>
+      show_preorder_flow: {{ show_preorder_flow }}<br>
+      localStorage value: <span id="debug-localstorage">Checking...</span>
+    </div>
+    
+    <script>
+      // Show localStorage value in debug panel
+      document.addEventListener('DOMContentLoaded', function() {
+        const debugSpan = document.getElementById('debug-localstorage');
+        if (debugSpan) {
+          const localStorageValue = localStorage.getItem('skipPreorderConfirmation');
+          debugSpan.textContent = localStorageValue || 'null';
+        }
+      });
+    </script>
       {%- assign product_form_id = 'BuyButtons-ProductForm-' | append: block.id -%}
       <product-form-component
         data-section-id="{{ section.id }}"
