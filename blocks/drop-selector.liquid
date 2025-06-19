@@ -43,7 +43,8 @@
               assign is_available = true
               
               # Check if drop is still available for ordering
-              if cutoff_date and cutoff_date < 'now' | date: '%Y-%m-%d'
+              assign today = 'now' | date: '%Y-%m-%d'
+              if cutoff_date and cutoff_date < today
                 assign is_available = false
               endif
             -%}
