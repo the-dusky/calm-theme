@@ -34,8 +34,8 @@
           data-global-drop-selector
           aria-label="{{ 'header.drop_selector.label' | t: default: 'Choose your drop' }}"
         >
-          <option value="" disabled>
-            {{ 'header.drop_selector.placeholder' | t: default: 'Select drop...' }}
+          <option value="all" selected>
+            {{ 'header.drop_selector.show_all' | t: default: '🌍 Show All Products' }}
           </option>
           
           {% for collection in sorted_drops %}

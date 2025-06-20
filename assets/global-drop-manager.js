@@ -45,7 +45,8 @@ class GlobalDropManager {
         collectionId: option.dataset.collectionId,
         flag: option.dataset.flag,
         isAvailable: !option.disabled,
-        displayText: option.textContent.trim()
+        displayText: option.textContent.trim(),
+        isShowAll: option.value === 'all'
       };
     }).filter(Boolean);
   }
@@ -94,7 +95,12 @@ class GlobalDropManager {
     const dropData = this.availableDrops.find(drop => drop.handle === selectedOption.value);
     if (!dropData) return;
 
-    this.setSelectedDrop(dropData);
+    if (dropData.isShowAll) {
+      this.setShowAllMode();
+    } else {
+      this.setSelectedDrop(dropData);
+    }
+    
     this.updatePageContent();
     this.dispatchDropChangeEvent(dropData);
   }
@@ -102,6 +108,13 @@ class GlobalDropManager {
   setSelectedDrop(dropData) {
     this.currentDrop = dropData;
     this.saveToStorage(dropData);
+    this.updateGlobalSelector();
+    this.updateHeaderDisplay();
+  }
+
+  setShowAllMode() {
+    this.currentDrop = { handle: 'all', isShowAll: true };
+    this.saveToStorage(this.currentDrop);
     this.updateGlobalSelector();
     this.updateHeaderDisplay();
   }
@@ -147,11 +160,8 @@ class GlobalDropManager {
   }
 
   setDefaultDrop() {
-    // Set first available drop as default
-    const defaultDrop = this.availableDrops.find(drop => drop.isAvailable);
-    if (defaultDrop) {
-      this.setSelectedDrop(defaultDrop);
-    }
+    // Default to "Show All" mode
+    this.setShowAllMode();
   }
 
   saveToStorage(dropData) {
@@ -179,12 +189,20 @@ class GlobalDropManager {
       return;
     }
 
-    if (flagElement) {
-      flagElement.textContent = this.currentDrop.flag;
-    }
-
-    if (textElement) {
-      textElement.textContent = `${this.currentDrop.dropType} Drop`;
+    if (this.currentDrop.isShowAll) {
+      if (flagElement) {
+        flagElement.textContent = '🌍';
+      }
+      if (textElement) {
+        textElement.textContent = 'Show All Products';
+      }
+    } else {
+      if (flagElement) {
+        flagElement.textContent = this.currentDrop.flag;
+      }
+      if (textElement) {
+        textElement.textContent = `${this.currentDrop.dropType} Drop`;
+      }
     }
 
     if (infoElement) {
@@ -206,6 +224,21 @@ class GlobalDropManager {
     
     products.forEach(product => {
       const productDrops = (product.dataset.dropProduct || '').split(',');
+      
+      // If in "show all" mode, show all products
+      if (this.currentDrop && this.currentDrop.isShowAll) {
+        product.classList.add('drop-available');
+        product.classList.remove('drop-unavailable');
+        
+        // Update indicator for show all mode
+        const dropIndicator = product.querySelector('.product-drop-indicator');
+        if (dropIndicator) {
+          dropIndicator.innerHTML = '🌍 Multiple Drops Available';
+          dropIndicator.className = 'product-drop-indicator show-all';
+        }
+        return;
+      }
+      
       const isAvailable = productDrops.includes(this.currentDrop.handle);
       
       // Add classes for styling

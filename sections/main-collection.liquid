@@ -41,6 +41,8 @@
 >
   {% render 'skip-to-content-link', href: '#ResultsList', text: 'accessibility.skip_to_results_list' %}
 
+  {% render 'target-card-comparison' %}
+  
   <div
     class="collection-wrapper grid gap-style"
   >
@@ -90,7 +92,7 @@
                 ref="cards[]"
               >
                 {% # theme-check-disable %}
-                {% render 'product-card', product: product, variant: variant %}
+                {% render 'enhanced-product-card', product: product, show_drop_info: true, show_rating: true, show_tags: true %}
                 {% # theme-check-enable %}
               </li>
             {% endfor %}

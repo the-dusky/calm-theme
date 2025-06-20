@@ -1,0 +1,305 @@
+{% comment %}
+  Drop Badge Component - Displays drop dates with country flags
+  
+  Usage:
+  {% render 'drop-badge', product: product, show_country_flags: true %}
+  
+  @param {object} product - The product object
+  @param {boolean} show_country_flags - Whether to show country flag emojis (default: true)
+  @param {string} class - Additional CSS classes
+{% endcomment %}
+
+{% liquid
+  assign show_flags = show_country_flags | default: true
+  assign drop_collections = product.collections | where: 'metafields.custom.ship_by_date', '!=' | append: blank
+  
+  # Get all collections with drop metafields for this product
+  assign drop_data = ''
+  assign now = 'now' | date: '%s'
+  
+  for collection in product.collections
+    if collection.metafields.custom.ship_by_date != blank
+      assign ship_date = collection.metafields.custom.ship_by_date
+      assign location = collection.metafields.custom.drop_type | default: 'US'
+      assign cutoff_date = collection.metafields.custom.order_cutoff_date
+      
+      # Create data string: ship_date|location|cutoff_date|collection_handle
+      assign data_item = ship_date | append: '|' | append: location
+      if cutoff_date != blank
+        assign data_item = data_item | append: '|' | append: cutoff_date
+      else
+        assign data_item = data_item | append: '|'
+      endif
+      assign data_item = data_item | append: '|' | append: collection.handle
+      
+      if drop_data != blank
+        assign drop_data = drop_data | append: ',' | append: data_item
+      else
+        assign drop_data = data_item
+      endif
+    endif
+  endfor
+  
+  assign drop_items = drop_data | split: ','
+%}
+
+{% if drop_items.size > 0 %}
+  <div class="drop-badge-container {{ class }}" data-drop-badge>
+    {% assign visible_count = 2 %}
+    {% assign remaining_count = drop_items.size | minus: visible_count %}
+    
+    {% for i in (0..drop_items.size) limit: visible_count %}
+      {% assign item_data = drop_items[i] | split: '|' %}
+      {% assign ship_date = item_data[0] %}
+      {% assign location = item_data[1] | default: 'US' %}
+      {% assign cutoff_date = item_data[2] %}
+      {% assign collection_handle = item_data[3] %}
+      
+      {% assign formatted_ship_date = ship_date | date: '%b %d' %}
+      
+      {% comment %} Check if cutoff has passed {% endcomment %}
+      {% assign is_available = true %}
+      {% if cutoff_date != blank %}
+        {% assign cutoff_timestamp = cutoff_date | date: '%s' %}
+        {% if now > cutoff_timestamp %}
+          {% assign is_available = false %}
+        {% endif %}
+      {% endif %}
+      
+      {% comment %} Country flag mapping {% endcomment %}
+      {% assign flag_emoji = '🇺🇸' %}
+      {% case location %}
+        {% when 'JP' %}
+          {% assign flag_emoji = '🇯🇵' %}
+        {% when 'EU' %}
+          {% assign flag_emoji = '🇪🇺' %}
+        {% when 'US' %}
+          {% assign flag_emoji = '🇺🇸' %}
+      {% endcase %}
+      
+      <span class="drop-badge drop-badge--{{ location | downcase }} {% unless is_available %}drop-badge--closed{% endunless %}" 
+            data-drop-date="{{ ship_date }}" 
+            data-drop-location="{{ location }}"
+            data-cutoff-date="{{ cutoff_date }}"
+            data-available="{{ is_available }}">
+        {% if show_flags %}
+          <span class="drop-badge__flag">{{ flag_emoji }}</span>
+        {% endif %}
+        <span class="drop-badge__date">{{ formatted_ship_date }}</span>
+        {% unless is_available %}
+          <span class="drop-badge__status">Closed</span>
+        {% endunless %}
+      </span>
+    {% endfor %}
+    
+    {% if remaining_count > 0 %}
+      <span class="drop-badge drop-badge--more" data-toggle-drop-dates>
+        +{{ remaining_count }}
+      </span>
+      
+      {% comment %} Hidden popover with all dates {% endcomment %}
+      <div class="drop-badge-popover" data-drop-popover style="display: none;">
+        <div class="drop-badge-popover__header">All Drop Dates:</div>
+        {% for i in (0..drop_items.size) %}
+          {% assign item_data = drop_items[i] | split: '|' %}
+          {% assign ship_date = item_data[0] %}
+          {% assign location = item_data[1] | default: 'US' %}
+          {% assign cutoff_date = item_data[2] %}
+          {% assign collection_handle = item_data[3] %}
+          
+          {% assign formatted_ship_date = ship_date | date: '%b %d' %}
+          {% assign formatted_cutoff_date = cutoff_date | date: '%b %d' %}
+          
+          {% assign is_available = true %}
+          {% if cutoff_date != blank %}
+            {% assign cutoff_timestamp = cutoff_date | date: '%s' %}
+            {% if now > cutoff_timestamp %}
+              {% assign is_available = false %}
+            {% endif %}
+          {% endif %}
+          
+          {% assign flag_emoji = '🇺🇸' %}
+          {% case location %}
+            {% when 'JP' %}
+              {% assign flag_emoji = '🇯🇵' %}
+            {% when 'EU' %}
+              {% assign flag_emoji = '🇪🇺' %}
+            {% when 'US' %}
+              {% assign flag_emoji = '🇺🇸' %}
+          {% endcase %}
+          
+          <div class="drop-badge-popover__item {% unless is_available %}drop-badge-popover__item--closed{% endunless %}">
+            <div class="drop-badge-popover__main">
+              {% if show_flags %}
+                <span class="drop-badge__flag">{{ flag_emoji }}</span>
+              {% endif %}
+              <span class="drop-badge__date">Ships {{ formatted_ship_date }}</span>
+              {% unless is_available %}
+                <span class="drop-badge__status">Closed</span>
+              {% endunless %}
+            </div>
+            {% if cutoff_date != blank %}
+              <div class="drop-badge-popover__cutoff">
+                Order by: {{ formatted_cutoff_date }}
+                {% unless is_available %}
+                  <span class="drop-badge-popover__expired">(Expired)</span>
+                {% endunless %}
+              </div>
+            {% endif %}
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+  </div>
+{% endif %}
+
+{% stylesheet %}
+  .drop-badge-container {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    flex-wrap: wrap;
+  }
+
+  .drop-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 8px;
+    background-color: #000;
+    color: #fff;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 500;
+    transition: background-color 0.2s ease;
+  }
+
+  .drop-badge:hover {
+    background-color: #333;
+  }
+
+  .drop-badge--more {
+    cursor: pointer;
+  }
+
+  .drop-badge--closed {
+    background-color: #666;
+    opacity: 0.7;
+  }
+
+  .drop-badge--closed:hover {
+    background-color: #777;
+  }
+
+  .drop-badge__flag {
+    font-size: 10px;
+    line-height: 1;
+  }
+
+  .drop-badge__date {
+    font-size: 12px;
+    white-space: nowrap;
+  }
+
+  .drop-badge__status {
+    font-size: 10px;
+    margin-left: 4px;
+    opacity: 0.8;
+  }
+
+  .drop-badge-popover {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    z-index: 1000;
+    background: white;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    min-width: 180px;
+    margin-top: 4px;
+  }
+
+  .drop-badge-popover__header {
+    font-size: 11px;
+    color: #666;
+    margin-bottom: 8px;
+    font-weight: 500;
+  }
+
+  .drop-badge-popover__item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4px 8px;
+    border-radius: 4px;
+    transition: background-color 0.2s ease;
+  }
+
+  .drop-badge-popover__item:hover {
+    background-color: #f5f5f5;
+  }
+
+  .drop-badge-popover__item--closed {
+    opacity: 0.7;
+  }
+
+  .drop-badge-popover__main {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .drop-badge-popover__cutoff {
+    font-size: 10px;
+    color: #999;
+    margin-top: 2px;
+    margin-left: 18px;
+  }
+
+  .drop-badge-popover__expired {
+    color: #dc3545;
+    font-weight: 500;
+  }
+
+  /* Position relative container for popover */
+  .drop-badge-container {
+    position: relative;
+  }
+{% endstylesheet %}
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const dropBadgeContainers = document.querySelectorAll('[data-drop-badge]');
+    
+    dropBadgeContainers.forEach(container => {
+      const moreButton = container.querySelector('[data-toggle-drop-dates]');
+      const popover = container.querySelector('[data-drop-popover]');
+      
+      if (moreButton && popover) {
+        moreButton.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          
+          // Close other popovers
+          document.querySelectorAll('[data-drop-popover]').forEach(p => {
+            if (p !== popover) p.style.display = 'none';
+          });
+          
+          // Toggle current popover
+          popover.style.display = popover.style.display === 'none' ? 'block' : 'none';
+        });
+      }
+    });
+    
+    // Close popovers when clicking outside
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('[data-drop-badge]')) {
+        document.querySelectorAll('[data-drop-popover]').forEach(p => {
+          p.style.display = 'none';
+        });
+      }
+    });
+  });
+</script>

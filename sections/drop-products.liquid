@@ -106,27 +106,23 @@
             data-drop-product="{{ product_drop_handles }}"
             data-product-id="{{ product.id }}"
           >
-            {% render 'product-card', 
+            {% render 'enhanced-product-card', 
               product: product,
-              children: blocks
+              show_drop_info: true,
+              show_rating: true,
+              show_tags: true
             %}
             
-            <div class="product-drop-overlay">
-              <div class="product-drop-indicator">
-                <!-- Will be populated by JavaScript -->
+            {% if other_drops.size > 0 %}
+              <div class="product-drop-switches" style="display: none;">
+                {% for other_drop in other_drops limit: 2 %}
+                  {% render 'switch-drop-button', 
+                    target_drop_handle: other_drop.handle,
+                    button_class: 'switch-drop-button--compact'
+                  %}
+                {% endfor %}
               </div>
-              
-              {% if other_drops.size > 0 %}
-                <div class="product-drop-switches" style="display: none;">
-                  {% for other_drop in other_drops limit: 2 %}
-                    {% render 'switch-drop-button', 
-                      target_drop_handle: other_drop.handle,
-                      button_class: 'switch-drop-button--compact'
-                    %}
-                  {% endfor %}
-                </div>
-              {% endif %}
-            </div>
+            {% endif %}
           </div>
         {% endfor %}
       </div>

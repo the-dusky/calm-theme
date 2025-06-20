@@ -2,91 +2,6 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-## Development Commands
-
-### Theme Development
-- `shopify theme check` - Run theme linting and validation
-- Git-based deployment - Theme auto-pulls from GitHub, no need for `shopify theme push`
-
-### Package Management
-- Use **pnpm** for all package management (not npm or yarn)
-
-## Project Architecture
-
-### Shopify Theme Structure (Tinker Theme Base)
-This is a Shopify Online Store 2.0 theme built on the Tinker theme foundation with custom preorder functionality.
-
-**Key Directories:**
-- `/sections/` - Theme sections with proper schema and presets
-- `/snippets/` - Reusable Liquid components  
-- `/blocks/` - Theme blocks for sections
-- `/templates/` - JSON page templates
-- `/assets/` - CSS, JS, and media files
-- `/config/` - Theme settings and configuration
-- `/locales/` - Translation files
-- `/sandbox/` - React prototypes and development components
-
-### Core Systems
-
-#### Preorder System
-Multi-phase preorder implementation using metafields:
-
-**Collection Metafields (namespace: `custom`):**
-- `ship_by_date` (date) - When drop ships
-- `order_by_date` (date) - Supplier order deadline  
-- `order_cutoff_date` (date) - Customer order cutoff
-- `drop_type` (text) - "US" or "JP" fulfillment location
-
-**Variant Metafields:**
-- `sold_out` (boolean) - Override inventory status
-
-**Key Files:**
-- `/snippets/preorder-prompt-modal.liquid` - Add to cart interception
-- `/snippets/how-it-works-modal.liquid` - Preorder explanation
-- `/snippets/drop-helpers.liquid` - Liquid helper functions
-- `/docs/METAFIELD_SETUP.md` - Metafield configuration guide
-
-#### Site-Wide Drop System
-Global drop selection system with localStorage persistence:
-
-**Core Components:**
-- `/snippets/global-drop-selector.liquid` - Header drop selector with country flags
-- `/snippets/switch-drop-button.liquid` - Product-level drop switching buttons
-- `/assets/global-drop-manager.js` - localStorage and DOM management
-- `/sections/drop-products.liquid` - Homepage sections for current/future drops
-
-**Features:**
-- Country flag mapping (US 🇺🇸, JP 🇯🇵, EU 🇪🇺)
-- localStorage persistence across browser sessions
-- Real-time product filtering based on selected drop
-- Responsive design with mobile support
-- Integration with existing preorder metafield system
-
-**Setup Requirements:**
-- Collections must have `ship_by_date`, `drop_type`, `order_cutoff_date` metafields
-- Include `{% render 'global-drop-selector' %}` in header-actions
-- Add drop-products sections via theme customizer
-- Include `global-drop-manager.js` in theme assets
-
-#### Component Architecture
-- Modular section/snippet system with proper block structure
-- All sections require `presets` array to appear in theme editor
-- Custom color variant display via `color_displayname_override` metafield
-- Responsive design with mobile-first approach
-
-## Development Rules
-
-### Liquid Template Rules
-- **Never escape with backslashes** in Liquid strings
-- Use double quotes (") when string contains apostrophes (')
-- Use single quotes (') when string contains double quotes (")
-
-### Shopify Section Requirements
-- All sections must have `presets` array in schema to appear in "Add Section" modal
-- Each preset requires `name` attribute minimum
-- Use category references like `"t:categories.storytelling"` for grouping
-- Categories must exist in `/locales/en.default.schema.json`
-
 ### Task Management Workflow
 When given a task, analyze and respond with:
 1. "Here's the prompt I would execute:"
@@ -157,6 +72,69 @@ cat logs/shopify_dev.log
 # Stop server when done
 pkill -f "shopify theme dev"
 ```
+
+## Development Commands
+
+### Theme Development
+- `shopify theme check` - Run theme linting and validation
+- Git-based deployment - Theme auto-pulls from GitHub, no need for `shopify theme push`
+
+### Package Management
+- Use **pnpm** for all package management (not npm or yarn)
+
+## Project Architecture
+
+### Shopify Theme Structure (Tinker Theme Base)
+This is a Shopify Online Store 2.0 theme built on the Tinker theme foundation with custom preorder functionality.
+
+**Key Directories:**
+- `/sections/` - Theme sections with proper schema and presets
+- `/snippets/` - Reusable Liquid components  
+- `/blocks/` - Theme blocks for sections
+- `/templates/` - JSON page templates
+- `/assets/` - CSS, JS, and media files
+- `/config/` - Theme settings and configuration
+- `/locales/` - Translation files
+- `/sandbox/` - React prototypes and development components
+
+### Core Systems
+
+#### Preorder System
+Multi-phase preorder implementation using metafields:
+
+**Collection Metafields (namespace: `custom`):**
+- `ship_by_date` (date) - When drop ships
+- `order_by_date` (date) - Supplier order deadline  
+- `order_cutoff_date` (date) - Customer order cutoff
+- `drop_type` (text) - "US" or "JP" fulfillment location
+
+**Variant Metafields:**
+- `sold_out` (boolean) - Override inventory status
+
+**Key Files:**
+- `/snippets/preorder-prompt-modal.liquid` - Add to cart interception
+- `/snippets/how-it-works-modal.liquid` - Preorder explanation
+- `/snippets/drop-helpers.liquid` - Liquid helper functions
+- `/docs/METAFIELD_SETUP.md` - Metafield configuration guide
+
+#### Component Architecture
+- Modular section/snippet system with proper block structure
+- All sections require `presets` array to appear in theme editor
+- Custom color variant display via `color_displayname_override` metafield
+- Responsive design with mobile-first approach
+
+## Development Rules
+
+### Liquid Template Rules
+- **Never escape with backslashes** in Liquid strings
+- Use double quotes (") when string contains apostrophes (')
+- Use single quotes (') when string contains double quotes (")
+
+### Shopify Section Requirements
+- All sections must have `presets` array in schema to appear in "Add Section" modal
+- Each preset requires `name` attribute minimum
+- Use category references like `"t:categories.storytelling"` for grouping
+- Categories must exist in `/locales/en.default.schema.json`
 
 
 ## Shopify Theme Section Debugging (Based on Official Shopify Documentation)

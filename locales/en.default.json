@@ -306,7 +306,8 @@
   "header": {
     "drop_selector": {
       "label": "Choose your drop",
-      "placeholder": "Select drop..."
+      "placeholder": "Select drop...",
+      "show_all": "🌍 Show All Products"
     }
   },
   "products": {

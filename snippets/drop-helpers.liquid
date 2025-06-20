@@ -56,5 +56,35 @@
         assign delivery_timestamp = ship_date | date: '%s' | plus: 604800
         echo delivery_timestamp | date: '%B %d'
       endif
+      
+    when 'get_availability_status'
+      # Get availability status for a product: available, future, or closed
+      assign now = 'now' | date: '%s'
+      assign has_available_drop = false
+      assign has_future_drop = false
+      
+      for collection in product.collections
+        if collection.metafields.custom.ship_by_date != blank
+          assign cutoff_date = collection.metafields.custom.order_cutoff_date
+          if cutoff_date != blank
+            assign cutoff_timestamp = cutoff_date | date: '%s'
+            if now <= cutoff_timestamp
+              assign has_available_drop = true
+            else
+              assign has_future_drop = true
+            endif
+          else
+            assign has_available_drop = true
+          endif
+        endif
+      endfor
+      
+      if has_available_drop
+        echo 'available'
+      elsif has_future_drop
+        echo 'future'
+      else
+        echo 'closed'
+      endif
   endcase
 %}

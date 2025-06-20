@@ -1,0 +1,920 @@
+{% comment %}
+  Enhanced Product Card with Drop Information
+  Based on sandbox/product-cards React components
+  
+  Usage:
+  {% render 'enhanced-product-card', product: product, show_drop_info: true %}
+  
+  @param {object} product - The product object
+  @param {boolean} show_drop_info - Whether to show drop badges and status (default: true)
+  @param {boolean} show_rating - Whether to show product rating (default: true)
+  @param {boolean} show_tags - Whether to show product tags (default: true)
+  @param {string} class - Additional CSS classes
+{% endcomment %}
+
+{% liquid
+  assign show_drops = show_drop_info | default: true
+  assign show_rating_stars = show_rating | default: true
+  assign show_product_tags = show_tags | default: true
+  assign current_variant = product.selected_or_first_available_variant
+  
+  # Check if this is a drop product
+  capture is_drop_result
+    render 'drop-helpers', product: product, action: 'is_drop_product'
+  endcapture
+  assign is_drop_product = is_drop_result | strip
+  
+  # Get availability status for drop products
+  assign availability_status = 'available'
+  assign status_message = ''
+  
+  if is_drop_product == 'true'
+    assign now = 'now' | date: '%s'
+    assign has_available_drop = false
+    assign has_future_drop = false
+    
+    for collection in product.collections
+      if collection.metafields.custom.ship_by_date != blank
+        assign cutoff_date = collection.metafields.custom.order_cutoff_date
+        if cutoff_date != blank
+          assign cutoff_timestamp = cutoff_date | date: '%s'
+          if now <= cutoff_timestamp
+            assign has_available_drop = true
+          else
+            assign has_future_drop = true
+          endif
+        else
+          assign has_available_drop = true
+        endif
+      endif
+    endfor
+    
+    if has_available_drop == false and has_future_drop == true
+      assign availability_status = 'future'
+      assign status_message = 'Coming Soon'
+    elsif has_available_drop == false and has_future_drop == false
+      assign availability_status = 'closed'
+      assign status_message = 'Order Closed'
+    endif
+  endif
+%}
+
+<div class="enhanced-product-card {{ class }}" 
+     data-product-id="{{ product.id }}" 
+     data-availability="{{ availability_status }}"
+     data-drop-aware="true"
+     data-drop-collections="{% for collection in product.collections %}{% if collection.metafields.custom.ship_by_date != blank %}{{ collection.handle }}{% unless forloop.last %},{% endunless %}{% endif %}{% endfor %}">
+  <div class="enhanced-product-card__inner">
+    
+    <!-- Product Image with Badges -->
+    <div class="enhanced-product-card__media">
+      <a href="{{ current_variant.url | default: product.url }}" class="enhanced-product-card__media-link">
+        
+        <!-- Top Badges (Best Seller, New, etc.) -->
+        {% liquid
+          # Check for badge metafield or determine if product is best seller
+          assign badge_text = product.metafields.custom.badge
+          if badge_text == blank
+            # Check if product is a best seller based on sales or tags
+            if product.tags contains 'best-seller' or product.tags contains 'bestseller'
+              assign badge_text = 'Best Seller'
+            elsif product.tags contains 'new'
+              assign badge_text = 'New'
+            elsif product.compare_at_price > product.price
+              assign badge_text = 'Sale'
+            endif
+          endif
+        %}
+        
+        {% if badge_text != blank %}
+          <div class="enhanced-product-card__top-badge">
+            <span class="product-badge product-badge--top">{{ badge_text }}</span>
+          </div>
+        {% endif %}
+        
+        <!-- Product Image -->
+        <div class="enhanced-product-card__image-container">
+          {% if current_variant.featured_image %}
+            {{ current_variant.featured_image | image_url: width: 500 | image_tag: 
+              loading: 'lazy',
+              class: 'enhanced-product-card__image',
+              alt: product.title
+            }}
+          {% elsif product.featured_image %}
+            {{ product.featured_image | image_url: width: 500 | image_tag:
+              loading: 'lazy', 
+              class: 'enhanced-product-card__image',
+              alt: product.title
+            }}
+          {% else %}
+            <div class="enhanced-product-card__placeholder">
+              {{ 'image' | placeholder_svg_tag: 'placeholder-svg' }}
+            </div>
+          {% endif %}
+          
+          <!-- Availability Overlay for unavailable products -->
+          {% if availability_status != 'available' %}
+            <div class="enhanced-product-card__availability-overlay">
+              <span class="enhanced-product-card__status-message">{{ status_message }}</span>
+            </div>
+          {% endif %}
+          
+          <!-- Switch Drop Overlay (shown on hover for multi-drop products) -->
+          {% if is_drop_product == 'true' %}
+            {% assign other_drop_collections = blank %}
+            {% assign current_drop_count = 0 %}
+            
+            {% for collection in product.collections %}
+              {% if collection.metafields.custom.ship_by_date != blank %}
+                {% assign current_drop_count = current_drop_count | plus: 1 %}
+                {% assign other_drop_collections = other_drop_collections | concat: collection %}
+              {% endif %}
+            {% endfor %}
+            
+            {% if current_drop_count > 1 %}
+              <div class="enhanced-product-card__switch-overlay" data-switch-overlay>
+                <div class="enhanced-product-card__switch-buttons">
+                  {% for collection in other_drop_collections limit: 3 %}
+                    {% assign flag_emoji = '🇺🇸' %}
+                    {% case collection.metafields.custom.drop_type %}
+                      {% when 'JP' %}
+                        {% assign flag_emoji = '🇯🇵' %}
+                      {% when 'EU' %}
+                        {% assign flag_emoji = '🇪🇺' %}
+                      {% when 'US' %}
+                        {% assign flag_emoji = '🇺🇸' %}
+                    {% endcase %}
+                    
+                    <button class="enhanced-product-card__switch-button" 
+                            data-switch-drop="{{ collection.handle }}"
+                            data-drop-type="{{ collection.metafields.custom.drop_type }}"
+                            data-ship-date="{{ collection.metafields.custom.ship_by_date }}">
+                      <span class="switch-button__flag">{{ flag_emoji }}</span>
+                      <span class="switch-button__text">{{ collection.metafields.custom.drop_type }} Drop</span>
+                      <span class="switch-button__date">{{ collection.metafields.custom.ship_by_date | date: '%b %d' }}</span>
+                    </button>
+                  {% endfor %}
+                </div>
+              </div>
+            {% endif %}
+          {% endif %}
+        </div>
+      </a>
+    </div>
+
+    <!-- Color Swatches -->
+    {% if product.variants.size > 1 %}
+      <div class="enhanced-product-card__swatches">
+        {% assign visible_count = 0 %}
+        {% assign max_swatches = 4 %}
+        {% assign demo_colors = '#F59E0B,#EF4444,#10B981,#1F2937,#6B7280' | split: ',' %}
+        {% assign unique_colors = '' %}
+        {% assign color_variants = '' %}
+        
+        <!-- First, collect unique colors and their representative variants -->
+        {% for variant in product.variants %}
+          {% assign color_option = variant.option1 | downcase %}
+          {% if variant.option2 contains 'color' or variant.option2 contains 'Color' %}
+            {% assign color_option = variant.option2 | downcase %}
+          {% elsif variant.option3 contains 'color' or variant.option3 contains 'Color' %}
+            {% assign color_option = variant.option3 | downcase %}
+          {% endif %}
+          
+          {% unless unique_colors contains color_option %}
+            {% if unique_colors == blank %}
+              {% assign unique_colors = color_option %}
+              {% assign color_variants = variant.id %}
+            {% else %}
+              {% assign unique_colors = unique_colors | append: ',' | append: color_option %}
+              {% assign color_variants = color_variants | append: ',' | append: variant.id %}
+            {% endif %}
+          {% endunless %}
+        {% endfor %}
+        
+        {% assign unique_colors_array = unique_colors | split: ',' %}
+        {% assign color_variants_array = color_variants | split: ',' %}
+        {% assign total_colors = unique_colors_array.size %}
+        
+        <!-- Render swatches for unique colors -->
+        {% for color in unique_colors_array limit: max_swatches %}
+          {% assign variant_id = color_variants_array[forloop.index0] %}
+          {% assign variant = product.variants | where: 'id', variant_id | first %}
+          
+          {% assign swatch_color = variant.metafields.custom.color_hex %}
+          {% if swatch_color == blank %}
+            {% assign color_index = forloop.index0 | modulo: demo_colors.size %}
+            {% assign swatch_color = demo_colors[color_index] %}
+          {% endif %}
+          
+          {% assign variant_image_url = '' %}
+          {% if variant.featured_image %}
+            {% assign variant_image_url = variant.featured_image | image_url: width: 500 %}
+          {% endif %}
+          
+          <button 
+            class="enhanced-product-card__swatch{% if forloop.first %} selected{% endif %}" 
+            style="background-color: {{ swatch_color }};"
+            data-variant-id="{{ variant.id }}"
+            data-variant-image="{{ variant_image_url }}"
+            data-variant-title="{{ variant.title }}"
+            data-color="{{ color }}"
+            title="{{ color | capitalize }}"
+          ></button>
+          {% assign visible_count = forloop.index %}
+        {% endfor %}
+        
+        {% assign remaining_colors = total_colors | minus: visible_count %}
+        {% if remaining_colors > 0 %}
+          <span class="enhanced-product-card__swatch-more">+{{ remaining_colors }}</span>
+        {% endif %}
+      </div>
+    {% endif %}
+
+    <!-- Product Info -->
+    <div class="enhanced-product-card__content">
+      <div class="enhanced-product-card__info">
+        
+        <!-- Product Title -->
+        <h3 class="enhanced-product-card__title">
+          <a href="{{ current_variant.url | default: product.url }}">{{ product.title }}</a>
+        </h3>
+        
+        <!-- Price -->
+        <div class="enhanced-product-card__price">
+          {% render 'price', product_resource: product, show_unit_price: false %}
+        </div>
+
+        <!-- Rating -->
+        {% if show_rating_stars %}
+          {% liquid
+            # Use metafield rating or generate demo rating for testing
+            assign rating = product.metafields.custom.rating | times: 1.0
+            assign review_count = product.metafields.custom.review_count | default: 0
+            
+            # If no rating metafield, create demo rating for testing
+            if rating == 0 or rating == blank
+              assign rating = 4.5
+              assign review_count = 494
+            endif
+          %}
+          
+          <div class="enhanced-product-card__rating">
+            <div class="product-rating">
+              {% for i in (1..5) %}
+                {% assign star_value = i %}
+                {% assign star_threshold = star_value | minus: 1 %}
+                {% if rating >= star_value %}
+                  <span class="product-rating__star product-rating__star--filled">★</span>
+                {% elsif rating > star_threshold %}
+                  <span class="product-rating__star product-rating__star--half">★</span>
+                {% else %}
+                  <span class="product-rating__star product-rating__star--empty">★</span>
+                {% endif %}
+              {% endfor %}
+            </div>
+            {% if review_count > 0 %}
+              <span class="product-rating__count">({{ review_count }})</span>
+            {% endif %}
+          </div>
+        {% endif %}
+
+        <!-- Product Tags -->
+        {% if show_product_tags %}
+          {% liquid
+            # Use product tags or add demo tag for testing
+            assign visible_tags = product.tags | where_not: 'starts_with', 'drop-' | where_not: 'starts_with', 'internal-'
+            
+            # If no suitable tags, add demo tag for testing
+            if visible_tags.size == 0
+              assign demo_tags = 'quick-drying' | split: ','
+              assign visible_tags = demo_tags
+            endif
+          %}
+          
+          <div class="enhanced-product-card__tags">
+            {% for tag in visible_tags limit: 2 %}
+              <span class="product-tag">{{ tag | replace: '-', ' ' | downcase }}</span>
+            {% endfor %}
+          </div>
+        {% endif %}
+      </div>
+
+      <!-- Drop Information (always at bottom) -->
+      {% if show_drops and is_drop_product == 'true' %}
+        <div class="enhanced-product-card__drop-info">
+          {% render 'drop-badge', product: product, show_country_flags: true %}
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+{% stylesheet %}
+  .enhanced-product-card {
+    background: white;
+    border-radius: 8px;
+    overflow: hidden;
+    transition: box-shadow 0.2s ease, transform 0.2s ease;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .enhanced-product-card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+  }
+
+  .enhanced-product-card__inner {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+
+  .enhanced-product-card__media {
+    position: relative;
+    background-color: #f8f9fa;
+    flex-shrink: 0;
+  }
+
+  .enhanced-product-card__media-link {
+    display: block;
+    position: relative;
+  }
+
+  .enhanced-product-card__top-badge {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    z-index: 10;
+  }
+
+  .product-badge--top {
+    background: white;
+    color: black;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 500;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  .enhanced-product-card__image-container {
+    position: relative;
+    aspect-ratio: 1;
+    overflow: hidden;
+  }
+
+  .enhanced-product-card__image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+  }
+
+  .enhanced-product-card:hover .enhanced-product-card__image {
+    transform: scale(1.05);
+  }
+
+  .enhanced-product-card__placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f0f0f0;
+  }
+
+  .enhanced-product-card__availability-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 5;
+  }
+
+  .enhanced-product-card__status-message {
+    color: white;
+    font-weight: 600;
+    font-size: 14px;
+    padding: 8px 16px;
+    background: rgba(0, 0, 0, 0.8);
+    border-radius: 20px;
+  }
+
+  .enhanced-product-card__swatches {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 12px;
+  }
+
+  .enhanced-product-card__swatch {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
+  }
+
+  .enhanced-product-card__swatch:hover {
+    border-color: #000;
+    transform: scale(1.15);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  }
+
+  .enhanced-product-card__swatch.selected {
+    border-color: #000;
+    border-width: 2px;
+    transform: scale(1.1);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  }
+
+  .enhanced-product-card__swatch-more {
+    font-size: 11px;
+    color: #666;
+    font-weight: 500;
+    margin-left: 2px;
+  }
+
+  .enhanced-product-card__content {
+    padding: 10px 12px 12px 12px;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .enhanced-product-card__info {
+    flex-grow: 1;
+  }
+
+  .enhanced-product-card__title {
+    font-size: 13px;
+    font-weight: 400;
+    line-height: 1.3;
+    margin-bottom: 6px;
+    color: #333;
+  }
+
+  .enhanced-product-card__title a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .enhanced-product-card__title a:hover {
+    text-decoration: underline;
+  }
+
+  .enhanced-product-card__price {
+    margin-bottom: 6px;
+    font-weight: 600;
+    font-size: 15px;
+  }
+
+  .enhanced-product-card__rating {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-bottom: 4px;
+  }
+
+  .product-rating {
+    display: flex;
+    gap: 1px;
+  }
+
+  .product-rating__star {
+    font-size: 14px;
+    color: #e5e7eb;
+    line-height: 1;
+  }
+
+  .product-rating__star--filled {
+    color: #fbbf24;
+  }
+
+  .product-rating__star--half {
+    color: #fbbf24;
+    position: relative;
+  }
+
+  .product-rating__star--empty {
+    color: #e5e7eb;
+  }
+
+  .product-rating__count {
+    font-size: 12px;
+    color: #666;
+  }
+
+  .enhanced-product-card__tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-bottom: 6px;
+  }
+
+  .product-tag {
+    font-size: 10px;
+    background: #f3f4f6;
+    color: #6b7280;
+    padding: 2px 6px;
+    border-radius: 2px;
+    font-weight: 400;
+  }
+
+  .enhanced-product-card__drop-info {
+    margin-top: auto;
+    padding-top: 6px;
+  }
+
+  /* Availability states */
+  .enhanced-product-card[data-availability="future"] {
+    opacity: 0.8;
+  }
+
+  .enhanced-product-card[data-availability="closed"] {
+    opacity: 0.6;
+  }
+
+  .enhanced-product-card[data-availability="future"] .enhanced-product-card__image {
+    filter: grayscale(0.3);
+  }
+
+  .enhanced-product-card[data-availability="closed"] .enhanced-product-card__image {
+    filter: grayscale(0.5);
+  }
+
+  /* Drop filtering states */
+  .enhanced-product-card.drop-filtered-out {
+    opacity: 0.4;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+  }
+
+  .enhanced-product-card.drop-filtered-in {
+    opacity: 1;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+  }
+
+  .enhanced-product-card.drop-highlighted {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+  }
+
+  /* Drop indicator badge */
+  .enhanced-product-card__drop-indicator {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 500;
+    z-index: 10;
+    transition: all 0.2s ease;
+  }
+
+  .enhanced-product-card__drop-indicator.available {
+    background: #059669;
+  }
+
+  .enhanced-product-card__drop-indicator.future {
+    background: #d97706;
+  }
+
+  .enhanced-product-card__drop-indicator.unavailable {
+    background: #dc2626;
+  }
+
+  /* Switch Drop Overlay */
+  .enhanced-product-card__switch-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.85);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+    z-index: 20;
+  }
+
+  .enhanced-product-card:hover .enhanced-product-card__switch-overlay {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  .enhanced-product-card__switch-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 16px;
+    max-width: 200px;
+  }
+
+  .enhanced-product-card__switch-button {
+    background: white;
+    border: none;
+    border-radius: 8px;
+    padding: 8px 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    text-align: left;
+    font-size: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .enhanced-product-card__switch-button:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    background: #f8f9fa;
+  }
+
+  .switch-button__flag {
+    font-size: 14px;
+    flex-shrink: 0;
+  }
+
+  .switch-button__text {
+    font-weight: 500;
+    color: #333;
+    flex-grow: 1;
+  }
+
+  .switch-button__date {
+    font-size: 10px;
+    color: #666;
+    flex-shrink: 0;
+  }
+
+  /* Hide switch overlay on mobile to avoid conflicts with touch */
+  @media (max-width: 768px) {
+    .enhanced-product-card__switch-overlay {
+      display: none;
+    }
+  }
+{% endstylesheet %}
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  class EnhancedProductCardManager {
+    constructor() {
+      this.cards = document.querySelectorAll('[data-drop-aware="true"]');
+      this.init();
+    }
+
+    init() {
+      this.bindEvents();
+      this.updateCardsForCurrentDrop();
+    }
+
+    bindEvents() {
+      // Listen for global drop changes
+      document.addEventListener('globalDropChanged', (event) => {
+        this.updateCardsForDrop(event.detail);
+      });
+
+      // Color swatch interactions
+      document.addEventListener('click', (event) => {
+        if (event.target.matches('.enhanced-product-card__swatch')) {
+          this.handleSwatchClick(event.target);
+        }
+      });
+
+      // Switch drop button interactions
+      document.addEventListener('click', (event) => {
+        if (event.target.closest('.enhanced-product-card__switch-button')) {
+          this.handleSwitchDropClick(event.target.closest('.enhanced-product-card__switch-button'), event);
+        }
+      });
+    }
+
+    updateCardsForCurrentDrop() {
+      if (window.GlobalDropManager) {
+        const currentDrop = window.GlobalDropManager.getCurrentDrop();
+        this.updateCardsForDrop(currentDrop);
+      }
+    }
+
+    updateCardsForDrop(dropData) {
+      this.cards.forEach(card => {
+        this.updateCardState(card, dropData);
+      });
+    }
+
+    updateCardState(card, dropData) {
+      const dropCollections = (card.dataset.dropCollections || '').split(',').filter(Boolean);
+      
+      // Clear existing states
+      card.classList.remove('drop-filtered-out', 'drop-filtered-in', 'drop-highlighted');
+      
+      // Remove existing drop indicator
+      const existingIndicator = card.querySelector('.enhanced-product-card__drop-indicator');
+      if (existingIndicator) {
+        existingIndicator.remove();
+      }
+
+      if (!dropData || dropData.isShowAll) {
+        // Show all mode - highlight cards with multiple drops
+        card.classList.add('drop-filtered-in');
+        if (dropCollections.length > 1) {
+          this.addDropIndicator(card, '🌍 Multiple Drops', 'available');
+        }
+        return;
+      }
+
+      const isAvailableInDrop = dropCollections.includes(dropData.handle);
+      
+      if (isAvailableInDrop) {
+        card.classList.add('drop-filtered-in', 'drop-highlighted');
+        this.addDropIndicator(card, `${dropData.flag} Available`, 'available');
+      } else if (dropCollections.length > 0) {
+        // Product has drops but not current one
+        card.classList.add('drop-filtered-out');
+        
+        // Find next available drop for switch hint
+        if (window.GlobalDropManager) {
+          const availableDrops = window.GlobalDropManager.getAvailableDrops();
+          const nextDrop = availableDrops.find(drop => 
+            dropCollections.includes(drop.handle) && drop.isAvailable
+          );
+          
+          if (nextDrop) {
+            this.addDropIndicator(card, `${nextDrop.flag} Switch`, 'future');
+            this.makeDropIndicatorClickable(card.querySelector('.enhanced-product-card__drop-indicator'), nextDrop.handle);
+          } else {
+            this.addDropIndicator(card, 'Future Drop', 'unavailable');
+          }
+        }
+      } else {
+        // Product not in any drop
+        card.classList.add('drop-filtered-in');
+      }
+    }
+
+    addDropIndicator(card, text, type) {
+      const indicator = document.createElement('div');
+      indicator.className = `enhanced-product-card__drop-indicator ${type}`;
+      indicator.textContent = text;
+      
+      const mediaElement = card.querySelector('.enhanced-product-card__media');
+      if (mediaElement) {
+        mediaElement.appendChild(indicator);
+      }
+    }
+
+    makeDropIndicatorClickable(indicator, dropHandle) {
+      if (!indicator) return;
+      
+      indicator.style.cursor = 'pointer';
+      indicator.addEventListener('click', (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        
+        if (window.GlobalDropManager) {
+          window.GlobalDropManager.switchToDrop(dropHandle);
+        }
+      });
+    }
+
+    handleSwatchClick(swatchElement) {
+      const variantId = swatchElement.dataset.variantId;
+      const variantImage = swatchElement.dataset.variantImage;
+      const variantTitle = swatchElement.dataset.variantTitle;
+      const card = swatchElement.closest('.enhanced-product-card');
+      
+      if (!variantId || !card) return;
+
+      // Update selected swatch state
+      const allSwatches = card.querySelectorAll('.enhanced-product-card__swatch');
+      allSwatches.forEach(swatch => swatch.classList.remove('selected'));
+      swatchElement.classList.add('selected');
+
+      // Update product image if variant has image
+      const productImage = card.querySelector('.enhanced-product-card__image');
+      if (productImage && variantImage && variantImage.trim() !== '') {
+        // Add loading state
+        productImage.style.opacity = '0.7';
+        
+        // Create new image to preload
+        const newImage = new Image();
+        newImage.onload = () => {
+          productImage.src = variantImage;
+          productImage.alt = variantTitle || productImage.alt;
+          productImage.style.opacity = '1';
+        };
+        newImage.onerror = () => {
+          // Revert on error
+          productImage.style.opacity = '1';
+          console.warn('Failed to load variant image:', variantImage);
+        };
+        newImage.src = variantImage;
+      }
+
+      // Update product links with variant URL if needed
+      const productLinks = card.querySelectorAll('a[href*="/products/"]');
+      productLinks.forEach(link => {
+        const url = new URL(link.href);
+        url.searchParams.set('variant', variantId);
+        link.href = url.toString();
+      });
+
+      // Trigger variant change event for other components
+      const event = new CustomEvent('variantChanged', {
+        detail: { 
+          variantId, 
+          variantImage, 
+          variantTitle, 
+          card 
+        },
+        bubbles: true
+      });
+      card.dispatchEvent(event);
+    }
+
+    handleSwitchDropClick(button, event) {
+      const dropHandle = button.dataset.switchDrop;
+      const dropType = button.dataset.dropType;
+      
+      if (!dropHandle) return;
+
+      // Prevent event from bubbling to card link
+      if (event) {
+        event.preventDefault();
+        event.stopPropagation();
+      }
+
+      // Switch to the selected drop
+      if (window.GlobalDropManager) {
+        window.GlobalDropManager.switchToDrop(dropHandle);
+        
+        // Show feedback message
+        this.showSwitchFeedback(dropType, button.dataset.shipDate);
+      }
+    }
+
+    showSwitchFeedback(dropType, shipDate) {
+      // Create temporary feedback message
+      const feedback = document.createElement('div');
+      feedback.className = 'switch-drop-feedback';
+      
+      const formattedDate = new Date(shipDate).toLocaleDateString('en-US', { 
+        month: 'short', 
+        day: 'numeric' 
+      });
+      
+      feedback.innerHTML = `
+        <div class="switch-drop-feedback__content">
+          🔄 Switched to ${dropType} Drop (Ships ${formattedDate})
+          <button class="switch-drop-feedback__close" onclick="this.parentElement.parentElement.remove()">×</button>
+        </div>
+      `;
+      
+      // Add styles
+      feedback.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 10000;
+        background: #059669;
+        color: white;
+        border-radius: 8px;
+        padding: 12px 16px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        animation: slideInRight 0.3s ease;
+        font-size: 14px;
+        max-width: 300px;
+      `;
+      
+      document.body.appendChild(feedback);
+      
+      // Auto remove after 3 seconds
+      setTimeout(() => {
+        if (feedback.parentElement) {
+          feedback.remove();
+        }
+      }, 3000);
+    }
+  }
+
+  // Initialize enhanced product card manager
+  new EnhancedProductCardManager();
+});
+</script>

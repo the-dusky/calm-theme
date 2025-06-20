@@ -46,9 +46,19 @@
 - [x] Test prompt flow
 
 #### Phase 3: Drop Shopping Mode
-- [x] Create drop selector UI component
-- [x] Implement session storage for drop selection
+- [x] Create global drop selector UI component with country flags
+- [x] Implement localStorage for drop selection persistence
 - [x] Add drop context to product pages
+- [x] Create homepage sections for current/future drops
+- [x] Implement switch drop buttons with country flags
+- [x] Add site-wide JavaScript for drop state management
+- [ ] **Update product cards with comprehensive drop information**
+  - [ ] Add drop badges with country flags and ship dates
+  - [ ] Display availability status (available/future/closed)
+  - [ ] Show cutoff dates and drop type indicators
+  - [ ] Integrate with localStorage for drop-aware filtering
+  - [ ] Add visual states for current vs future drops
+  - [ ] Include switch drop buttons for multi-drop products
 - [x] Test drop browsing experience
 
 #### Phase 4: Order Management

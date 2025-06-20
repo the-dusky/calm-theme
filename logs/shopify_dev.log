@@ -14,12 +14,8 @@
 [2] https://2e9wzh-eg.myshopify.com/admin/themes/146293096616/editor?hr=9292
 [3] http://127.0.0.1:9292/gift_cards/[store_id]/preview
 
-• 13:27:07 Request »    GET 200 / 319ms
-• 13:27:55 Request »    GET 200 /collections 282ms
-• 13:28:06 Request »    GET 200 /collections/frontpage 358ms
-• 13:28:20 Request »    GET 200 /collections/frontpage 318ms
-• 13:28:20  Synced » update snippets/global-drop-selector.liquid
-• 13:28:28  Synced » update snippets/global-drop-selector.liquid
-• 13:28:29 Request »    GET 200 /collections/frontpage 409ms
-• 13:28:35 Request »    GET 200 / 252ms
-• 13:30:14 Request »    GET 200 / 234ms
+• 19:58:56 Request »    GET 200 /collections/frontpage 516ms
+• 19:59:06 Request »    GET 200 / 306ms
+• 19:59:09 Request »    GET 200 /collections/frontpage 460ms
+• 19:59:42 Request »    GET 200 /collections/frontpage 367ms
+• 20:01:00 Request »    GET 200 / 287ms
