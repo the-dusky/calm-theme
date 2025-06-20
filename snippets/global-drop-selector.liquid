@@ -81,11 +81,6 @@
           <path d="M1 1.5L5 4.5L9 1.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
       </div>
-      
-      <div id="global-drop-info" class="global-drop-selector__info" style="display: none;">
-        <span class="global-drop-selector__selected-flag" data-selected-flag></span>
-        <span class="global-drop-selector__selected-text" data-selected-text></span>
-      </div>
     </div>
   </div>
 {% endif %}
@@ -98,9 +93,7 @@
   
   .global-drop-selector__wrapper {
     position: relative;
-    display: flex;
-    align-items: center;
-    gap: var(--gap-xs);
+    display: inline-block;
   }
   
   .global-drop-selector__select-wrapper {
@@ -144,22 +137,6 @@
     color: rgba(var(--color-foreground), 0.6);
   }
   
-  .global-drop-selector__info {
-    display: flex;
-    align-items: center;
-    gap: var(--gap-2xs);
-    font-size: var(--font-size--xs);
-    color: rgb(var(--color-foreground));
-  }
-  
-  .global-drop-selector__selected-flag {
-    font-size: 1rem;
-  }
-  
-  .global-drop-selector__selected-text {
-    font-weight: 500;
-  }
-  
   /* Mobile responsive */
   @media screen and (max-width: 750px) {
     .global-drop-selector {
@@ -170,10 +147,6 @@
       min-width: 120px;
       font-size: var(--font-size--2xs);
       padding: 0.4rem 1.75rem 0.4rem 0.6rem;
-    }
-    
-    .global-drop-selector__info {
-      display: none; /* Hide detailed info on mobile */
     }
   }
   

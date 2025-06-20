@@ -42,3 +42,13 @@
 • 20:06:05 Request »    GET 200 /products/shorts?option_values=9935913910440,9652064452776 441ms
 • 20:06:06 Request »    GET 200 /products/shorts?option_values=9652064420008,9652064452776 333ms
 • 20:06:09 Request »    GET 200 / 234ms
+• 00:08:05 Request »    GET 200 /collections/frontpage 696ms
+• 00:08:07  Synced » update templates/index.json
+• 00:09:47  Synced » update snippets/global-drop-selector.liquid
+• 00:09:47 Request »    GET 200 /collections/frontpage 434ms
+• 00:09:53  Synced » update snippets/global-drop-selector.liquid
+• 00:09:53 Request »    GET 200 /collections/frontpage 421ms
+• 00:10:01  Synced » update snippets/global-drop-selector.liquid
+• 00:10:01 Request »    GET 200 /collections/frontpage 440ms
+• 00:10:09 Request »    GET 200 /collections/frontpage 407ms
+• 00:10:09  Synced » update snippets/global-drop-selector.liquid
