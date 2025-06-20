@@ -61,7 +61,9 @@
       {% endif %}
       
       {% if product %}
-        {% render 'variant-cards', product: product %}
+        <div class="resource-list__item">
+          {% render 'enhanced-product-card', product: product, show_drop_info: true, show_rating: true, show_tags: true %}
+        </div>
 
         {% unless forloop.last %}
             <!--@list/split-->
