@@ -9,6 +9,76 @@
  */
 {
   "sections": {
+    "hero_slideshow_z8BcfN": {
+      "type": "hero-slideshow",
+      "blocks": {
+        "slide_RXaTzx": {
+          "type": "slide",
+          "settings": {
+            "media_type": "image",
+            "image": "shopify://shop_images/012-NAVY.jpg",
+            "title": "",
+            "text": "",
+            "button_label": "",
+            "button_link": "shopify://collections/all",
+            "button_new_tab": false
+          }
+        },
+        "slide_znWX47": {
+          "type": "slide",
+          "settings": {
+            "media_type": "image",
+            "image": "shopify://shop_images/485985033_683950010858592_3074333349411215271_n.jpg",
+            "title": "",
+            "text": "",
+            "button_label": "",
+            "button_link": "",
+            "button_new_tab": false
+          }
+        },
+        "slide_h3HKef": {
+          "type": "slide",
+          "settings": {
+            "media_type": "image",
+            "title": "Special Offer",
+            "text": "<p>Limited time deals you don't want to miss</p>",
+            "button_label": "Shop Sale",
+            "button_link": "shopify://collections/sale",
+            "button_new_tab": false
+          }
+        },
+        "slide_eM84Jp": {
+          "type": "slide",
+          "settings": {
+            "media_type": "image",
+            "title": "Hero Slide Title",
+            "text": "<p>Add your slide description here.</p>",
+            "button_label": "Shop Now",
+            "button_link": "",
+            "button_new_tab": false
+          }
+        }
+      },
+      "block_order": [
+        "slide_RXaTzx",
+        "slide_znWX47",
+        "slide_h3HKef",
+        "slide_eM84Jp"
+      ],
+      "name": "Hero Slideshow",
+      "settings": {
+        "auto_advance": true,
+        "slide_duration": 5,
+        "show_navigation": false,
+        "show_dots": false,
+        "section_height": 40,
+        "color_scheme": "",
+        "toggle_overlay": true,
+        "overlay_color": "#f2f1f022",
+        "overlay_style": "gradient",
+        "gradient_direction": "to bottom"
+      }
+    },
     "hero_iLBwPd": {
       "type": "hero",
       "blocks": {
@@ -716,6 +786,7 @@
     }
   },
   "order": [
+    "hero_slideshow_z8BcfN",
     "hero_iLBwPd",
     "product_list_EDUBdR",
     "shipping_tracker_tKNhEx",
