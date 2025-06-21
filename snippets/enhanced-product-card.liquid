@@ -770,7 +770,7 @@
   /* Responsive Grid Utilities for Enhanced Product Cards */
   .enhanced-cards-grid {
     display: grid;
-    gap: 1rem;
+    gap: 12px;
     grid-template-columns: repeat(4, 1fr); /* Default 4 columns */
   }
 
@@ -786,10 +786,11 @@
     grid-template-columns: repeat(4, 1fr);
   }
 
-  /* Responsive behavior with explicit column control */
-  @media (max-width: 1200px) {
+  /* Responsive breakpoints calculated with container padding */
+  /* 4 → 3 columns: (280px * 4) + (12px * 3) + 80px = 1236px */
+  @media (max-width: 1240px) {
     .enhanced-cards-grid {
-      grid-template-columns: repeat(3, 1fr); /* 3 columns on large tablets */
+      grid-template-columns: repeat(3, 1fr);
     }
     
     .enhanced-cards-grid--4-col {
@@ -797,10 +798,10 @@
     }
   }
 
-  @media (max-width: 900px) {
+  /* 3 → 2 columns: (280px * 3) + (12px * 2) + 80px = 944px */
+  @media (max-width: 950px) {
     .enhanced-cards-grid {
-      grid-template-columns: repeat(2, 1fr); /* 2 columns on tablets */
-      gap: 0.75rem;
+      grid-template-columns: repeat(2, 1fr);
     }
     
     .enhanced-cards-grid--3-col,
@@ -813,9 +814,10 @@
     }
   }
 
-  @media (max-width: 580px) {
+  /* 2 → 1 column: (260px * 2) + (12px * 1) + 80px = 612px */
+  @media (max-width: 620px) {
     .enhanced-cards-grid {
-      grid-template-columns: 1fr; /* Single column on mobile */
+      grid-template-columns: 1fr;
     }
     
     .enhanced-cards-grid--2-col,

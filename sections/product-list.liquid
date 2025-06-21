@@ -61,9 +61,7 @@
       {% endif %}
       
       {% if product %}
-        <div class="resource-list__item">
-          {% render 'enhanced-product-card', product: product, show_drop_info: true, show_rating: true, show_tags: true %}
-        </div>
+        {% render 'enhanced-product-card', product: product, show_drop_info: true, show_rating: true, show_tags: true %}
 
         {% unless forloop.last %}
             <!--@list/split-->
@@ -89,16 +87,22 @@
 
   <div
     class="
-      resource-list
-      {% if section.settings.layout_type == 'carousel' %}
-        force-full-width
+      {% if section.settings.layout_type == 'grid' %}
+        enhanced-cards-grid enhanced-cards-grid--{{ section.settings.columns }}-col
+      {% else %}
+        resource-list
+        {% if section.settings.layout_type == 'carousel' %}
+          force-full-width
+        {% endif %}
+        {% if section.settings.carousel_on_mobile and section.settings.layout_type != 'carousel' %}
+          hidden--mobile
+        {% endif %}
+        {{ classes }}
       {% endif %}
-      {% if section.settings.carousel_on_mobile and section.settings.layout_type != 'carousel' %}
-        hidden--mobile
-      {% endif %}
-      {{ classes }}
     "
-    style="{{ styles }}"
+    {% unless section.settings.layout_type == 'grid' %}
+      style="{{ styles }}"
+    {% endunless %}
     {% if section.settings.layout_type == 'grid' %}
       data-testid="resource-list-grid"
     {% endif %}
