@@ -585,46 +585,23 @@
         {
           "type": "select",
           "id": "image_position",
-          "label": "Image position",
+          "label": "Vertical image position",
           "options": [
             {
               "value": "center top",
-              "label": "Top"
+              "label": "Show top (crop bottom)"
             },
             {
               "value": "center center",
-              "label": "Center"
+              "label": "Show center (crop top & bottom)"
             },
             {
               "value": "center bottom",
-              "label": "Bottom"
-            },
-            {
-              "value": "left center",
-              "label": "Left"
-            },
-            {
-              "value": "right center",
-              "label": "Right"
-            },
-            {
-              "value": "left top",
-              "label": "Top Left"
-            },
-            {
-              "value": "right top",
-              "label": "Top Right"
-            },
-            {
-              "value": "left bottom",
-              "label": "Bottom Left"
-            },
-            {
-              "value": "right bottom",
-              "label": "Bottom Right"
+              "label": "Show bottom (crop top)"
             }
           ],
           "default": "center center",
+          "info": "Controls which part of the image is visible when it gets cropped vertically",
           "visible_if": "{{ block.settings.media_type == 'image' }}"
         },
         {
