@@ -188,7 +188,7 @@
     %}
     
     {% if has_color_variants and product.variants.size > 1 %}
-      <div class="enhanced-product-card__swatches">
+      <div class="enhanced-product-card__swatches" data-swatches-container>
         {% assign visible_count = 0 %}
         {% assign max_swatches = 10 %}
         {% assign unique_colors = '' %}
@@ -221,8 +221,8 @@
         {% assign color_variants_array = color_variants | split: ',' %}
         {% assign total_colors = unique_colors_array.size %}
         
-        <!-- Render swatches for unique colors using Shopify's built-in swatch system -->
-        {% for color in unique_colors_array limit: max_swatches %}
+        <!-- Render all swatches with responsive visibility -->
+        {% for color in unique_colors_array %}
           {% assign variant_id_string = color_variants_array[forloop.index0] %}
           {% assign variant_id = variant_id_string | times: 1 %}
           {% assign variant = product.variants | where: 'id', variant_id | first %}
@@ -263,16 +263,14 @@
                data-variant-image="{{ variant_image_url }}"
                data-variant-title="{{ variant.title }}"
                data-color="{{ color }}"
+               data-swatch-index="{{ forloop.index0 }}"
                title="{{ color | capitalize }}">
             {% render 'swatch', swatch: swatch_data %}
           </div>
-          {% assign visible_count = forloop.index %}
         {% endfor %}
         
-        {% assign remaining_colors = total_colors | minus: visible_count %}
-        {% if remaining_colors > 0 %}
-          <span class="enhanced-product-card__swatch-more">+{{ remaining_colors }}</span>
-        {% endif %}
+        <!-- More indicator (will be shown/hidden by JavaScript) -->
+        <span class="enhanced-product-card__swatch-more" data-swatch-more style="display: none;">+<span data-remaining-count>0</span></span>
       </div>
     {% elsif product.variants.size > 1 %}
       <!-- Product has variants but no color option - show empty space to maintain layout -->
@@ -379,6 +377,7 @@
                 box-shadow var(--hover-transition-duration, 0.25s) var(--hover-transition-timing, ease-out);
     will-change: transform, box-shadow;
     z-index: var(--layer-flat, 1);
+    min-width: 280px; /* Ensure cards maintain good width for swatches */
   }
 
   .enhanced-product-card:hover {
@@ -768,6 +767,69 @@
       display: none;
     }
   }
+  /* Responsive Grid Utilities for Enhanced Product Cards */
+  .enhanced-cards-grid {
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: repeat(4, 1fr); /* Default 4 columns */
+  }
+
+  .enhanced-cards-grid--2-col {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .enhanced-cards-grid--3-col {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .enhanced-cards-grid--4-col {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  /* Responsive behavior with explicit column control */
+  @media (max-width: 1200px) {
+    .enhanced-cards-grid {
+      grid-template-columns: repeat(3, 1fr); /* 3 columns on large tablets */
+    }
+    
+    .enhanced-cards-grid--4-col {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  @media (max-width: 900px) {
+    .enhanced-cards-grid {
+      grid-template-columns: repeat(2, 1fr); /* 2 columns on tablets */
+      gap: 0.75rem;
+    }
+    
+    .enhanced-cards-grid--3-col,
+    .enhanced-cards-grid--4-col {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .enhanced-product-card {
+      min-width: 260px;
+    }
+  }
+
+  @media (max-width: 580px) {
+    .enhanced-cards-grid {
+      grid-template-columns: 1fr; /* Single column on mobile */
+    }
+    
+    .enhanced-cards-grid--2-col,
+    .enhanced-cards-grid--3-col,
+    .enhanced-cards-grid--4-col {
+      grid-template-columns: 1fr;
+    }
+    
+    .enhanced-product-card {
+      min-width: 100%;
+      max-width: 400px;
+      margin: 0 auto;
+    }
+  }
 {% endstylesheet %}
 
 <script>
@@ -781,6 +843,7 @@ document.addEventListener('DOMContentLoaded', function() {
     init() {
       this.bindEvents();
       this.updateCardsForCurrentDrop();
+      this.initializeResponsiveSwatches();
     }
 
     bindEvents() {
@@ -1122,6 +1185,56 @@ document.addEventListener('DOMContentLoaded', function() {
         statusDiv.textContent = message;
         statusDiv.style.background = message.startsWith('SUCCESS') ? '#4CAF50' : 
                                     message.startsWith('ERROR') ? '#f44336' : '#555';
+      }
+    }
+
+    initializeResponsiveSwatches() {
+      // Initialize responsive swatch display for all cards
+      const swatchContainers = document.querySelectorAll('[data-swatches-container]');
+      swatchContainers.forEach(container => {
+        this.updateSwatchVisibility(container);
+      });
+
+      // Update on window resize
+      let resizeTimeout;
+      window.addEventListener('resize', () => {
+        clearTimeout(resizeTimeout);
+        resizeTimeout = setTimeout(() => {
+          swatchContainers.forEach(container => {
+            this.updateSwatchVisibility(container);
+          });
+        }, 150);
+      });
+    }
+
+    updateSwatchVisibility(container) {
+      const swatches = container.querySelectorAll('.enhanced-product-card__swatch-wrapper');
+      const moreIndicator = container.querySelector('[data-swatch-more]');
+      const remainingCountSpan = container.querySelector('[data-remaining-count]');
+      
+      if (swatches.length === 0) return;
+
+      // With min-width of 280px, we can comfortably show 8-10 swatches
+      const maxVisible = 8; // Conservative number that works well
+
+      // Show/hide swatches based on max visible
+      let visibleCount = 0;
+      swatches.forEach((swatch, index) => {
+        if (index < maxVisible) {
+          swatch.style.display = '';
+          visibleCount++;
+        } else {
+          swatch.style.display = 'none';
+        }
+      });
+
+      // Update the "more" indicator
+      const remainingCount = swatches.length - visibleCount;
+      if (remainingCount > 0) {
+        moreIndicator.style.display = '';
+        remainingCountSpan.textContent = remainingCount;
+      } else {
+        moreIndicator.style.display = 'none';
       }
     }
   }

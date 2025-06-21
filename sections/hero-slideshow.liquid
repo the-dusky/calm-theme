@@ -10,6 +10,7 @@
   assign slide_duration = section.settings.slide_duration | times: 1000
   assign show_navigation = section.settings.show_navigation
   assign show_dots = section.settings.show_dots
+  assign transition_effect = section.settings.transition_effect
   
   assign sizes = '100vw'
   assign widths = '300, 450, 600, 750, 900, 1050, 1200, 1350, 1500, 1650, 1800, 1950, 2000, 2500, 3000, 3500, 4000, 5000'
@@ -17,7 +18,7 @@
 
 <div
   id="HeroSlideshow-{{ section.id }}"
-  class="hero-slideshow color-{{ section.settings.color_scheme }}"
+  class="hero-slideshow hero-slideshow--{{ transition_effect }} color-{{ section.settings.color_scheme }}"
   style="
     --hero-slideshow-height: {{ section.settings.section_height }}vh;
     --slide-count: {{ slide_count }};
@@ -26,6 +27,7 @@
   data-slideshow
   data-auto-advance="{{ auto_advance }}"
   data-slide-duration="{{ slide_duration }}"
+  data-transition="{{ transition_effect }}"
 >
   <div class="hero-slideshow__container">
     
@@ -174,6 +176,7 @@
     position: relative;
     width: 100%;
     height: 100%;
+    overflow: hidden;
   }
 
   .hero-slideshow__slide {
@@ -182,15 +185,77 @@
     left: 0;
     width: 100%;
     height: 100%;
-    opacity: 0;
-    transition: opacity 0.8s ease-in-out;
     display: flex;
     align-items: center;
     justify-content: center;
+    transition: all 0.8s ease-in-out;
   }
 
-  .hero-slideshow__slide--active {
+  /* Fade transition (default) */
+  .hero-slideshow--fade .hero-slideshow__slide {
+    opacity: 0;
+    transform: none;
+  }
+
+  .hero-slideshow--fade .hero-slideshow__slide--active {
     opacity: 1;
+    z-index: 2;
+  }
+
+  /* Slide Left to Right */
+  .hero-slideshow--slide-left .hero-slideshow__slide {
+    opacity: 1;
+    transform: translateX(100%);
+  }
+
+  .hero-slideshow--slide-left .hero-slideshow__slide--active {
+    transform: translateX(0);
+    z-index: 2;
+  }
+
+  .hero-slideshow--slide-left .hero-slideshow__slide--prev {
+    transform: translateX(-100%);
+  }
+
+  /* Slide Right to Left */
+  .hero-slideshow--slide-right .hero-slideshow__slide {
+    opacity: 1;
+    transform: translateX(-100%);
+  }
+
+  .hero-slideshow--slide-right .hero-slideshow__slide--active {
+    transform: translateX(0);
+    z-index: 2;
+  }
+
+  .hero-slideshow--slide-right .hero-slideshow__slide--prev {
+    transform: translateX(100%);
+  }
+
+  /* Slide Up */
+  .hero-slideshow--slide-up .hero-slideshow__slide {
+    opacity: 1;
+    transform: translateY(100%);
+  }
+
+  .hero-slideshow--slide-up .hero-slideshow__slide--active {
+    transform: translateY(0);
+    z-index: 2;
+  }
+
+  .hero-slideshow--slide-up .hero-slideshow__slide--prev {
+    transform: translateY(-100%);
+  }
+
+  /* Zoom transition */
+  .hero-slideshow--zoom .hero-slideshow__slide {
+    opacity: 0;
+    transform: scale(1.1);
+  }
+
+  .hero-slideshow--zoom .hero-slideshow__slide--active {
+    opacity: 1;
+    transform: scale(1);
     z-index: 2;
   }
 
@@ -387,6 +452,7 @@
       this.autoAdvance = element.dataset.autoAdvance === 'true';
       this.slideDuration = parseInt(element.dataset.slideDuration) || 5000;
       this.autoAdvanceTimer = null;
+      this.transition = element.dataset.transition || 'fade';
       
       this.init();
     }
@@ -425,6 +491,12 @@
     
     goToSlide(index) {
       if (index === this.currentSlide) return;
+      
+      // For sliding transitions, mark previous slide
+      if (this.transition.includes('slide')) {
+        this.slides.forEach(slide => slide.classList.remove('hero-slideshow__slide--prev'));
+        this.slides[this.currentSlide].classList.add('hero-slideshow__slide--prev');
+      }
       
       // Update slides
       this.slides[this.currentSlide].classList.remove('hero-slideshow__slide--active');
@@ -578,6 +650,34 @@
       "id": "show_dots",
       "label": "Show dot indicators",
       "default": true
+    },
+    {
+      "type": "select",
+      "id": "transition_effect",
+      "label": "Transition effect",
+      "options": [
+        {
+          "value": "fade",
+          "label": "Fade"
+        },
+        {
+          "value": "slide-left",
+          "label": "Slide (Left to Right)"
+        },
+        {
+          "value": "slide-right",
+          "label": "Slide (Right to Left)"
+        },
+        {
+          "value": "slide-up",
+          "label": "Slide (Bottom to Top)"
+        },
+        {
+          "value": "zoom",
+          "label": "Zoom"
+        }
+      ],
+      "default": "fade"
     },
     {
       "type": "header",
