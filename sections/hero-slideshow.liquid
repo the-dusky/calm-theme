@@ -60,17 +60,18 @@
                   assign image_position = 'center center'
                 endif
               %}
-              <img 
-                src="{{ block.settings.image | image_url: width: 3840 }}"
-                class="hero-slideshow__image"
-                alt="{{ block.settings.image.alt | default: block.settings.title }}"
-                style="object-position: {{ image_position }};"
-                sizes="{{ sizes }}"
-                srcset="{% for width in widths %}{{ block.settings.image | image_url: width: width }} {{ width }}w{% unless forloop.last %}, {% endunless %}{% endfor %}"
-                loading="lazy"
-                data-debug-position="{{ image_position }}"
-                data-debug-setting="{{ block.settings.image_position }}"
-              >
+              {{ block.settings.image | image_url: width: 3840 | image_tag:
+                class: 'hero-slideshow__image',
+                sizes: sizes,
+                widths: widths,
+                alt: block.settings.image.alt,
+                loading: 'lazy'
+              }}
+              <style>
+                .hero-slideshow__slide[data-slide="{{ forloop.index0 }}"] .hero-slideshow__image {
+                  object-position: {{ image_position }};
+                }
+              </style>
             {% elsif has_video %}
               {{ block.settings.video | video_tag:
                 image_size: '3840x',
