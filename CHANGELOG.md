@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- Updated house icon to storage unit with garage door in process section
+- Process timeline now shows more industrial/logistics-appropriate storage unit icon
+- Icon features horizontal garage door lines and handle for realistic appearance
+
 ### Added
 - Preorder system Phase 1 complete
 - Collection metafields schema for drop management (ship_by_date, order_by_date, drop_location)
