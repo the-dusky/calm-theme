@@ -293,3 +293,12 @@
 • 21:10:59  Synced » update templates/index.json
 • 21:11:02 Request »    GET 200 / 291ms
 • 21:11:05 Request »    GET 200 / 356ms
+• 21:12:55  Synced » update sections/hero-slideshow.liquid
+• 21:12:55 Request »    GET 200 / 278ms
+• 21:12:55 Request »    GET 200 / 313ms
+• 21:12:56 Request »    GET 200 / 253ms
+• 21:12:56 Request »    GET 200 / 220ms
+• 21:12:57 Request »    GET 200 / 262ms
+• 21:13:04  Synced » update sections/hero-slideshow.liquid
+• 21:13:13  Synced » update templates/index.json
+• 21:13:15  Synced » update sections/hero-slideshow.liquid

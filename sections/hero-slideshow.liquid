@@ -58,7 +58,8 @@
                 class: 'hero-slideshow__image',
                 sizes: sizes,
                 widths: widths,
-                alt: block.settings.image.alt | default: block.settings.title
+                alt: block.settings.image.alt | default: block.settings.title,
+                style: 'object-position: ' | append: block.settings.image_position | default: 'center center'
               }}
             {% elsif has_video %}
               {{ block.settings.video | video_tag:
@@ -582,6 +583,51 @@
           "info": "Recommended: 1920x1080px"
         },
         {
+          "type": "select",
+          "id": "image_position",
+          "label": "Image position",
+          "options": [
+            {
+              "value": "center top",
+              "label": "Top"
+            },
+            {
+              "value": "center center",
+              "label": "Center"
+            },
+            {
+              "value": "center bottom",
+              "label": "Bottom"
+            },
+            {
+              "value": "left center",
+              "label": "Left"
+            },
+            {
+              "value": "right center",
+              "label": "Right"
+            },
+            {
+              "value": "left top",
+              "label": "Top Left"
+            },
+            {
+              "value": "right top",
+              "label": "Top Right"
+            },
+            {
+              "value": "left bottom",
+              "label": "Bottom Left"
+            },
+            {
+              "value": "right bottom",
+              "label": "Bottom Right"
+            }
+          ],
+          "default": "center center",
+          "visible_if": "{{ block.settings.media_type == 'image' }}"
+        },
+        {
           "type": "video",
           "id": "video",
           "label": "Video"
@@ -760,7 +806,8 @@
             "title": "New Collection",
             "text": "<p>Discover our latest arrivals</p>",
             "button_label": "Shop Now",
-            "button_link": "shopify://collections/all"
+            "button_link": "shopify://collections/all",
+            "image_position": "center center"
           }
         },
         {
@@ -769,7 +816,8 @@
             "title": "Featured Products",
             "text": "<p>Handpicked favorites just for you</p>",
             "button_label": "Explore",
-            "button_link": "shopify://collections/featured"
+            "button_link": "shopify://collections/featured",
+            "image_position": "center top"
           }
         },
         {
@@ -778,7 +826,8 @@
             "title": "Special Offer",
             "text": "<p>Limited time deals you don't want to miss</p>",
             "button_label": "Shop Sale",
-            "button_link": "shopify://collections/sale"
+            "button_link": "shopify://collections/sale",
+            "image_position": "center bottom"
           }
         }
       ]
