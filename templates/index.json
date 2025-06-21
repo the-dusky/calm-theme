@@ -17,6 +17,7 @@
           "settings": {
             "media_type": "image",
             "image": "shopify://shop_images/012-NAVY.jpg",
+            "image_position": "center top",
             "title": "",
             "text": "",
             "button_label": "",
@@ -29,6 +30,7 @@
           "settings": {
             "media_type": "image",
             "image": "shopify://shop_images/485985033_683950010858592_3074333349411215271_n.jpg",
+            "image_position": "center center",
             "title": "",
             "text": "",
             "button_label": "",
@@ -41,6 +43,7 @@
           "settings": {
             "media_type": "image",
             "image": "shopify://shop_images/calm_cover_copy.jpg",
+            "image_position": "center center",
             "title": "",
             "text": "",
             "button_label": "",
