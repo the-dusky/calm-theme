@@ -43,7 +43,7 @@
           "settings": {
             "media_type": "image",
             "image": "shopify://shop_images/calm_cover_copy.jpg",
-            "image_position": "center center",
+            "image_position": "center bottom",
             "title": "",
             "text": "",
             "button_label": "",
