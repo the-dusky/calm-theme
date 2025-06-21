@@ -504,14 +504,17 @@
     goToSlide(index) {
       if (index === this.currentSlide) return;
       
-      // For sliding transitions, mark previous slide
+      // Reset all slides to default state
+      this.slides.forEach(slide => {
+        slide.classList.remove('hero-slideshow__slide--active', 'hero-slideshow__slide--prev');
+      });
+      
+      // For sliding transitions, set up the previous slide position
       if (this.transition.includes('slide')) {
-        this.slides.forEach(slide => slide.classList.remove('hero-slideshow__slide--prev'));
         this.slides[this.currentSlide].classList.add('hero-slideshow__slide--prev');
       }
       
-      // Update slides
-      this.slides[this.currentSlide].classList.remove('hero-slideshow__slide--active');
+      // Activate the new slide
       this.slides[index].classList.add('hero-slideshow__slide--active');
       
       // Update dots
