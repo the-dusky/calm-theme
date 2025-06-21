@@ -54,12 +54,13 @@
           <!-- Media -->
           <div class="hero-slideshow__media">
             {% if has_image %}
+              {% assign image_position = block.settings.image_position | default: 'center center' %}
               {{ block.settings.image | image_url: width: 3840 | image_tag:
                 class: 'hero-slideshow__image',
                 sizes: sizes,
                 widths: widths,
                 alt: block.settings.image.alt | default: block.settings.title,
-                style: 'object-position: ' | append: block.settings.image_position | default: 'center center'
+                style: 'object-position: ' | append: image_position
               }}
             {% elsif has_video %}
               {{ block.settings.video | video_tag:
