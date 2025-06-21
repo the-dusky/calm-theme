@@ -1,0 +1,688 @@
+{% comment %}
+  Hero Slideshow Section
+  Displays multiple hero slides with automatic cycling and navigation
+  Each slide can be an image or video with overlaid content blocks
+{% endcomment %}
+
+{% liquid
+  assign slide_count = section.blocks.size
+  assign auto_advance = section.settings.auto_advance
+  assign slide_duration = section.settings.slide_duration | times: 1000
+  assign show_navigation = section.settings.show_navigation
+  assign show_dots = section.settings.show_dots
+  
+  assign sizes = '100vw'
+  assign widths = '300, 450, 600, 750, 900, 1050, 1200, 1350, 1500, 1650, 1800, 1950, 2000, 2500, 3000, 3500, 4000, 5000'
+%}
+
+<div
+  id="HeroSlideshow-{{ section.id }}"
+  class="hero-slideshow color-{{ section.settings.color_scheme }}"
+  style="
+    --hero-slideshow-height: {{ section.settings.section_height }}vh;
+    --slide-count: {{ slide_count }};
+    --slide-duration: {{ slide_duration }}ms;
+  "
+  data-slideshow
+  data-auto-advance="{{ auto_advance }}"
+  data-slide-duration="{{ slide_duration }}"
+>
+  <div class="hero-slideshow__container">
+    
+    <!-- Slides -->
+    <div class="hero-slideshow__slides" data-slides>
+      {% for block in section.blocks %}
+        {% liquid
+          assign media_type = block.settings.media_type
+          assign has_image = false
+          assign has_video = false
+          
+          if media_type == 'image' and block.settings.image != blank
+            assign has_image = true
+          elsif media_type == 'video' and block.settings.video != blank
+            assign has_video = true
+          endif
+        %}
+        
+        <div 
+          class="hero-slideshow__slide {% if forloop.first %}hero-slideshow__slide--active{% endif %}"
+          data-slide="{{ forloop.index0 }}"
+          {{ block.shopify_attributes }}
+        >
+          <!-- Media -->
+          <div class="hero-slideshow__media">
+            {% if has_image %}
+              {{ block.settings.image | image_url: width: 3840 | image_tag:
+                class: 'hero-slideshow__image',
+                sizes: sizes,
+                widths: widths,
+                alt: block.settings.image.alt | default: block.settings.title
+              }}
+            {% elsif has_video %}
+              {{ block.settings.video | video_tag:
+                image_size: '3840x',
+                autoplay: true,
+                loop: true,
+                controls: false,
+                muted: true,
+                class: 'hero-slideshow__video'
+              }}
+            {% else %}
+              <div class="hero-slideshow__placeholder">
+                {{ 'image' | placeholder_svg_tag: 'placeholder-svg' }}
+              </div>
+            {% endif %}
+            
+            <!-- Overlay -->
+            {% if section.settings.toggle_overlay %}
+              <div class="hero-slideshow__overlay" style="
+                background: {{ section.settings.overlay_color }};
+                {% if section.settings.overlay_style == 'gradient' %}
+                  background: linear-gradient({{ section.settings.gradient_direction }}, transparent 0%, {{ section.settings.overlay_color }} 100%);
+                {% endif %}
+              "></div>
+            {% endif %}
+          </div>
+          
+          <!-- Content -->
+          {% if block.settings.title != blank or block.settings.text != blank or block.settings.button_label != blank %}
+            <div class="hero-slideshow__content">
+              <div class="hero-slideshow__content-inner">
+                {% if block.settings.title != blank %}
+                  <h2 class="hero-slideshow__title">{{ block.settings.title }}</h2>
+                {% endif %}
+                
+                {% if block.settings.text != blank %}
+                  <div class="hero-slideshow__text">{{ block.settings.text }}</div>
+                {% endif %}
+                
+                {% if block.settings.button_label != blank and block.settings.button_link != blank %}
+                  <a 
+                    href="{{ block.settings.button_link }}"
+                    class="hero-slideshow__button button button--primary"
+                    {% if block.settings.button_new_tab %}target="_blank" rel="noopener"{% endif %}
+                  >
+                    {{ block.settings.button_label }}
+                  </a>
+                {% endif %}
+              </div>
+            </div>
+          {% endif %}
+        </div>
+      {% endfor %}
+    </div>
+    
+    <!-- Navigation Arrows -->
+    {% if show_navigation and slide_count > 1 %}
+      <div class="hero-slideshow__navigation">
+        <button 
+          type="button" 
+          class="hero-slideshow__nav hero-slideshow__nav--prev"
+          data-slideshow-prev
+          aria-label="Previous slide"
+        >
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="15,18 9,12 15,6"></polyline>
+          </svg>
+        </button>
+        
+        <button 
+          type="button" 
+          class="hero-slideshow__nav hero-slideshow__nav--next"
+          data-slideshow-next
+          aria-label="Next slide"
+        >
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="9,6 15,12 9,18"></polyline>
+          </svg>
+        </button>
+      </div>
+    {% endif %}
+    
+    <!-- Dots Indicator -->
+    {% if show_dots and slide_count > 1 %}
+      <div class="hero-slideshow__dots">
+        {% for block in section.blocks %}
+          <button 
+            type="button"
+            class="hero-slideshow__dot {% if forloop.first %}hero-slideshow__dot--active{% endif %}"
+            data-slide-to="{{ forloop.index0 }}"
+            aria-label="Go to slide {{ forloop.index }}"
+          ></button>
+        {% endfor %}
+      </div>
+    {% endif %}
+  </div>
+</div>
+
+{% stylesheet %}
+  .hero-slideshow {
+    position: relative;
+    width: 100%;
+    height: var(--hero-slideshow-height);
+    min-height: 400px;
+    overflow: hidden;
+  }
+
+  .hero-slideshow__container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+  }
+
+  .hero-slideshow__slides {
+    position: relative;
+    width: 100%;
+    height: 100%;
+  }
+
+  .hero-slideshow__slide {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    transition: opacity 0.8s ease-in-out;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .hero-slideshow__slide--active {
+    opacity: 1;
+    z-index: 2;
+  }
+
+  .hero-slideshow__media {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+  }
+
+  .hero-slideshow__image,
+  .hero-slideshow__video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+  }
+
+  .hero-slideshow__placeholder {
+    width: 100%;
+    height: 100%;
+    background-color: var(--color-background-secondary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .hero-slideshow__placeholder svg {
+    width: 120px;
+    height: 120px;
+    opacity: 0.3;
+  }
+
+  .hero-slideshow__overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 2;
+  }
+
+  .hero-slideshow__content {
+    position: relative;
+    z-index: 3;
+    text-align: center;
+    color: white;
+    max-width: 800px;
+    padding: 0 20px;
+  }
+
+  .hero-slideshow__title {
+    font-size: clamp(2rem, 5vw, 4rem);
+    font-weight: 700;
+    line-height: 1.1;
+    margin-bottom: 1rem;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  }
+
+  .hero-slideshow__text {
+    font-size: clamp(1.1rem, 2vw, 1.3rem);
+    line-height: 1.4;
+    margin-bottom: 2rem;
+    opacity: 0.95;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  }
+
+  .hero-slideshow__button {
+    display: inline-block;
+    padding: 1rem 2rem;
+    background: white;
+    color: black;
+    text-decoration: none;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 1.1rem;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  }
+
+  .hero-slideshow__button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+  }
+
+  /* Navigation */
+  .hero-slideshow__navigation {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    z-index: 4;
+    display: flex;
+    justify-content: space-between;
+    padding: 0 20px;
+    pointer-events: none;
+  }
+
+  .hero-slideshow__nav {
+    pointer-events: auto;
+    background: rgba(255, 255, 255, 0.9);
+    border: none;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    color: black;
+    backdrop-filter: blur(4px);
+  }
+
+  .hero-slideshow__nav:hover {
+    background: white;
+    transform: scale(1.1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  }
+
+  /* Dots */
+  .hero-slideshow__dots {
+    position: absolute;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 4;
+    display: flex;
+    gap: 12px;
+  }
+
+  .hero-slideshow__dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    border: 2px solid white;
+    background: transparent;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    opacity: 0.7;
+  }
+
+  .hero-slideshow__dot--active {
+    background: white;
+    opacity: 1;
+    transform: scale(1.2);
+  }
+
+  .hero-slideshow__dot:hover {
+    opacity: 1;
+    transform: scale(1.1);
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .hero-slideshow__content {
+      padding: 0 15px;
+    }
+    
+    .hero-slideshow__navigation {
+      padding: 0 15px;
+    }
+    
+    .hero-slideshow__nav {
+      width: 40px;
+      height: 40px;
+    }
+    
+    .hero-slideshow__dots {
+      bottom: 20px;
+      gap: 8px;
+    }
+    
+    .hero-slideshow__dot {
+      width: 10px;
+      height: 10px;
+    }
+  }
+{% endstylesheet %}
+
+<script>
+  class HeroSlideshow {
+    constructor(element) {
+      this.slideshow = element;
+      this.slides = element.querySelectorAll('.hero-slideshow__slide');
+      this.dots = element.querySelectorAll('.hero-slideshow__dot');
+      this.prevBtn = element.querySelector('[data-slideshow-prev]');
+      this.nextBtn = element.querySelector('[data-slideshow-next]');
+      
+      this.currentSlide = 0;
+      this.slideCount = this.slides.length;
+      this.autoAdvance = element.dataset.autoAdvance === 'true';
+      this.slideDuration = parseInt(element.dataset.slideDuration) || 5000;
+      this.autoAdvanceTimer = null;
+      
+      this.init();
+    }
+    
+    init() {
+      if (this.slideCount <= 1) return;
+      
+      // Event listeners
+      if (this.prevBtn) {
+        this.prevBtn.addEventListener('click', () => this.previousSlide());
+      }
+      
+      if (this.nextBtn) {
+        this.nextBtn.addEventListener('click', () => this.nextSlide());
+      }
+      
+      this.dots.forEach((dot, index) => {
+        dot.addEventListener('click', () => this.goToSlide(index));
+      });
+      
+      // Auto advance
+      if (this.autoAdvance) {
+        this.startAutoAdvance();
+        
+        // Pause on hover
+        this.slideshow.addEventListener('mouseenter', () => this.pauseAutoAdvance());
+        this.slideshow.addEventListener('mouseleave', () => this.startAutoAdvance());
+      }
+      
+      // Keyboard navigation
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowLeft') this.previousSlide();
+        if (e.key === 'ArrowRight') this.nextSlide();
+      });
+    }
+    
+    goToSlide(index) {
+      if (index === this.currentSlide) return;
+      
+      // Update slides
+      this.slides[this.currentSlide].classList.remove('hero-slideshow__slide--active');
+      this.slides[index].classList.add('hero-slideshow__slide--active');
+      
+      // Update dots
+      if (this.dots.length > 0) {
+        this.dots[this.currentSlide].classList.remove('hero-slideshow__dot--active');
+        this.dots[index].classList.add('hero-slideshow__dot--active');
+      }
+      
+      this.currentSlide = index;
+      
+      // Reset auto advance timer
+      if (this.autoAdvance) {
+        this.startAutoAdvance();
+      }
+    }
+    
+    nextSlide() {
+      const nextIndex = (this.currentSlide + 1) % this.slideCount;
+      this.goToSlide(nextIndex);
+    }
+    
+    previousSlide() {
+      const prevIndex = (this.currentSlide - 1 + this.slideCount) % this.slideCount;
+      this.goToSlide(prevIndex);
+    }
+    
+    startAutoAdvance() {
+      this.pauseAutoAdvance();
+      this.autoAdvanceTimer = setInterval(() => {
+        this.nextSlide();
+      }, this.slideDuration);
+    }
+    
+    pauseAutoAdvance() {
+      if (this.autoAdvanceTimer) {
+        clearInterval(this.autoAdvanceTimer);
+        this.autoAdvanceTimer = null;
+      }
+    }
+  }
+  
+  // Initialize slideshows when DOM is ready
+  document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('[data-slideshow]').forEach(slideshow => {
+      new HeroSlideshow(slideshow);
+    });
+  });
+</script>
+
+{% schema %}
+{
+  "name": "Hero Slideshow",
+  "tag": "section",
+  "class": "hero-slideshow-wrapper section-wrapper",
+  "blocks": [
+    {
+      "type": "slide",
+      "name": "Slide",
+      "settings": [
+        {
+          "type": "select",
+          "id": "media_type",
+          "label": "Media Type",
+          "options": [
+            {
+              "value": "image",
+              "label": "Image"
+            },
+            {
+              "value": "video",
+              "label": "Video"
+            }
+          ],
+          "default": "image"
+        },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image",
+          "info": "Recommended: 1920x1080px"
+        },
+        {
+          "type": "video",
+          "id": "video",
+          "label": "Video"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Heading",
+          "default": "Hero Slide Title"
+        },
+        {
+          "type": "richtext",
+          "id": "text",
+          "label": "Text",
+          "default": "<p>Add your slide description here.</p>"
+        },
+        {
+          "type": "text",
+          "id": "button_label",
+          "label": "Button Label",
+          "default": "Shop Now"
+        },
+        {
+          "type": "url",
+          "id": "button_link",
+          "label": "Button Link"
+        },
+        {
+          "type": "checkbox",
+          "id": "button_new_tab",
+          "label": "Open in new tab",
+          "default": false
+        }
+      ]
+    }
+  ],
+  "settings": [
+    {
+      "type": "header",
+      "content": "Slideshow Settings"
+    },
+    {
+      "type": "checkbox",
+      "id": "auto_advance",
+      "label": "Auto advance slides",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "slide_duration",
+      "label": "Slide duration (seconds)",
+      "min": 3,
+      "max": 10,
+      "step": 1,
+      "default": 5,
+      "info": "How long each slide is displayed"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_navigation",
+      "label": "Show navigation arrows",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_dots",
+      "label": "Show dot indicators",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "range",
+      "id": "section_height",
+      "label": "Section height",
+      "min": 40,
+      "max": 100,
+      "step": 5,
+      "default": 70,
+      "unit": "vh"
+    },
+    {
+      "type": "header",
+      "content": "Appearance"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "scheme-1"
+    },
+    {
+      "type": "checkbox",
+      "id": "toggle_overlay",
+      "label": "Add overlay",
+      "default": true
+    },
+    {
+      "type": "color",
+      "id": "overlay_color",
+      "label": "Overlay color",
+      "alpha": true,
+      "default": "#00000040"
+    },
+    {
+      "type": "select",
+      "id": "overlay_style",
+      "label": "Overlay style",
+      "options": [
+        {
+          "value": "solid",
+          "label": "Solid"
+        },
+        {
+          "value": "gradient",
+          "label": "Gradient"
+        }
+      ],
+      "default": "gradient"
+    },
+    {
+      "type": "select",
+      "id": "gradient_direction",
+      "label": "Gradient direction",
+      "options": [
+        {
+          "value": "to top",
+          "label": "Bottom to top"
+        },
+        {
+          "value": "to bottom",
+          "label": "Top to bottom"
+        }
+      ],
+      "default": "to top"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Hero Slideshow",
+      "category": "Banners",
+      "blocks": [
+        {
+          "type": "slide",
+          "settings": {
+            "title": "New Collection",
+            "text": "<p>Discover our latest arrivals</p>",
+            "button_label": "Shop Now",
+            "button_link": "shopify://collections/all"
+          }
+        },
+        {
+          "type": "slide",
+          "settings": {
+            "title": "Featured Products",
+            "text": "<p>Handpicked favorites just for you</p>",
+            "button_label": "Explore",
+            "button_link": "shopify://collections/featured"
+          }
+        },
+        {
+          "type": "slide",
+          "settings": {
+            "title": "Special Offer",
+            "text": "<p>Limited time deals you don't want to miss</p>",
+            "button_label": "Shop Sale",
+            "button_link": "shopify://collections/sale"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}
