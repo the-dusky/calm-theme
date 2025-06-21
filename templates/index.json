@@ -40,20 +40,10 @@
           "type": "slide",
           "settings": {
             "media_type": "image",
-            "title": "Special Offer",
-            "text": "<p>Limited time deals you don't want to miss</p>",
-            "button_label": "Shop Sale",
-            "button_link": "shopify://collections/sale",
-            "button_new_tab": false
-          }
-        },
-        "slide_eM84Jp": {
-          "type": "slide",
-          "settings": {
-            "media_type": "image",
-            "title": "Hero Slide Title",
-            "text": "<p>Add your slide description here.</p>",
-            "button_label": "Shop Now",
+            "image": "shopify://shop_images/calm_cover_copy.jpg",
+            "title": "",
+            "text": "",
+            "button_label": "",
             "button_link": "",
             "button_new_tab": false
           }
@@ -62,8 +52,7 @@
       "block_order": [
         "slide_RXaTzx",
         "slide_znWX47",
-        "slide_h3HKef",
-        "slide_eM84Jp"
+        "slide_h3HKef"
       ],
       "name": "Hero Slideshow",
       "settings": {
@@ -228,6 +217,7 @@
       "block_order": [
         "group_mATTUY"
       ],
+      "disabled": true,
       "custom_css": [
         "img {object-fit: cover; object-position: top; /* This keeps the top visible, cutting off the bottom */}"
       ],
