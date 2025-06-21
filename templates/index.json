@@ -60,7 +60,7 @@
         "slide_duration": 5,
         "show_navigation": false,
         "show_dots": false,
-        "transition_effect": "slide-right",
+        "transition_effect": "slide-left",
         "section_height": 40,
         "color_scheme": "",
         "toggle_overlay": true,
