@@ -5,17 +5,20 @@
 {% endcomment %}
 
 {% liquid
-  # Get all collections with drop information
-  assign drop_collections = collections | where: 'metafields.custom.ship_by_date', present
-  assign sorted_drops = drop_collections | sort: 'metafields.custom.ship_by_date'
+  # Get all collections with drop information - must have both ship_by_date AND drop_location
+  assign all_collections = collections
+  assign drop_collections = blank
+  assign drop_collections_array = '' | split: ','
   
-  # DEBUG: If no drops found, use test data
-  if sorted_drops.size == 0
-    assign test_drops = collections | limit: 3
-    assign sorted_drops = test_drops
-  endif
+  for collection in all_collections
+    if collection.metafields.custom.ship_by_date != blank and collection.metafields.custom.drop_location != blank
+      assign drop_collections_array = drop_collections_array | push: collection
+    endif
+  endfor
   
-  # Create flag mapping
+  assign sorted_drops = drop_collections_array | sort: 'metafields.custom.ship_by_date'
+  
+  # Create flag mapping based on drop_location
   assign flag_map = 'US:🇺🇸,JP:🇯🇵,EU:🇪🇺' | split: ','
 %}
 
@@ -41,7 +44,7 @@
           {% for collection in sorted_drops %}
             {%- liquid
               assign ship_date = collection.metafields.custom.ship_by_date
-              assign drop_type = collection.metafields.custom.drop_type | default: 'Standard'
+              assign drop_location = collection.metafields.custom.drop_location
               assign cutoff_date = collection.metafields.custom.order_cutoff_date
               assign is_available = true
               
@@ -51,11 +54,11 @@
                 assign is_available = false
               endif
               
-              # Get flag for this drop
+              # Get flag for this drop based on drop_location
               assign flag_emoji = '🌍'
               for flag_pair in flag_map
                 assign flag_parts = flag_pair | split: ':'
-                if flag_parts[0] == drop_type
+                if flag_parts[0] == drop_location
                   assign flag_emoji = flag_parts[1]
                   break
                 endif
@@ -65,13 +68,13 @@
             <option 
               value="{{ collection.handle }}"
               data-ship-date="{{ ship_date }}"
-              data-drop-type="{{ drop_type }}"
+              data-drop-location="{{ drop_location }}"
               data-cutoff-date="{{ cutoff_date }}"
               data-collection-id="{{ collection.id }}"
               data-flag="{{ flag_emoji }}"
               {% unless is_available %}disabled{% endunless %}
             >
-              {{ flag_emoji }} {{ drop_type }} Drop - Ships {{ ship_date | date: '%b %d' }}
+              {{ flag_emoji }} {{ drop_location }} Drop - Ships {{ ship_date | date: '%b %d' }}
               {% unless is_available %} (Closed){% endunless %}
             </option>
           {% endfor %}

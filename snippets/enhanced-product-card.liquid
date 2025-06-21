@@ -119,6 +119,13 @@
             </div>
           {% endif %}
           
+          <!-- Drop Badge (top-right corner) -->
+          {% if show_drops and is_drop_product == 'true' %}
+            <div class="enhanced-product-card__drop-badge-overlay">
+              {% render 'drop-badge', product: product, show_country_flags: false, position: 'overlay' %}
+            </div>
+          {% endif %}
+          
           <!-- Switch Drop Overlay (shown on hover for multi-drop products) -->
           {% if is_drop_product == 'true' %}
             {% assign other_drop_collections = blank %}
@@ -163,29 +170,48 @@
     </div>
 
     <!-- Color Swatches -->
-    {% if product.variants.size > 1 %}
+    {% liquid
+      # First, detect if this product has color variants
+      assign has_color_variants = false
+      assign color_option_index = -1
+      
+      for i in (0..2)
+        if product.options[i] != blank
+          assign option_name = product.options[i] | downcase
+          if option_name contains 'color' or option_name contains 'colour'
+            assign has_color_variants = true
+            assign color_option_index = i
+            break
+          endif
+        endif
+      endfor
+    %}
+    
+    {% if has_color_variants and product.variants.size > 1 %}
       <div class="enhanced-product-card__swatches">
         {% assign visible_count = 0 %}
-        {% assign max_swatches = 4 %}
-        {% assign demo_colors = '#F59E0B,#EF4444,#10B981,#1F2937,#6B7280' | split: ',' %}
+        {% assign max_swatches = 10 %}
         {% assign unique_colors = '' %}
         {% assign color_variants = '' %}
         
-        <!-- First, collect unique colors and their representative variants -->
+        <!-- Collect unique colors and their representative variants -->
         {% for variant in product.variants %}
-          {% assign color_option = variant.option1 | downcase %}
-          {% if variant.option2 contains 'color' or variant.option2 contains 'Color' %}
-            {% assign color_option = variant.option2 | downcase %}
-          {% elsif variant.option3 contains 'color' or variant.option3 contains 'Color' %}
-            {% assign color_option = variant.option3 | downcase %}
-          {% endif %}
+          {% case color_option_index %}
+            {% when 0 %}
+              {% assign color_option = variant.option1 %}
+            {% when 1 %}
+              {% assign color_option = variant.option2 %}
+            {% when 2 %}
+              {% assign color_option = variant.option3 %}
+          {% endcase %}
           
-          {% unless unique_colors contains color_option %}
+          {% assign color_key = color_option | downcase %}
+          {% unless unique_colors contains color_key %}
             {% if unique_colors == blank %}
-              {% assign unique_colors = color_option %}
+              {% assign unique_colors = color_key %}
               {% assign color_variants = variant.id %}
             {% else %}
-              {% assign unique_colors = unique_colors | append: ',' | append: color_option %}
+              {% assign unique_colors = unique_colors | append: ',' | append: color_key %}
               {% assign color_variants = color_variants | append: ',' | append: variant.id %}
             {% endif %}
           {% endunless %}
@@ -195,31 +221,51 @@
         {% assign color_variants_array = color_variants | split: ',' %}
         {% assign total_colors = unique_colors_array.size %}
         
-        <!-- Render swatches for unique colors -->
+        <!-- Render swatches for unique colors using Shopify's built-in swatch system -->
         {% for color in unique_colors_array limit: max_swatches %}
-          {% assign variant_id = color_variants_array[forloop.index0] %}
+          {% assign variant_id_string = color_variants_array[forloop.index0] %}
+          {% assign variant_id = variant_id_string | times: 1 %}
           {% assign variant = product.variants | where: 'id', variant_id | first %}
           
-          {% assign swatch_color = variant.metafields.custom.color_hex %}
-          {% if swatch_color == blank %}
-            {% assign color_index = forloop.index0 | modulo: demo_colors.size %}
-            {% assign swatch_color = demo_colors[color_index] %}
-          {% endif %}
+          <!-- Get the color option value for this variant -->
+          {% liquid
+            case color_option_index
+              when 0
+                assign color_option_value = variant.option1
+              when 1
+                assign color_option_value = variant.option2
+              when 2
+                assign color_option_value = variant.option3
+            endcase
+          %}
+          
+          <!-- Find the swatch data from product options -->
+          {% assign swatch_data = null %}
+          {% for option in product.options_with_values %}
+            {% if forloop.index0 == color_option_index %}
+              {% for option_value in option.values %}
+                {% if option_value.name == color_option_value %}
+                  {% assign swatch_data = option_value.swatch %}
+                  {% break %}
+                {% endif %}
+              {% endfor %}
+              {% break %}
+            {% endif %}
+          {% endfor %}
           
           {% assign variant_image_url = '' %}
           {% if variant.featured_image %}
             {% assign variant_image_url = variant.featured_image | image_url: width: 500 %}
           {% endif %}
           
-          <button 
-            class="enhanced-product-card__swatch{% if forloop.first %} selected{% endif %}" 
-            style="background-color: {{ swatch_color }};"
-            data-variant-id="{{ variant.id }}"
-            data-variant-image="{{ variant_image_url }}"
-            data-variant-title="{{ variant.title }}"
-            data-color="{{ color }}"
-            title="{{ color | capitalize }}"
-          ></button>
+          <div class="enhanced-product-card__swatch-wrapper{% if forloop.first %} selected{% endif %}"
+               data-variant-id="{{ variant.id }}"
+               data-variant-image="{{ variant_image_url }}"
+               data-variant-title="{{ variant.title }}"
+               data-color="{{ color }}"
+               title="{{ color | capitalize }}">
+            {% render 'swatch', swatch: swatch_data %}
+          </div>
           {% assign visible_count = forloop.index %}
         {% endfor %}
         
@@ -227,6 +273,11 @@
         {% if remaining_colors > 0 %}
           <span class="enhanced-product-card__swatch-more">+{{ remaining_colors }}</span>
         {% endif %}
+      </div>
+    {% elsif product.variants.size > 1 %}
+      <!-- Product has variants but no color option - show empty space to maintain layout -->
+      <div class="enhanced-product-card__swatches enhanced-product-card__swatches--empty">
+        <!-- Empty space to maintain consistent layout -->
       </div>
     {% endif %}
 
@@ -282,7 +333,18 @@
         {% if show_product_tags %}
           {% liquid
             # Use product tags or add demo tag for testing
-            assign visible_tags = product.tags | where_not: 'starts_with', 'drop-' | where_not: 'starts_with', 'internal-'
+            # Filter out tags that start with 'drop-' or 'internal-'
+            assign visible_tags = ''
+            for tag in product.tags
+              unless tag contains 'drop-' or tag contains 'internal-'
+                if visible_tags == blank
+                  assign visible_tags = tag
+                else
+                  assign visible_tags = visible_tags | append: ',' | append: tag
+                endif
+              endunless
+            endfor
+            assign visible_tags = visible_tags | split: ','
             
             # If no suitable tags, add demo tag for testing
             if visible_tags.size == 0
@@ -299,12 +361,7 @@
         {% endif %}
       </div>
 
-      <!-- Drop Information (always at bottom) -->
-      {% if show_drops and is_drop_product == 'true' %}
-        <div class="enhanced-product-card__drop-info">
-          {% render 'drop-badge', product: product, show_country_flags: true %}
-        </div>
-      {% endif %}
+      <!-- Drop Information moved to top-right overlay -->
     </div>
   </div>
 </div>
@@ -314,15 +371,21 @@
     background: white;
     border-radius: 8px;
     overflow: hidden;
-    transition: box-shadow 0.2s ease, transform 0.2s ease;
     height: 100%;
     display: flex;
     flex-direction: column;
+    position: relative;
+    transition: transform var(--hover-transition-duration, 0.25s) var(--hover-transition-timing, ease-out),
+                box-shadow var(--hover-transition-duration, 0.25s) var(--hover-transition-timing, ease-out);
+    will-change: transform, box-shadow;
+    z-index: var(--layer-flat, 1);
   }
 
   .enhanced-product-card:hover {
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    transform: translateY(-2px);
+    position: relative;
+    z-index: var(--layer-raised, 10);
+    transform: translateY(calc(-1 * var(--hover-lift-amount, 4px)));
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
   }
 
   .enhanced-product-card__inner {
@@ -407,34 +470,69 @@
     border-radius: 20px;
   }
 
+  .enhanced-product-card__drop-badge-overlay {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    z-index: 15;
+  }
+
   .enhanced-product-card__swatches {
     display: flex;
     align-items: center;
     gap: 6px;
     padding: 8px 12px;
+    min-height: 34px; /* Maintain consistent height */
   }
 
-  .enhanced-product-card__swatch {
+  .enhanced-product-card__swatches--empty {
+    /* Empty space to maintain layout when no color variants */
+    min-height: 34px;
+  }
+
+  .enhanced-product-card__swatch-wrapper {
     width: 18px;
     height: 18px;
     border-radius: 50%;
-    border: 1px solid rgba(0, 0, 0, 0.1);
     cursor: pointer;
     transition: all 0.2s ease;
     flex-shrink: 0;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .enhanced-product-card__swatch-wrapper .swatch {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    border: 1px solid rgba(0, 0, 0, 0.1);
     box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
   }
 
-  .enhanced-product-card__swatch:hover {
-    border-color: #000;
+  /* White and light colors need better borders */
+  .enhanced-product-card__swatch-wrapper .swatch[style*="#ffffff"],
+  .enhanced-product-card__swatch-wrapper .swatch[style*="#FFFFFF"],
+  .enhanced-product-card__swatch-wrapper .swatch[style*="white"] {
+    border-color: rgba(0, 0, 0, 0.3);
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(0, 0, 0, 0.1);
+  }
+
+  .enhanced-product-card__swatch-wrapper:hover {
     transform: scale(1.15);
+  }
+
+  .enhanced-product-card__swatch-wrapper:hover .swatch {
+    border-color: #000;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
   }
 
-  .enhanced-product-card__swatch.selected {
+  .enhanced-product-card__swatch-wrapper.selected {
+    transform: scale(1.1);
+  }
+
+  .enhanced-product-card__swatch-wrapper.selected .swatch {
     border-color: #000;
     border-width: 2px;
-    transform: scale(1.1);
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
   }
 
@@ -693,8 +791,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
       // Color swatch interactions
       document.addEventListener('click', (event) => {
-        if (event.target.matches('.enhanced-product-card__swatch')) {
-          this.handleSwatchClick(event.target);
+        const swatchWrapper = event.target.closest('.enhanced-product-card__swatch-wrapper');
+        if (swatchWrapper) {
+          this.handleSwatchClick(swatchWrapper);
         }
       });
 
@@ -794,38 +893,107 @@ document.addEventListener('DOMContentLoaded', function() {
       });
     }
 
-    handleSwatchClick(swatchElement) {
-      const variantId = swatchElement.dataset.variantId;
-      const variantImage = swatchElement.dataset.variantImage;
-      const variantTitle = swatchElement.dataset.variantTitle;
-      const card = swatchElement.closest('.enhanced-product-card');
+    showVariantDebugInfo(card, clickedSwatch) {
+      // Remove any existing debug info
+      const existingDebug = document.querySelector('.variant-debug-info');
+      if (existingDebug) {
+        existingDebug.remove();
+      }
+
+      // Create debug info display
+      const debugDiv = document.createElement('div');
+      debugDiv.className = 'variant-debug-info';
+      debugDiv.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: white;
+        border: 2px solid #333;
+        padding: 15px;
+        max-width: 400px;
+        max-height: 500px;
+        overflow-y: auto;
+        z-index: 10000;
+        font-family: monospace;
+        font-size: 12px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      `;
+
+      const allSwatches = card.querySelectorAll('.enhanced-product-card__swatch-wrapper');
+      let debugHtml = `
+        <h3>Variant Images Debug</h3>
+        <p><strong>Product ID:</strong> ${card.dataset.productId}</p>
+        <p><strong>Total Swatches:</strong> ${allSwatches.length}</p>
+        <hr>
+      `;
+
+      allSwatches.forEach((swatch, index) => {
+        const isClicked = swatch === clickedSwatch;
+        debugHtml += `
+          <div style="margin: 10px 0; padding: 8px; background: ${isClicked ? '#ffffcc' : '#f5f5f5'}; border: 1px solid #ddd;">
+            <strong>Swatch ${index + 1}${isClicked ? ' (CLICKED)' : ''}:</strong><br>
+            Color: ${swatch.dataset.color}<br>
+            Variant ID: ${swatch.dataset.variantId}<br>
+            Image: ${swatch.dataset.variantImage ? swatch.dataset.variantImage.substring(0, 50) + '...' : 'No image'}<br>
+            Title: ${swatch.dataset.variantTitle}
+          </div>
+        `;
+      });
+
+      debugHtml += `
+        <hr>
+        <button onclick="this.parentElement.remove()" style="padding: 5px 10px; margin-top: 10px;">Close Debug</button>
+      `;
+
+      debugDiv.innerHTML = debugHtml;
+      document.body.appendChild(debugDiv);
+    }
+
+    handleSwatchClick(swatchWrapper) {
+      const variantId = swatchWrapper.dataset.variantId;
+      const variantImage = swatchWrapper.dataset.variantImage;
+      const variantTitle = swatchWrapper.dataset.variantTitle;
+      const card = swatchWrapper.closest('.enhanced-product-card');
+      
+      // Debug display: Show variant images in UI (disabled)
+      // this.showVariantDebugInfo(card, swatchWrapper);
       
       if (!variantId || !card) return;
 
       // Update selected swatch state
-      const allSwatches = card.querySelectorAll('.enhanced-product-card__swatch');
+      const allSwatches = card.querySelectorAll('.enhanced-product-card__swatch-wrapper');
       allSwatches.forEach(swatch => swatch.classList.remove('selected'));
-      swatchElement.classList.add('selected');
+      swatchWrapper.classList.add('selected');
 
       // Update product image if variant has image
       const productImage = card.querySelector('.enhanced-product-card__image');
       if (productImage && variantImage && variantImage.trim() !== '') {
+        const originalSrc = productImage.src;
+        
         // Add loading state
         productImage.style.opacity = '0.7';
+        
+        // Debug removed - functionality working correctly
         
         // Create new image to preload
         const newImage = new Image();
         newImage.onload = () => {
-          productImage.src = variantImage;
+          // Update both src and srcset properly for responsive images
+          const baseImageUrl = variantImage.split('?')[0]; // Remove existing params
+          productImage.src = baseImageUrl + '?width=500';
+          productImage.srcset = baseImageUrl + '?width=352 352w, ' + baseImageUrl + '?width=500 500w';
           productImage.alt = variantTitle || productImage.alt;
           productImage.style.opacity = '1';
+          // Image successfully updated
         };
         newImage.onerror = () => {
           // Revert on error
           productImage.style.opacity = '1';
-          console.warn('Failed to load variant image:', variantImage);
+          // this.updateImageSwitchDebug('ERROR: Failed to load image - ' + variantImage);
         };
         newImage.src = variantImage;
+      } else {
+        this.updateImageSwitchDebug('SKIPPED: No image or invalid data');
       }
 
       // Update product links with variant URL if needed
@@ -911,6 +1079,50 @@ document.addEventListener('DOMContentLoaded', function() {
           feedback.remove();
         }
       }, 3000);
+    }
+
+    showImageSwitchDebug(card, originalSrc, newSrc) {
+      // Remove any existing image debug
+      const existingDebug = document.querySelector('.image-switch-debug');
+      if (existingDebug) {
+        existingDebug.remove();
+      }
+
+      const debugDiv = document.createElement('div');
+      debugDiv.className = 'image-switch-debug';
+      debugDiv.style.cssText = `
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        background: #333;
+        color: white;
+        padding: 15px;
+        max-width: 400px;
+        z-index: 10000;
+        font-family: monospace;
+        font-size: 12px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        border-radius: 5px;
+      `;
+
+      debugDiv.innerHTML = `
+        <h3 style="margin: 0 0 10px 0; color: #fff;">Image Switch Debug</h3>
+        <div><strong>From:</strong> ${originalSrc.substring(originalSrc.lastIndexOf('/') + 1)}</div>
+        <div><strong>To:</strong> ${newSrc.substring(newSrc.lastIndexOf('/') + 1)}</div>
+        <div id="switch-status" style="margin-top: 10px; padding: 5px; background: #555;">Loading...</div>
+        <button onclick="this.parentElement.remove()" style="margin-top: 10px; padding: 5px 10px;">Close</button>
+      `;
+
+      document.body.appendChild(debugDiv);
+    }
+
+    updateImageSwitchDebug(message) {
+      const statusDiv = document.getElementById('switch-status');
+      if (statusDiv) {
+        statusDiv.textContent = message;
+        statusDiv.style.background = message.startsWith('SUCCESS') ? '#4CAF50' : 
+                                    message.startsWith('ERROR') ? '#f44336' : '#555';
+      }
     }
   }
 

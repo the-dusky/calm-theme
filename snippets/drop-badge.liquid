@@ -11,6 +11,13 @@
 
 {% liquid
   assign show_flags = show_country_flags | default: true
+%}
+{% if position == 'overlay' %}
+  {% assign is_overlay = true %}
+{% else %}
+  {% assign is_overlay = false %}
+{% endif %}
+{% liquid
   assign drop_collections = product.collections | where: 'metafields.custom.ship_by_date', '!=' | append: blank
   
   # Get all collections with drop metafields for this product
@@ -44,8 +51,13 @@
 %}
 
 {% if drop_items.size > 0 %}
-  <div class="drop-badge-container {{ class }}" data-drop-badge>
-    {% assign visible_count = 2 %}
+  <div class="drop-badge-container {{ class }} {% if is_overlay %}drop-badge-container--overlay{% endif %}" data-drop-badge>
+    {% assign visible_count = 1 %}
+    {% if is_overlay %}
+      {% assign visible_count = 1 %}
+    {% else %}
+      {% assign visible_count = 2 %}
+    {% endif %}
     {% assign remaining_count = drop_items.size | minus: visible_count %}
     
     {% for i in (0..drop_items.size) limit: visible_count %}
@@ -55,7 +67,11 @@
       {% assign cutoff_date = item_data[2] %}
       {% assign collection_handle = item_data[3] %}
       
-      {% assign formatted_ship_date = ship_date | date: '%b %d' %}
+      {% if is_overlay %}
+        {% assign formatted_ship_date = ship_date | date: '%b %d' %}
+      {% else %}
+        {% assign formatted_ship_date = ship_date | date: '%b %d' %}
+      {% endif %}
       
       {% comment %} Check if cutoff has passed {% endcomment %}
       {% assign is_available = true %}
@@ -77,15 +93,25 @@
           {% assign flag_emoji = '🇺🇸' %}
       {% endcase %}
       
-      <span class="drop-badge drop-badge--{{ location | downcase }} {% unless is_available %}drop-badge--closed{% endunless %}" 
+      <span class="drop-badge drop-badge--{{ location | downcase }} {% if is_overlay %}drop-badge--overlay{% endif %} {% unless is_available %}drop-badge--closed{% endunless %}" 
             data-drop-date="{{ ship_date }}" 
             data-drop-location="{{ location }}"
             data-cutoff-date="{{ cutoff_date }}"
             data-available="{{ is_available }}">
-        {% if show_flags %}
-          <span class="drop-badge__flag">{{ flag_emoji }}</span>
+        {% if is_overlay %}
+          <svg class="drop-badge__ship-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="1" y="3" width="15" height="13"></rect>
+            <polygon points="16,8 20,8 23,11 23,16 16,16"></polygon>
+            <circle cx="5.5" cy="18.5" r="2.5"></circle>
+            <circle cx="18.5" cy="18.5" r="2.5"></circle>
+          </svg>
+          <span class="drop-badge__date">Ships {{ formatted_ship_date }}</span>
+        {% else %}
+          {% if show_flags %}
+            <span class="drop-badge__flag">{{ flag_emoji }}</span>
+          {% endif %}
+          <span class="drop-badge__date">{{ formatted_ship_date }}</span>
         {% endif %}
-        <span class="drop-badge__date">{{ formatted_ship_date }}</span>
         {% unless is_available %}
           <span class="drop-badge__status">Closed</span>
         {% endunless %}
@@ -266,6 +292,46 @@
   /* Position relative container for popover */
   .drop-badge-container {
     position: relative;
+  }
+
+  /* Overlay styles for top-right placement */
+  .drop-badge-container--overlay {
+    display: inline-block;
+  }
+
+  .drop-badge--overlay {
+    background: rgba(255, 255, 255, 0.95);
+    color: #333;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    padding: 6px 10px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 600;
+    backdrop-filter: blur(4px);
+  }
+
+  .drop-badge--overlay:hover {
+    background: rgba(255, 255, 255, 1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  }
+
+  .drop-badge__ship-icon {
+    width: 12px;
+    height: 12px;
+    flex-shrink: 0;
+  }
+
+  .drop-badge--overlay .drop-badge__date {
+    font-size: 11px;
+    white-space: nowrap;
+    font-weight: 600;
+  }
+
+  .drop-badge--overlay.drop-badge--closed {
+    background: rgba(0, 0, 0, 0.8);
+    color: #fff;
+    opacity: 1;
   }
 {% endstylesheet %}
 
