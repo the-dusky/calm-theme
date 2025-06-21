@@ -57,7 +57,7 @@
       "name": "Hero Slideshow",
       "settings": {
         "auto_advance": true,
-        "slide_duration": 10,
+        "slide_duration": 15,
         "show_navigation": false,
         "show_dots": false,
         "transition_effect": "slide-left",
