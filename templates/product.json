@@ -1067,22 +1067,10 @@
         "klaviyo_reviews_product_reviews_zNJJUr": {
           "type": "shopify://apps/klaviyo-reviews/blocks/product-reviews/db20e365-d984-4ac4-9655-e1588d951ca9",
           "settings": {}
-        },
-        "klaviyo_reviews_all_reviews_CrGC6R": {
-          "type": "shopify://apps/klaviyo-reviews/blocks/all-reviews/db20e365-d984-4ac4-9655-e1588d951ca9",
-          "settings": {}
-        },
-        "klaviyo_reviews_average_rating_LfM8f6": {
-          "type": "shopify://apps/klaviyo-reviews/blocks/average-rating/db20e365-d984-4ac4-9655-e1588d951ca9",
-          "settings": {
-            "product": "{{closest.product}}"
-          }
         }
       },
       "block_order": [
-        "klaviyo_reviews_product_reviews_zNJJUr",
-        "klaviyo_reviews_all_reviews_CrGC6R",
-        "klaviyo_reviews_average_rating_LfM8f6"
+        "klaviyo_reviews_product_reviews_zNJJUr"
       ],
       "settings": {
         "content_direction": "column",
@@ -1090,10 +1078,10 @@
         "horizontal_alignment": "flex-start",
         "vertical_alignment": "center",
         "align_baseline": false,
-        "horizontal_alignment_flex_direction_column": "flex-start",
+        "horizontal_alignment_flex_direction_column": "center",
         "vertical_alignment_flex_direction_column": "center",
         "gap": 12,
-        "section_width": "page-width",
+        "section_width": "full-width",
         "section_height": "",
         "section_height_custom": 50,
         "color_scheme": "",
