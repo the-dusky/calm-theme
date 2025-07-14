@@ -555,11 +555,11 @@
           "type": "shipping_step",
           "settings": {
             "title": "Place Order by Cutoff",
-            "description": "Submit your order before daily cutoff time",
+            "description": "Orders can be placed up until 12PM New York Time, July, 28th",
             "is_active": true,
             "icon": "<svg width=\"20\" height=\"20\" viewbox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><rect x=\"1\" y=\"4\" width=\"22\" height=\"16\" rx=\"2\" ry=\"2\"></rect><line x1=\"1\" y1=\"10\" x2=\"23\" y2=\"10\"></line></svg>",
-            "transparency_title": "Why we're starting slow",
-            "transparency_content": "We are starting slow and trying to learn as much as possible from our customers. Join our Discord community to help shape the vision. We'd rather get it right than get it fast.",
+            "transparency_title": "Why not stock goods?",
+            "transparency_content": "We are starting slow and trying to learn as much as possible from our customers before making any large inventory commitments.",
             "transparency_icon": "<svg width=\"16\" height=\"16\" viewbox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><circle cx=\"12\" cy=\"12\" r=\"10\"></circle><path d=\"M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3\"></path><path d=\"M12 17h.01\"></path></svg>"
           }
         },
@@ -611,16 +611,16 @@
       ],
       "name": "How It Works",
       "settings": {
-        "heading": "The Process for now",
-        "subtitle": "Well be shipping in approx 2 week increments. Shipments will be made up of orders that were placed during the preorder for that shipment window.",
-        "transparency_note": "Check out the info below to see how it works",
+        "heading": "How it works... as we get started.",
+        "subtitle": "Well be shipping in approx. 2 week increments. Shipments will be made up of orders that were placed during the preorder for that shipment window.",
+        "transparency_note": "The next shipment date is August 7th, 2025",
         "steps_heading": "Shipping Timeline",
-        "steps_subtitle": "Track your order journey",
+        "steps_subtitle": "",
         "shipping_note": "Actual delivery times may vary based on customs processing and local shipping conditions.",
         "commitment_text": "We believe in radical transparency. Every constraint, every decision, every why - we share it all because we think you deserve to know how your order really works.",
         "show_community_section": true,
         "community_title": "Join Our Community",
-        "community_description": "Help us shape the future of international commerce. We are building this together.",
+        "community_description": "Help us shape the future of Calm. We are building this together.",
         "community_link": "https://discord.gg/4bqHQxn7rS",
         "community_button_text": "Join Discord",
         "show_support_section": true,
@@ -628,7 +628,7 @@
         "support_link": "https://discord.gg/4bqHQxn7rS",
         "support_button_text": "Contact Support",
         "show_transparency_statement": false,
-        "transparency_statement": "<p>Every business decision explained. Every constraint shared.<br/>Because transparency builds trust, and trust builds community.</p>"
+        "transparency_statement": "<p>Every business decision explained. Every constraint shared.<br/>Because transparency builds trust, and trust builds brands.</p>"
       }
     },
     "media_with_content_LfPdEJ": {
