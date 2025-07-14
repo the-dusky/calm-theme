@@ -90,18 +90,6 @@
               },
               "blocks": {}
             },
-            "reviews": {
-              "type": "review",
-              "settings": {
-                "product": "{{ closest.product }}",
-                "stars_style": "shaded",
-                "show_number": true,
-                "rating_color": "primary",
-                "type_preset": "paragraph",
-                "alignment": "left"
-              },
-              "blocks": {}
-            },
             "price_a7krng": {
               "type": "price",
               "settings": {
@@ -787,7 +775,6 @@
           },
           "block_order": [
             "heading_m7KmQQ",
-            "reviews",
             "price_a7krng",
             "kiwi_size_chart_recommender_kiwi_sizing_hMjmB6",
             "variant_picker_R3rGDr",
