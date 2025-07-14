@@ -1,9 +1,9 @@
 {% comment %}
   Preorder Information Card
-  
+
   Displays preorder information and "How it works" button
   Replaces the buy buttons section for preorder/drop products
-  
+
   @param {product} product - The product object
   @param {collection} drop_collection - The collection with drop metafields
   @param {block} block - The block settings for styling
@@ -16,14 +16,14 @@
   if ship_by_date != blank
     assign formatted_ship_date = ship_by_date | date: '%B %d, %Y'
   endif
-  
+
   # Format drop location if available
   assign drop_location = drop_collection.metafields.custom.drop_location
   assign location_text = ''
   if drop_location != blank
     assign location_text = ' (' | append: drop_location | append: ')'
   endif
-  
+
   # Check if product has multiple drops
   assign drop_collections = product.collections | where: 'metafields.custom.ship_by_date', present
   assign has_multiple_drops = false
@@ -40,10 +40,11 @@
         <path d="M12 6v6l4 2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
       </svg>
     </div>
-    
+
     <div class="preorder-info-card__text">
       <h3 class="preorder-info-card__title">
-        {{ 'preorder.info_card.title' | t: default: 'This is a preorder item' }}{{ location_text }}
+        {{ 'preorder.info_card.title' | t: default: 'This is a preorder item' -}}
+        {{- location_text }}
         {% if has_multiple_drops %}
           <span class="preorder-info-card__drop-indicator">(Multiple drops available)</span>
         {% endif %}
@@ -51,9 +52,14 @@
       <p class="preorder-info-card__description">
         {% assign description_text = 'preorder.info_card.description' | t: ship_date: formatted_ship_date %}
         {% if description_text contains 'Translation missing' %}
-          I will ship out to customers on or before <span data-ship-date>{{ formatted_ship_date }}</span>.
+          It will ship out to customers on or before <span data-ship-date>{{ formatted_ship_date }}</span>
         {% else %}
-          {{ description_text | replace: formatted_ship_date, '<span data-ship-date>' | append: formatted_ship_date | append: '</span>' }}
+          {{
+            description_text
+            | replace: formatted_ship_date, '<span data-ship-date>'
+            | append: formatted_ship_date
+            | append: '</span>'
+          }}
         {% endif %}
       </p>
       {% if has_multiple_drops %}
@@ -63,10 +69,10 @@
       {% endif %}
     </div>
   </div>
-  
+
   <div class="preorder-info-card__actions">
-    <button 
-      type="button" 
+    <button
+      type="button"
       class="preorder-info-card__how-it-works-btn"
       onclick="openHowItWorksModal()"
     >
@@ -76,9 +82,9 @@
         <path d="M7 7h10v10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
       </svg>
     </button>
-    
-    <a 
-      href="/pages/how-it-works" 
+
+    <a
+      href="/pages/how-it-works"
       class="preorder-info-card__learn-more-link"
     >
       {{ 'preorder.info_card.learn_more' | t: default: 'Learn more' }}
