@@ -1,0 +1,100 @@
+{% comment %}
+  Enhanced Thai Word Helper with Metafield Support
+  
+  Usage with metafields:
+  {% render 'thai-word', word: 'hello' %}
+  {% render 'thai-word', word: 'thankyou' %}
+  
+  Custom usage:
+  {% render 'thai-word', 
+    english: 'Beautiful',
+    thai: 'สวย',
+    phonetic: 'sǔai',
+    meaning: 'Beautiful'
+  %}
+  
+  With context (checks product/collection metafields first):
+  {% render 'thai-word', word: 'hello', context: product %}
+  {% render 'thai-word', word: 'hello', context: collection %}
+{% endcomment %}
+
+{% comment %} Try to get translations from metafields first {% endcomment %}
+{% assign translation_found = false %}
+{% assign metafield_translation = null %}
+
+{% if word and word != blank %}
+  {% comment %} Check context-specific metafields first (product or collection) {% endcomment %}
+  {% if context %}
+    {% assign context_translations = context.metafields.thai_translations.translations %}
+    {% if context_translations and context_translations[word] %}
+      {% assign metafield_translation = context_translations[word] %}
+      {% assign translation_found = true %}
+    {% endif %}
+  {% endif %}
+  
+  {% comment %} Fall back to shop-level metafields {% endcomment %}
+  {% unless translation_found %}
+    {% assign shop_translations = shop.metafields.thai_translations.thai_words %}
+    {% if shop_translations and shop_translations[word] %}
+      {% assign metafield_translation = shop_translations[word] %}
+      {% assign translation_found = true %}
+    {% endif %}
+  {% endunless %}
+{% endif %}
+
+{% if translation_found and metafield_translation %}
+  {% comment %} Use metafield translation {% endcomment %}
+  {% assign syllables_string = '' %}
+  {% if metafield_translation.syllables %}
+    {% for syllable in metafield_translation.syllables %}
+      {% if forloop.first %}
+        {% assign syllables_string = syllable %}
+      {% else %}
+        {% assign syllables_string = syllables_string | append: ',' | append: syllable %}
+      {% endif %}
+    {% endfor %}
+  {% endif %}
+  
+  {% render 'thai-translation',
+    english_text: word | capitalize,
+    thai_text: metafield_translation.thai,
+    phonetic: metafield_translation.phonetic,
+    syllables: syllables_string,
+    meaning: metafield_translation.meaning,
+    example_thai: metafield_translation.exampleSentence.thai,
+    example_english: metafield_translation.exampleSentence.english,
+    example_phonetic: metafield_translation.exampleSentence.phonetic
+  %}
+{% elsif word and word != blank %}
+  {% comment %} Fall back to hardcoded translations {% endcomment %}
+  {% assign common_translations = 'hello:สวัสดี:sà-wàt-dii:สวัส,ดี:Hello/Goodbye:สวัสดีครับ ผมชื่อจอห์น:Hello, my name is John:sà-wàt-dii kráp, pǒm chɯ̂ɯ jɔɔn|thankyou:ขอบคุณ:kɔ̀ɔp-kun:ขอบ,คุณ:Thank you:ขอบคุณมากครับ:Thank you very much:kɔ̀ɔp-kun mâak kráp|water:น้ำ:náam:น้ำ:Water:ขอน้ำหนึ่งแก้วครับ:I would like one glass of water, please:kɔ̌ɔ náam nɯ̀ŋ gɛ̂ɛw kráp|food:อาหาร:aa-hǎan:อา,หาร:Food:อาหารไทยอร่อยมาก:Thai food is very delicious:aa-hǎan tai à-rɔ̀i mâak|beautiful:สวย:sǔai:สวย:Beautiful:ดอกไม้สวยมาก:The flowers are very beautiful:dɔ̀ɔk-mái sǔai mâak|outdoor:กิจกรรมกลางแจ้ง:gìt-jà-gam-glaang-jɛ́ɛŋ:กิจ,กรรม,กลาง,แจ้ง:Outdoor activities:เราชอบกิจกรรมกลางแจ้ง:We like outdoor activities:rao chɔ̂ɔp gìt-jà-gam-glaang-jɛ́ɛŋ|cap:หมวก:mùak:หมวก:Hat/Cap:หมวกใบนี้สวยมาก:This hat is very beautiful:mùak bai níi sǔai mâak|jacket:แจ็คเก็ต:jɛ́k-gèt:แจ็ค,เก็ต:Jacket:แจ็คเก็ตตัวนี้อุ่นดี:This jacket is very warm:jɛ́k-gèt tua níi ùun dii|pants:กางเกง:gaang-geeŋ:กาง,เกง:Pants:กางเกงตัวนี้สบาย:These pants are comfortable:gaang-geeŋ tua níi sà-baai|shirt:เสื้อ:sɯ̂a:เสื้อ:Shirt:เสื้อตัวนี้นุ่มมาก:This shirt is very soft:sɯ̂a tua níi nûm mâak' | split: '|' %}
+  
+  {% for translation_data in common_translations %}
+    {% assign parts = translation_data | split: ':' %}
+    {% if parts[0] == word %}
+      {% render 'thai-translation',
+        english_text: parts[0] | capitalize,
+        thai_text: parts[1],
+        phonetic: parts[2],
+        syllables: parts[3],
+        meaning: parts[4],
+        example_thai: parts[5],
+        example_english: parts[6],
+        example_phonetic: parts[7]
+      %}
+      {% break %}
+    {% endif %}
+  {% endfor %}
+{% else %}
+  {% comment %} Use custom parameters {% endcomment %}
+  {% render 'thai-translation',
+    english_text: english,
+    thai_text: thai,
+    phonetic: phonetic,
+    syllables: syllables,
+    meaning: meaning,
+    example_thai: example_thai,
+    example_english: example_english,
+    example_phonetic: example_phonetic
+  %}
+{% endif %}

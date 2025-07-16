@@ -285,7 +285,20 @@
         
         <!-- Product Title -->
         <h3 class="enhanced-product-card__title">
-          <a href="{{ current_variant.url | default: product.url }}">{{ product.title }}</a>
+          <a href="{{ current_variant.url | default: product.url }}">
+            {{ product.title }}
+            {% comment %} Add Thai translation based on product title {% endcomment %}
+            {% assign product_title_lower = product.title | downcase %}
+            {% if product_title_lower contains 'cap' %}
+              {% render 'thai-word', word: 'cap' %}
+            {% elsif product_title_lower contains 'jacket' %}
+              {% render 'thai-word', word: 'jacket' %}
+            {% elsif product_title_lower contains 'pants' or product_title_lower contains 'short' %}
+              {% render 'thai-word', word: 'pants' %}
+            {% elsif product_title_lower contains 'tee' or product_title_lower contains 'shirt' %}
+              {% render 'thai-word', word: 'shirt' %}
+            {% endif %}
+          </a>
         </h3>
         
         <!-- Price -->

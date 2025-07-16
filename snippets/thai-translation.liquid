@@ -1,0 +1,524 @@
+{% comment %}
+  Thai Translation Component
+  
+  Usage:
+  {% render 'thai-translation', 
+    english_text: 'Hello', 
+    thai_text: 'สวัสดี',
+    phonetic: 'sà-wàt-dii',
+    syllables: 'สวัส,ดี',
+    meaning: 'Hello/Goodbye',
+    example_thai: 'สวัสดีครับ ผมชื่อจอห์น',
+    example_english: 'Hello, my name is John',
+    example_phonetic: 'sà-wàt-dii kráp, pǒm chɯ̂ɯ jɔɔn'
+  %}
+{% endcomment %}
+
+{% assign unique_id = thai_text | handle | append: '-' | append: forloop.index0 | default: 'default' %}
+
+<span class="thai-translation-wrapper">
+  {{ english_text }}
+  <button
+    type="button"
+    class="thai-indicator"
+    onclick="openThaiModal('{{ unique_id }}', event)"
+    title="Thai: {{ thai_text }}"
+    style="display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.4rem 0.8rem; margin-left: 0.4rem; background: rgba(59, 130, 246, 0.1); color: rgb(29, 78, 216); border: 1px solid rgba(59, 130, 246, 0.3); border-radius: 0.6rem; font-size: 1.2rem; cursor: pointer; transition: all 0.2s ease;"
+  >
+    <span style="font-size: 1rem;">ไทย</span>
+    <span style="color: rgba(59, 130, 246, 0.7); font-size: 1rem;">•</span>
+    <span style="font-size: 1rem;">{{ thai_text }}</span>
+  </button>
+</span>
+
+<!-- Thai Translation Modal -->
+<div id="thai-modal-{{ unique_id }}" class="thai-modal">
+  <div class="thai-modal__backdrop">
+    <div class="thai-modal__container">
+      <div class="thai-modal__content">
+        <!-- Header -->
+        <div class="thai-modal__header">
+          <div class="thai-modal__header-left">
+            <h2 class="thai-modal__title">Thai Pronunciation Guide</h2>
+            <span class="thai-modal__category">{{ meaning }}</span>
+          </div>
+          <button
+            type="button"
+            onclick="closeThaiModal('{{ unique_id }}')"
+            class="thai-modal__close"
+            aria-label="Close modal"
+          >
+            ×
+          </button>
+        </div>
+
+        <!-- Thai Word Display -->
+        <div class="thai-modal__word-display">
+          <div class="thai-modal__thai-text">{{ thai_text }}</div>
+          <div class="thai-modal__phonetic">/{{ phonetic }}/</div>
+        </div>
+
+        <!-- Syllable Breakdown -->
+        {% if syllables and syllables != blank %}
+          {% assign syllable_array = syllables | split: ',' %}
+          {% assign phonetic_parts = phonetic | split: '-' %}
+          <div class="thai-modal__section">
+            <h3 class="thai-modal__section-title">Syllable Breakdown</h3>
+            <div class="thai-modal__syllables">
+              {% for syllable in syllable_array %}
+                <div class="thai-modal__syllable">
+                  <div class="thai-modal__syllable-thai">{{ syllable }}</div>
+                  <div class="thai-modal__syllable-phonetic">
+                    /{{ phonetic_parts[forloop.index0] | default: syllable }}/
+                  </div>
+                </div>
+              {% endfor %}
+            </div>
+          </div>
+        {% endif %}
+
+        <!-- Pronunciation -->
+        <div class="thai-modal__section thai-modal__section--highlight">
+          <div class="thai-modal__pronunciation-header">
+            <h3 class="thai-modal__section-title">Pronunciation</h3>
+            <button
+              type="button"
+              onclick="playThaiAudio('{{ unique_id }}')"
+              class="thai-modal__play-button"
+            >
+              <svg class="thai-modal__play-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+              </svg>
+              Play Sound
+            </button>
+          </div>
+          <div class="thai-modal__pronunciation-text">/{{ phonetic }}/</div>
+          <div class="thai-modal__pronunciation-note">
+            Click the play button to hear the pronunciation
+          </div>
+        </div>
+
+        <!-- Example Usage -->
+        {% if example_thai and example_thai != blank %}
+          <div class="thai-modal__section">
+            <h3 class="thai-modal__section-title">Example Usage</h3>
+            <div class="thai-modal__examples">
+              <div class="thai-modal__example">
+                <span class="thai-modal__example-label">TH</span>
+                <div class="thai-modal__example-content">
+                  <div class="thai-modal__example-thai">{{ example_thai }}</div>
+                  {% if example_phonetic and example_phonetic != blank %}
+                    <div class="thai-modal__example-phonetic">/{{ example_phonetic }}/</div>
+                  {% endif %}
+                </div>
+              </div>
+              {% if example_english and example_english != blank %}
+                <div class="thai-modal__example">
+                  <span class="thai-modal__example-label">EN</span>
+                  <div class="thai-modal__example-content">
+                    <div class="thai-modal__example-english">{{ example_english }}</div>
+                  </div>
+                </div>
+              {% endif %}
+            </div>
+          </div>
+        {% endif %}
+
+        <!-- Pronunciation Tips -->
+        <div class="thai-modal__section thai-modal__section--tips">
+          <h3 class="thai-modal__section-title">Pronunciation Tips</h3>
+          <ul class="thai-modal__tips">
+            <li>Thai is a tonal language - pay attention to the tone marks</li>
+            <li>Practice each syllable separately first</li>
+            <li>Listen to native speakers for the best pronunciation</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .thai-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 999999;
+    display: none;
+    font-family: var(--font-body-family, inherit);
+  }
+  
+  .thai-modal__backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(4px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    z-index: 999999;
+  }
+  
+  .thai-modal__container {
+    background: white;
+    border-radius: 16px;
+    max-width: 600px;
+    width: 100%;
+    max-height: 90vh;
+    overflow: hidden;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    animation: modalSlideIn 0.3s ease-out;
+  }
+  
+  .thai-modal__content {
+    padding: 2rem;
+    overflow-y: auto;
+    max-height: 90vh;
+  }
+  
+  .thai-modal__header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 1.5rem;
+  }
+  
+  .thai-modal__header-left {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+  
+  .thai-modal__title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #1f2937;
+    margin: 0;
+    font-family: var(--font-heading-family, inherit);
+  }
+  
+  .thai-modal__category {
+    background: #f3f4f6;
+    color: #6b7280;
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.875rem;
+    font-weight: 500;
+  }
+  
+  .thai-modal__close {
+    background: none;
+    border: none;
+    color: #9ca3af;
+    font-size: 1.5rem;
+    cursor: pointer;
+    padding: 0.25rem;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+    line-height: 1;
+  }
+  
+  .thai-modal__close:hover {
+    color: #6b7280;
+    background: #f9fafb;
+  }
+  
+  .thai-modal__word-display {
+    text-align: center;
+    margin-bottom: 2rem;
+    padding: 1.5rem;
+    background: linear-gradient(135deg, #dbeafe 0%, #e0e7ff 100%);
+    border-radius: 12px;
+  }
+  
+  .thai-modal__thai-text {
+    font-size: 3rem;
+    color: #1d4ed8;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+  }
+  
+  .thai-modal__phonetic {
+    font-size: 1.125rem;
+    color: #6b7280;
+    font-style: italic;
+  }
+  
+  .thai-modal__section {
+    margin-bottom: 1.5rem;
+  }
+  
+  .thai-modal__section--highlight {
+    background: #f8fafc;
+    padding: 1.25rem;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+  }
+  
+  .thai-modal__section--tips {
+    background: #fefce8;
+    padding: 1.25rem;
+    border-radius: 12px;
+    border: 1px solid #fde047;
+  }
+  
+  .thai-modal__section-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #374151;
+    margin: 0 0 0.75rem 0;
+    font-family: var(--font-heading-family, inherit);
+  }
+  
+  .thai-modal__syllables {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    justify-content: center;
+  }
+  
+  .thai-modal__syllable {
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 0.75rem;
+    text-align: center;
+    min-width: 80px;
+  }
+  
+  .thai-modal__syllable-thai {
+    font-size: 1.125rem;
+    color: #1d4ed8;
+    font-weight: 500;
+    margin-bottom: 0.25rem;
+  }
+  
+  .thai-modal__syllable-phonetic {
+    font-size: 0.875rem;
+    color: #6b7280;
+    font-style: italic;
+  }
+  
+  .thai-modal__pronunciation-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.75rem;
+  }
+  
+  .thai-modal__play-button {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: white;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  
+  .thai-modal__play-button:hover {
+    background: #f9fafb;
+    border-color: #9ca3af;
+  }
+  
+  .thai-modal__play-icon {
+    width: 16px;
+    height: 16px;
+  }
+  
+  .thai-modal__pronunciation-text {
+    font-size: 1.125rem;
+    color: #374151;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+  }
+  
+  .thai-modal__pronunciation-note {
+    font-size: 0.875rem;
+    color: #6b7280;
+  }
+  
+  .thai-modal__examples {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+  
+  .thai-modal__example {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+  
+  .thai-modal__example-label {
+    background: #f3f4f6;
+    border: 1px solid #d1d5db;
+    border-radius: 4px;
+    padding: 0.25rem 0.5rem;
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: #374151;
+    flex-shrink: 0;
+    margin-top: 0.125rem;
+  }
+  
+  .thai-modal__example-content {
+    flex: 1;
+  }
+  
+  .thai-modal__example-thai {
+    color: #1d4ed8;
+    font-weight: 500;
+    margin-bottom: 0.25rem;
+  }
+  
+  .thai-modal__example-phonetic {
+    font-size: 0.875rem;
+    color: #6b7280;
+    font-style: italic;
+  }
+  
+  .thai-modal__example-english {
+    color: #6b7280;
+  }
+  
+  .thai-modal__tips {
+    margin: 0;
+    padding-left: 1.25rem;
+    color: #92400e;
+  }
+  
+  .thai-modal__tips li {
+    margin-bottom: 0.25rem;
+    font-size: 0.875rem;
+  }
+  
+  .thai-indicator {
+    font-family: var(--font-body-family, inherit);
+    transition: all 0.2s ease;
+  }
+  
+  .thai-indicator:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
+  }
+  
+  @keyframes modalSlideIn {
+    from {
+      opacity: 0;
+      transform: scale(0.95) translateY(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1) translateY(0);
+    }
+  }
+  
+  @media (max-width: 640px) {
+    .thai-modal__backdrop {
+      padding: 1rem;
+    }
+    
+    .thai-modal__content {
+      padding: 1.5rem;
+    }
+    
+    .thai-modal__thai-text {
+      font-size: 2.5rem;
+    }
+    
+    .thai-modal__syllables {
+      justify-content: stretch;
+    }
+    
+    .thai-modal__syllable {
+      flex: 1;
+      min-width: 60px;
+    }
+    
+    .thai-modal__pronunciation-header {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.5rem;
+    }
+  }
+</style>
+
+<script>
+  function openThaiModal(id, event) {
+    // Prevent event bubbling to avoid triggering product navigation
+    if (event) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
+    
+    let modal = document.getElementById('thai-modal-' + id);
+    if (!modal) {
+      console.error('Modal not found for id:', id);
+      return;
+    }
+    
+    // Move modal to body if it's not already there (to escape product card constraints)
+    if (modal.parentElement !== document.body) {
+      document.body.appendChild(modal);
+    }
+    
+    modal.style.display = 'block';
+    document.body.style.overflow = 'hidden';
+    
+    // Add animation
+    setTimeout(() => {
+      modal.style.opacity = '1';
+    }, 10);
+  }
+
+  function closeThaiModal(id) {
+    const modal = document.getElementById('thai-modal-' + id);
+    if (modal) {
+      modal.style.opacity = '0';
+      setTimeout(() => {
+        modal.style.display = 'none';
+        document.body.style.overflow = 'auto';
+      }, 200);
+    }
+  }
+
+  function playThaiAudio(id) {
+    // Mock audio playback - in real implementation, would play audio file
+    console.log('Playing audio for Thai word: ' + id);
+    // Future: implement actual audio playback
+    // const audio = new Audio('/path/to/audio/' + id + '.mp3');
+    // audio.play();
+  }
+
+  // Close modal when clicking outside
+  document.addEventListener('click', function(event) {
+    if (event.target.classList.contains('thai-modal')) {
+      const modalId = event.target.id.replace('thai-modal-', '');
+      closeThaiModal(modalId);
+    }
+  });
+
+  // Close modal with escape key
+  document.addEventListener('keydown', function(event) {
+    if (event.key === 'Escape') {
+      const openModals = document.querySelectorAll('.thai-modal');
+      openModals.forEach(function(modal) {
+        if (modal.style.display === 'block') {
+          const modalId = modal.id.replace('thai-modal-', '');
+          closeThaiModal(modalId);
+        }
+      });
+    }
+  });
+</script>
