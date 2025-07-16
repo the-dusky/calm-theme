@@ -1,0 +1,267 @@
+{% comment %}
+  Thai Content Demo Section
+  Shows how to integrate Thai translations into regular content
+{% endcomment %}
+
+{{ 'section-thai-content-demo.css' | asset_url | stylesheet_tag }}
+
+<section class="section-{{ section.id }}-padding color-{{ section.settings.color_scheme }}">
+  <div class="page-width">
+    
+    {% if section.settings.title != blank %}
+      <div class="title-wrapper-with-link title-wrapper--self-padded-mobile title-wrapper--no-top-margin">
+        <h2 class="title inline-richtext {{ section.settings.heading_size }}">{{ section.settings.title }}</h2>
+      </div>
+    {% endif %}
+
+    <div class="grid grid--1-col grid--2-col-tablet grid--2-col-desktop">
+      
+      <!-- Welcome Card -->
+      <div class="grid__item">
+        <div class="card-wrapper underline-links-hover">
+          <div class="card card--card card--text card--soft color-{{ section.settings.card_color_scheme }} gradient">
+            <div class="card__content">
+              <div class="card__information">
+                <h3 class="card__heading">
+                  {% render 'thai-word', word: 'hello' %} to Calm Outdoors
+                </h3>
+                <div class="card__text rte color-{{ section.settings.card_color_scheme }}">
+                  <p>
+                    {% render 'thai-word', word: 'thankyou' %} for visiting our store. 
+                    We specialize in high-quality outdoor equipment and gear for all your adventures.
+                  </p>
+                  <p><small>Based in Thailand, bringing you authentic outdoor experiences.</small></p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Product Features -->
+      <div class="grid__item">
+        <div class="card-wrapper underline-links-hover">
+          <div class="card card--card card--text card--soft color-{{ section.settings.card_color_scheme }} gradient">
+            <div class="card__content">
+              <div class="card__information">
+                <h3 class="card__heading">Essential Gear</h3>
+                <div class="card__text rte color-{{ section.settings.card_color_scheme }}">
+                  <p>Stay hydrated with our premium {% render 'thai-word', word: 'water' %} bottles and filtration systems.</p>
+                  <p>Pack nutritious trail {% render 'thai-word', word: 'food' %} for your outdoor adventures.</p>
+                  <p>Discover {% render 'thai-word', word: 'beautiful' %} hiking trails and camping spots.</p>
+                  <p>Perfect for all types of {% render 'thai-word', word: 'outdoor' %} activities.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Custom Translations -->
+    {% if section.blocks.size > 0 %}
+      <div class="mt-8">
+        <h3 class="text-xl font-semibold mb-4 text-center">Custom Content</h3>
+        <div class="prose max-w-none">
+          {% for block in section.blocks %}
+            {% case block.type %}
+              {% when 'custom_translation' %}
+                <p>
+                  {% render 'thai-translation',
+                    english_text: block.settings.english_text,
+                    thai_text: block.settings.thai_text,
+                    phonetic: block.settings.phonetic,
+                    syllables: block.settings.syllables,
+                    meaning: block.settings.meaning,
+                    example_thai: block.settings.example_thai,
+                    example_english: block.settings.example_english,
+                    example_phonetic: block.settings.example_phonetic
+                  %}
+                  {{ block.settings.additional_text }}
+                </p>
+              {% when 'text_block' %}
+                <div class="mb-4">
+                  {{ block.settings.content }}
+                </div>
+            {% endcase %}
+          {% endfor %}
+        </div>
+      </div>
+    {% endif %}
+
+    <!-- Integration Guide -->
+    {% if section.settings.show_guide %}
+      <div class="thai-integration-guide">
+        <h3>How to Use Thai Translations</h3>
+        <ul>
+          <li><strong>Quick Usage:</strong> Use predefined words like "hello", "thankyou", "water"</li>
+          <li><strong>Custom Words:</strong> Add your own Thai translations with phonetic guides</li>
+          <li><strong>In Product Descriptions:</strong> Perfect for product content and pages</li>
+          <li><strong>Available Words:</strong> hello, thankyou, water, food, beautiful, outdoor</li>
+        </ul>
+        <p><small>Click any Thai indicator above to see the pronunciation guide in action!</small></p>
+      </div>
+    {% endif %}
+
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Thai Content Demo",
+  "tag": "section",
+  "class": "section",
+  "settings": [
+    {
+      "type": "inline_richtext",
+      "id": "title",
+      "label": "Heading",
+      "default": "Experience Thai Language Integration"
+    },
+    {
+      "type": "select",
+      "id": "heading_size",
+      "options": [
+        {
+          "value": "h2",
+          "label": "Small"
+        },
+        {
+          "value": "h1",
+          "label": "Medium"
+        },
+        {
+          "value": "h0",
+          "label": "Large"
+        }
+      ],
+      "default": "h1",
+      "label": "Heading size"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "scheme-1"
+    },
+    {
+      "type": "color_scheme",
+      "id": "card_color_scheme",
+      "label": "Card color scheme",
+      "default": "scheme-2"
+    },
+    {
+      "type": "header",
+      "content": "Section padding"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Top padding",
+      "default": 36
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Bottom padding",
+      "default": 36
+    },
+    {
+      "type": "checkbox",
+      "id": "show_guide",
+      "label": "Show Integration Guide",
+      "default": true,
+      "info": "Display usage examples and integration instructions"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "custom_translation",
+      "name": "Custom Thai Translation",
+      "settings": [
+        {
+          "type": "text",
+          "id": "english_text",
+          "label": "English Text",
+          "placeholder": "Enter English word/phrase"
+        },
+        {
+          "type": "text",
+          "id": "thai_text",
+          "label": "Thai Text",
+          "placeholder": "Enter Thai characters"
+        },
+        {
+          "type": "text",
+          "id": "phonetic",
+          "label": "Phonetic Pronunciation",
+          "placeholder": "e.g., sà-wàt-dii"
+        },
+        {
+          "type": "text",
+          "id": "syllables",
+          "label": "Syllables (comma-separated)",
+          "placeholder": "e.g., สวัส,ดี"
+        },
+        {
+          "type": "text",
+          "id": "meaning",
+          "label": "Meaning",
+          "placeholder": "Brief definition"
+        },
+        {
+          "type": "text",
+          "id": "example_thai",
+          "label": "Example Sentence (Thai)",
+          "placeholder": "Thai example sentence"
+        },
+        {
+          "type": "text",
+          "id": "example_english",
+          "label": "Example Sentence (English)",
+          "placeholder": "English translation"
+        },
+        {
+          "type": "text",
+          "id": "example_phonetic",
+          "label": "Example Pronunciation",
+          "placeholder": "Phonetic pronunciation"
+        },
+        {
+          "type": "text",
+          "id": "additional_text",
+          "label": "Additional Text",
+          "placeholder": "Text to appear after the translation"
+        }
+      ]
+    },
+    {
+      "type": "text_block",
+      "name": "Text Content",
+      "settings": [
+        {
+          "type": "richtext",
+          "id": "content",
+          "label": "Content",
+          "info": "Add regular text content"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Thai Content Demo",
+      "category": "Advanced"
+    }
+  ]
+}
+{% endschema %}

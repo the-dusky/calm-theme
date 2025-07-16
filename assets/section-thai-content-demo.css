@@ -1,0 +1,123 @@
+.section-thai-content-demo-padding {
+  padding-top: 3.6rem;
+  padding-bottom: 3.6rem;
+}
+
+@media screen and (min-width: 750px) {
+  .section-thai-content-demo-padding {
+    padding-top: 5.2rem;
+    padding-bottom: 5.2rem;
+  }
+}
+
+.thai-integration-guide {
+  margin-top: 3.2rem;
+  padding: 2.4rem;
+  border-radius: 0.8rem;
+  background: rgb(var(--color-base-accent-2));
+  border: 0.1rem solid rgba(var(--color-base-accent-2), 0.2);
+}
+
+.thai-integration-guide h3 {
+  margin-bottom: 1.6rem;
+  color: rgb(var(--color-base-solid-button-labels));
+}
+
+.thai-integration-guide code {
+  background: rgb(var(--color-base-background-1));
+  padding: 0.4rem 0.8rem;
+  border-radius: 0.4rem;
+  font-family: var(--font-body-family);
+  font-size: 1.2rem;
+  color: rgb(var(--color-base-text));
+  border: 0.1rem solid rgba(var(--color-border), 0.08);
+}
+
+.thai-integration-guide ul {
+  list-style: none;
+  padding: 0;
+}
+
+.thai-integration-guide li {
+  margin-bottom: 0.8rem;
+  color: rgb(var(--color-base-text));
+}
+
+.thai-translation-wrapper {
+  display: inline;
+}
+
+.thai-indicator {
+  font-family: var(--font-body-family);
+  font-size: 1.2rem;
+  margin-left: 0.4rem;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.thai-indicator:hover {
+  transform: translateY(-0.1rem);
+  box-shadow: 0 0.2rem 0.4rem rgba(var(--color-shadow), 0.1);
+}
+
+.thai-modal {
+  backdrop-filter: blur(0.4rem);
+  font-family: var(--font-body-family);
+  z-index: 101;
+}
+
+.thai-modal .bg-white {
+  background-color: rgb(var(--color-base-background-1));
+  border: 0.1rem solid rgba(var(--color-border), 0.08);
+  box-shadow: 0 1rem 1.5rem -0.3rem rgba(var(--color-shadow), 0.1),
+              0 0.4rem 0.6rem -0.2rem rgba(var(--color-shadow), 0.05);
+}
+
+.thai-modal h2,
+.thai-modal h3 {
+  font-family: var(--font-heading-family);
+  color: rgb(var(--color-base-text));
+}
+
+.thai-modal .text-gray-600 {
+  color: rgb(var(--color-base-text));
+  opacity: 0.8;
+}
+
+.thai-modal .text-blue-700 {
+  color: rgb(var(--color-base-accent-1));
+}
+
+.thai-modal .bg-gray-50 {
+  background-color: rgb(var(--color-base-background-2));
+}
+
+.thai-modal .bg-blue-50 {
+  background-color: rgba(var(--color-base-accent-1), 0.1);
+}
+
+.thai-modal .bg-amber-50 {
+  background-color: rgba(var(--color-base-accent-2), 0.1);
+}
+
+.thai-modal .border-blue-200 {
+  border-color: rgba(var(--color-base-accent-1), 0.3);
+}
+
+.thai-modal .text-amber-800 {
+  color: rgb(var(--color-base-solid-button-labels));
+}
+
+.thai-modal .text-amber-700 {
+  color: rgb(var(--color-base-solid-button-labels));
+  opacity: 0.9;
+}
+
+.thai-modal button {
+  font-family: var(--font-body-family);
+  transition: all 0.2s ease;
+}
+
+.thai-modal button:hover {
+  background-color: rgba(var(--color-base-accent-1), 0.1);
+}

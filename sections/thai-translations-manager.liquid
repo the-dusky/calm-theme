@@ -1,0 +1,198 @@
+{% comment %}
+  Thai Translations Manager Section
+  Allows admins to configure Thai translations through the theme customizer
+{% endcomment %}
+
+<div class="thai-translations-manager">
+  {% if section.settings.show_preview %}
+    <div class="max-w-4xl mx-auto p-6">
+      <!-- Header -->
+      <div class="text-center mb-8">
+        <h1 class="text-2xl font-bold mb-2">{{ section.settings.title | default: 'Thai Translation Preview' }}</h1>
+        <p class="text-gray-600">
+          {{ section.settings.description | default: 'Click on any Thai indicator (ไทย • Thai text) to learn pronunciation' }}
+        </p>
+      </div>
+
+      <!-- Preview Content -->
+      <div class="bg-white border rounded-lg p-6 mb-6">
+        <h2 class="text-xl font-semibold mb-4">Translation Examples</h2>
+        
+        {% for block in section.blocks %}
+          {% case block.type %}
+            {% when 'translation_item' %}
+              <div class="mb-4">
+                {% render 'thai-translation',
+                  english_text: block.settings.english_text,
+                  thai_text: block.settings.thai_text,
+                  phonetic: block.settings.phonetic,
+                  syllables: block.settings.syllables,
+                  meaning: block.settings.meaning,
+                  example_thai: block.settings.example_thai,
+                  example_english: block.settings.example_english,
+                  example_phonetic: block.settings.example_phonetic
+                %}
+              </div>
+            {% when 'text_content' %}
+              <div class="prose mb-4">
+                {{ block.settings.content }}
+              </div>
+          {% endcase %}
+        {% endfor %}
+      </div>
+
+      <!-- Usage Instructions -->
+      <div class="bg-blue-50 border border-blue-200 rounded-lg p-6">
+        <h3 class="font-semibold mb-2">How to Use Thai Translations</h3>
+        <div class="text-sm text-blue-800 space-y-2">
+          <p><strong>In Product Descriptions:</strong> Use the snippet code in your product descriptions</p>
+          <p><strong>In Pages:</strong> Add translation items through this section</p>
+          <p><strong>Custom Usage:</strong> Copy the snippet format and customize as needed</p>
+        </div>
+        
+        <div class="mt-4 p-3 bg-white rounded border">
+          <p class="text-xs text-gray-600 mb-1">Example snippet usage:</p>
+          <code class="text-xs">
+            {%- raw -%}
+            {% render 'thai-translation', 
+              english_text: 'Welcome', 
+              thai_text: 'ยินดีต้อนรับ',
+              phonetic: 'yin-dii-tɔ̂ɔn-ráp',
+              meaning: 'Welcome'
+            %}
+            {%- endraw -%}
+          </code>
+        </div>
+      </div>
+    </div>
+  {% endif %}
+</div>
+
+{% schema %}
+{
+  "name": "Thai Translations Manager",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "show_preview",
+      "label": "Show Preview Section",
+      "default": true,
+      "info": "Display this section on the frontend for testing translations"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Section Title",
+      "default": "Thai Translation Preview"
+    },
+    {
+      "type": "textarea",
+      "id": "description",
+      "label": "Section Description",
+      "default": "Click on any Thai indicator (ไทย • Thai text) to learn pronunciation"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "translation_item",
+      "name": "Thai Translation",
+      "settings": [
+        {
+          "type": "text",
+          "id": "english_text",
+          "label": "English Text",
+          "info": "The English word or phrase"
+        },
+        {
+          "type": "text",
+          "id": "thai_text",
+          "label": "Thai Text",
+          "info": "Thai characters/script"
+        },
+        {
+          "type": "text",
+          "id": "phonetic",
+          "label": "Phonetic Pronunciation",
+          "info": "Romanized pronunciation (e.g., 'sà-wàt-dii')"
+        },
+        {
+          "type": "text",
+          "id": "syllables",
+          "label": "Syllables",
+          "info": "Comma-separated Thai syllables (e.g., 'สวัส,ดี')"
+        },
+        {
+          "type": "text",
+          "id": "meaning",
+          "label": "Meaning/Definition",
+          "info": "Brief meaning or definition"
+        },
+        {
+          "type": "text",
+          "id": "example_thai",
+          "label": "Example Sentence (Thai)",
+          "info": "Thai example sentence"
+        },
+        {
+          "type": "text",
+          "id": "example_english",
+          "label": "Example Sentence (English)",
+          "info": "English translation of example"
+        },
+        {
+          "type": "text",
+          "id": "example_phonetic",
+          "label": "Example Pronunciation",
+          "info": "Phonetic pronunciation of example"
+        }
+      ]
+    },
+    {
+      "type": "text_content",
+      "name": "Text Content",
+      "settings": [
+        {
+          "type": "richtext",
+          "id": "content",
+          "label": "Content",
+          "info": "Regular text content to mix with translations"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Thai Translations Manager",
+      "category": "Advanced",
+      "blocks": [
+        {
+          "type": "translation_item",
+          "settings": {
+            "english_text": "Hello",
+            "thai_text": "สวัสดี",
+            "phonetic": "sà-wàt-dii",
+            "syllables": "สวัส,ดี",
+            "meaning": "Hello/Goodbye",
+            "example_thai": "สวัสดีครับ ผมชื่อจอห์น",
+            "example_english": "Hello, my name is John",
+            "example_phonetic": "sà-wàt-dii kráp, pǒm chɯ̂ɯ jɔɔn"
+          }
+        },
+        {
+          "type": "translation_item",
+          "settings": {
+            "english_text": "Thank you",
+            "thai_text": "ขอบคุณ",
+            "phonetic": "kɔ̀ɔp-kun",
+            "syllables": "ขอบ,คุณ",
+            "meaning": "Thank you",
+            "example_thai": "ขอบคุณมากครับ",
+            "example_english": "Thank you very much",
+            "example_phonetic": "kɔ̀ɔp-kun mâak kráp"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}
