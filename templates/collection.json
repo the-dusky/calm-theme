@@ -6,13 +6,15 @@
  * or related systems. Please exercise caution as any changes
  * made to this file may be overwritten.
  * ------------------------------------------------------------
- */{
+ */
+{
   "sections": {
     "section": {
       "type": "section",
       "blocks": {
         "text_tqQTNE": {
           "type": "text",
+          "disabled": true,
           "settings": {
             "text": "<p>{{ closest.collection.title }}</p>",
             "width": "fit-content",
@@ -39,7 +41,9 @@
         "group_KwyQPe": {
           "type": "group",
           "name": "t:names.group",
+          "disabled": true,
           "settings": {
+            "link": "",
             "open_in_new_tab": false,
             "content_direction": "column",
             "vertical_on_mobile": true,
@@ -80,6 +84,7 @@
               "disabled": true,
               "settings": {
                 "image": "{{ closest.collection.image }}",
+                "link": "",
                 "image_ratio": "adapt",
                 "width": "fill",
                 "custom_width": 100,
@@ -225,6 +230,7 @@
             "group": {
               "type": "group",
               "settings": {
+                "link": "",
                 "open_in_new_tab": false,
                 "content_direction": "column",
                 "vertical_on_mobile": true,
@@ -295,6 +301,12 @@
                     "type_preset": "paragraph",
                     "width": "fit-content",
                     "alignment": "center",
+                    "font": "var(--font-body--family)",
+                    "font_size": "1rem",
+                    "line_height": "normal",
+                    "letter_spacing": "normal",
+                    "case": "none",
+                    "color": "var(--color-foreground)",
                     "padding-block-start": 0,
                     "padding-block-end": 0,
                     "padding-inline-start": 0,
@@ -331,6 +343,7 @@
           ]
         }
       },
+      "disabled": true,
       "settings": {
         "layout_type": "grid",
         "product_card_size": "medium",
